@@ -231,12 +231,25 @@
     return prefs;
   }
 
+  function applyDataAttrsOnly() {
+    try {
+      var root = document.documentElement;
+      if (!root) return;
+      var prefs = getPrefs();
+      root.setAttribute('data-text-size', prefs.textSize);
+      root.setAttribute('data-font', prefs.fontHarmony ? 'harmony' : 'system');
+      root.setAttribute('data-voice', prefs.voice);
+    } catch (e) {}
+  }
+
   function bootApply() {
     try {
       applyPrefs();
     } catch (e) {}
   }
 
+  // Attrs before first paint when this script is in <head>
+  applyDataAttrsOnly();
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', bootApply);
   } else {

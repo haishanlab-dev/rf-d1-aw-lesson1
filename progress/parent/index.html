@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="../../assets/calm-shell.css">
 <link rel="stylesheet" href="../../assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see ../../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
+<script src="../../assets/prefs-boot.js"></script>
 <script src="../../assets/progress-api.js"></script>
 <style>
   .gate-card {
@@ -24,7 +25,7 @@
     padding: 12px 14px; font-size: 16px; font-weight: 700;
     font-family: inherit; background: #fff; color: var(--ink);
   }
-  .gate-card button.unlock {
+  .gate-card button.enter {
     border: 0; border-radius: 999px; padding: 12px 18px;
     background: var(--blue); color: #fff; font-weight: 800; font-size: 14px;
     font-family: inherit; cursor: pointer;
@@ -78,17 +79,17 @@
         <div class="page-head">
           <div>
             <h1>Parent settings</h1>
-            <p id="headSub">Enter family key to unlock</p>
+            <p id="headSub">Enter family key</p>
           </div>
           <a class="course-pill" href="../" style="text-decoration:none"><span class="ms">arrow_back</span> Back to Progress</a>
         </div>
 
-        <div id="gatePanel" class="gate-card" aria-label="Unlock">
+        <div id="gatePanel" class="gate-card" aria-label="Enter family key">
           <h2>Parent settings</h2>
           <p class="gate-sub">Enter family key</p>
           <div class="key-row">
             <input id="gateKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
-            <button type="button" class="unlock" id="unlockBtn">Enter</button>
+            <button type="button" class="enter" id="enterBtn">Enter</button>
           </div>
           <div class="gate-status" id="gateStatus"></div>
         </div>
@@ -174,12 +175,11 @@
   var RF = window.RFProgress;
   if (!RF) return;
 
-  var SESSION_UNLOCK = 'rfParentUnlocked';
   var gatePanel = document.getElementById('gatePanel');
   var settingsPanel = document.getElementById('settingsPanel');
   var headSub = document.getElementById('headSub');
   var gateInput = document.getElementById('gateKeyInput');
-  var unlockBtn = document.getElementById('unlockBtn');
+  var enterBtn = document.getElementById('enterBtn');
   var gateStatus = document.getElementById('gateStatus');
 
   var keyInput = document.getElementById('familyKeyInput');
@@ -197,20 +197,10 @@
 
   var TEXT_LABELS = { medium: 'Medium', large: 'Large', xl: 'XL' };
 
-  function sessionUnlocked() {
-    try { return sessionStorage.getItem(SESSION_UNLOCK) === '1'; } catch (e) { return false; }
-  }
-  function setSessionUnlocked(on) {
-    try {
-      if (on) sessionStorage.setItem(SESSION_UNLOCK, '1');
-      else sessionStorage.removeItem(SESSION_UNLOCK);
-    } catch (e) {}
-  }
-
   function showGate() {
     gatePanel.hidden = false;
     settingsPanel.hidden = true;
-    headSub.textContent = 'Enter family key to unlock';
+    headSub.textContent = 'Enter family key';
   }
   function showSettings() {
     gatePanel.hidden = true;
@@ -228,7 +218,7 @@
     gatePanel.classList.add('shake');
   }
 
-  async function tryUnlock(raw) {
+  async function tryEnter(raw) {
     var entered = String(raw || '').trim();
     if (!entered) {
       shakeGate('Enter family key');
@@ -240,7 +230,6 @@
         shakeGate('Wrong key');
         return;
       }
-      setSessionUnlocked(true);
       showSettings();
       return;
     }
@@ -251,7 +240,6 @@
     RF.setFamilyKey(entered);
     try {
       await RF.fetchProgress();
-      setSessionUnlocked(true);
       showSettings();
     } catch (e) {
       RF.setFamilyKey(prev || '');
@@ -361,7 +349,6 @@
     keyInput.value = '';
     if (!k) {
       setKeyUi(false, 'Cleared');
-      setSessionUnlocked(false);
       showGate();
       return;
     }
@@ -371,21 +358,18 @@
     if (ev.key === 'Enter') saveBtn.click();
   });
 
-  unlockBtn.addEventListener('click', function () { tryUnlock(gateInput.value); });
+  enterBtn.addEventListener('click', function () { tryEnter(gateInput.value); });
   gateInput.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Enter') unlockBtn.click();
+    if (ev.key === 'Enter') enterBtn.click();
   });
 
   RF.consumeKeyFromQuery();
   RF.applyPrefs();
 
-  // Gate: need session unlock AND a saved family key (or unlock will set one)
-  if (sessionUnlocked() && RF.getFamilyKey()) {
-    showSettings();
-  } else {
-    setSessionUnlocked(false);
-    showGate();
-  }
+  // Always require Enter when opening this page (Back then return re-prompts)
+  try { sessionStorage.removeItem('rfParentUnlocked'); } catch (e) {}
+  showGate();
+  setTimeout(function () { if (gateInput) gateInput.focus(); }, 40);
 })();
 </script>
 </body>
