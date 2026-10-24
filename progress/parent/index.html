@@ -19,6 +19,7 @@
   .gate-card h2 { margin: 0 0 6px; font-size: 22px; font-weight: 900; }
   .gate-card .gate-sub { margin: 0 0 16px; font-size: 13px; font-weight: 700; color: var(--ink-muted); }
   .gate-card .key-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  #gateKeyInput, #familyKeyInput { -webkit-text-security: disc; }
   .gate-card input {
     flex: 1; min-width: 140px;
     border: 2px solid var(--line); border-radius: 12px;
@@ -92,10 +93,12 @@
         <div id="gatePanel" class="gate-card" aria-label="Enter family key">
           <h2>Parent settings</h2>
           <p class="gate-sub">Enter family key</p>
+          <form id="gateForm" autocomplete="off" onsubmit="return false;">
           <div class="key-row">
-            <input id="gateKeyInput" type="password" autocomplete="new-password" inputmode="numeric" spellcheck="false" placeholder="Family key" aria-label="Family key">
+            <input id="gateKeyInput" type="text" name="rf_family_gate" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" placeholder="Family key" aria-label="Family key">
             <button type="button" class="enter" id="enterBtn">Enter</button>
           </div>
+          </form>
           <div class="gate-status" id="gateStatus"></div>
         </div>
 
@@ -157,7 +160,7 @@
                   <span>Only if you need a new code</span>
                 </div>
                 <div class="key-row">
-                  <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="New family key" aria-label="New family key">
+                  <input id="familyKeyInput" type="text" name="rf_family_update" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false" inputmode="numeric" data-lpignore="true" data-1p-ignore="true" data-bwignore="true" data-form-type="other" placeholder="New family key" aria-label="New family key">
                   <button type="button" class="save-key" id="saveKeyBtn">Update</button>
                 </div>
               </div>
