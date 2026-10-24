@@ -59,7 +59,7 @@
     img.alt = 'Miles';
     img.width = 300;
     img.height = 80;
-    img.src = assetBase() + 'brand/miles-logo.png';
+    img.src = assetBase() + 'brand/miles-logo.svg';
     el.appendChild(img);
     document.body.appendChild(el);
   }
