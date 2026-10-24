@@ -27,72 +27,25 @@
         <div class="page-head">
           <div>
             <h1>Parent settings</h1>
-            <p>Family key &amp; sync · not shown on Miles’s Progress tab</p>
+            <p>Family key &amp; sync</p>
           </div>
           <a class="course-pill" href="../" style="text-decoration:none"><span class="ms">arrow_back</span> Back to Progress</a>
         </div>
 
-        <div id="keyBanner" class="prog-banner" role="status">
-          Paste the family key once on this iPad to sync Miles’s completed lessons across devices.
-        </div>
-
-        <div class="prog-layout parent-only">
+        <div class="prog-layout parent-only" style="grid-template-columns:1fr;max-width:560px">
           <aside class="settings-card" aria-label="Sync">
             <h3><span class="ms">cloud_sync</span> Progress sync</h3>
             <div class="set-row family-key">
               <div>
                 <strong>Family key</strong>
-                <span>Keep private · stored only on this device</span>
+                <span>Stored only on this device</span>
               </div>
               <div class="key-row">
-                <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste family key" aria-label="Family key">
+                <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
                 <button type="button" class="save-key" id="saveKeyBtn">Save</button>
               </div>
-              <div class="key-status" id="keyStatus">Not set · Progress showcase stays local until saved</div>
+              <div class="key-status" id="keyStatus">Not set</div>
             </div>
-            <p class="parent-note">
-              <strong>Parent note:</strong>
-              After Save, Miles’s Progress tab shows Done stars from the cloud when a lesson finishes.
-              You can also open this page once with <code>?key=…</code> — the key is saved and stripped from the URL.
-              Losing the key means generating a new one (old sync stops).
-            </p>
-          </aside>
-
-          <aside class="settings-card" aria-label="Notes">
-            <h3><span class="ms">info</span> Course notes</h3>
-            <div class="set-row">
-              <div>
-                <strong>Voice</strong>
-                <span>British English · Sonia</span>
-              </div>
-              <div class="val">en-GB</div>
-            </div>
-            <div class="set-row">
-              <div>
-                <strong>Text size</strong>
-                <span>Large for iPad reading</span>
-              </div>
-              <div class="val">Large</div>
-            </div>
-            <div class="set-row">
-              <div>
-                <strong>Learner name</strong>
-                <span>Spoken by Eva</span>
-              </div>
-              <div class="val">Miles</div>
-            </div>
-            <div class="set-row">
-              <div>
-                <strong>Font</strong>
-                <span>HarmonyOS Sans</span>
-              </div>
-              <div class="val">On</div>
-            </div>
-            <p class="parent-note">
-              Voice / text size / font here are notes (not live toggles).
-              Open a lesson · tap Start · Eva speaks to Miles. Pause anytime.
-              No shop, no leagues, no hearts pressure.
-            </p>
           </aside>
         </div>
       </div>
@@ -111,15 +64,13 @@
   var RF = window.RFProgress;
   if (!RF) return;
 
-  var banner = document.getElementById('keyBanner');
   var keyInput = document.getElementById('familyKeyInput');
   var keyStatus = document.getElementById('keyStatus');
   var saveBtn = document.getElementById('saveKeyBtn');
 
   function setKeyUi(hasKey, msg, cls) {
-    if (banner) banner.classList.toggle('hidden', !!hasKey);
     if (keyStatus) {
-      keyStatus.textContent = msg || (hasKey ? 'Saved on this device' : 'Not set · Progress showcase stays local until saved');
+      keyStatus.textContent = msg || (hasKey ? 'Saved' : 'Not set');
       keyStatus.className = 'key-status' + (cls ? ' ' + cls : (hasKey ? ' ok' : ''));
     }
   }
@@ -130,12 +81,12 @@
       setKeyUi(false);
       return;
     }
-    setKeyUi(true, 'Saved on this device · checking sync…', 'ok');
+    setKeyUi(true, 'Checking…', 'ok');
     try {
       await RF.fetchProgress();
-      setKeyUi(true, 'Synced · Miles’s Progress tab will show Done stars', 'ok');
+      setKeyUi(true, 'Synced', 'ok');
     } catch (e) {
-      setKeyUi(true, 'Key saved, but sync failed — check the key or network', 'err');
+      setKeyUi(true, 'Saved, but sync failed', 'err');
     }
   }
 
@@ -143,7 +94,7 @@
     var k = RF.setFamilyKey(keyInput.value);
     keyInput.value = '';
     if (!k) {
-      setKeyUi(false, 'Cleared · paste a key to sync again');
+      setKeyUi(false, 'Cleared');
       return;
     }
     refresh();
@@ -154,7 +105,7 @@
   });
 
   RF.consumeKeyFromQuery();
-  if (RF.getFamilyKey()) setKeyUi(true, 'Saved on this device · checking sync…', 'ok');
+  if (RF.getFamilyKey()) setKeyUi(true, 'Checking…', 'ok');
   else setKeyUi(false);
   refresh();
 })();
