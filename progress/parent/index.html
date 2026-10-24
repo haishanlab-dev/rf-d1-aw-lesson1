@@ -65,6 +65,18 @@
     font-family: inherit; cursor: pointer;
   }
   .name-edit[hidden] { display: none !important; }
+  .retell-row {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap;
+    padding: 10px 0; border-top: 1px solid var(--line);
+  }
+  .retell-row strong { flex: 1; min-width: 10em; font-size: 15px; }
+  .retell-row button {
+    border: 0; border-radius: 999px; padding: 8px 14px;
+    background: var(--blue); color: #fff; font-weight: 800; font-size: 13px;
+    font-family: inherit; cursor: pointer;
+  }
+  .retell-row button.dl { background: #F3EDE0; color: var(--ink); }
+  #retellEmpty { margin: 0; font-size: 13px; font-weight: 700; color: var(--ink-muted); }
 </style>
 </head>
 <body oncontextmenu="return false">
@@ -166,11 +178,18 @@
               </div>
             </aside>
 
+            <aside class="settings-card" aria-label="Spoken retells" style="margin-top:16px;grid-column:1/-1">
+              <h3><span class="ms">mic</span> Spoken retells</h3>
+              <p id="retellEmpty">No saved speaking yet.</p>
+              <div id="retellList"></div>
+            </aside>
+
             <aside class="settings-card" aria-label="Parent note" style="margin-top:16px;grid-column:1/-1">
               <h3><span class="ms">info</span> Parent note</h3>
               <div class="parent-note" style="margin:0">
                 <div>· Learner English name defaults to <b>Miles</b>. Eva speaks to Miles in lesson audio (changing Display name does not re-record voice yet).</div>
-                <div style="margin-top:8px">· Progress tab is Miles’s showcase (stars for finished lessons). No shop / leagues.</div>
+                <div style="margin-top:8px">· Progress is Miles’s showcase: soft stars for a finished lesson, and session / map / speaking marks along the way. No shop / leagues.</div>
+                <div style="margin-top:8px">· A saved retell plays on any iPad with this family key. Download is a backup copy of that audio.</div>
                 <div style="margin-top:8px">· Family key unlocks this page and syncs progress across devices.</div>
                 <div style="margin-top:8px">· Voice: British Sonia or American Jenny — tap Voice above to preview and switch.</div>
                 <div style="margin-top:8px">· Lessons: Session 1 then Session 2; tap the map to jump parts. Book: Discover 1 Student Book.</div>
@@ -224,6 +243,17 @@
     if (gateInput) gateInput.value = '';
     if (gateStatus) { gateStatus.textContent = ''; gateStatus.className = 'gate-status'; }
   }
+  var RETELL_LABELS = {
+    unit1: "1 · Animals' Weather",
+    unit2: '2 · A Rainy Day',
+    unit3: '3 · Rain, Snow, and Ice',
+    unit4: '4 · Fish from the Sky',
+    scienceReview: 'Weather review'
+  };
+  var retellPlayer = new Audio();
+  retellPlayer.setAttribute('playsinline', '');
+  var retellPlaying = '';
+
   function showSettings() {
     try { document.documentElement.setAttribute('data-parent-entered', '1'); } catch (e) {}
     gatePanel.hidden = true;
@@ -231,6 +261,88 @@
     headSub.textContent = 'Course & sync';
     refreshPrefsUi();
     refreshSyncUi();
+    refreshRetells();
+  }
+
+  function refreshRetells() {
+    var list = document.getElementById('retellList');
+    var empty = document.getElementById('retellEmpty');
+    if (!list || !RF.fetchProgress) return;
+    list.innerHTML = '';
+    empty.hidden = false;
+    empty.textContent = 'Checking…';
+    RF.fetchProgress().then(function (data) {
+      var view = RF.presentProgress ? RF.presentProgress(data) : { retells: {} };
+      var ids = RF.UNIT_IDS || Object.keys(RETELL_LABELS);
+      var any = false;
+      ids.forEach(function (id) {
+        if (!view.retells || !view.retells[id]) return;
+        any = true;
+        var row = document.createElement('div');
+        row.className = 'retell-row';
+        var title = document.createElement('strong');
+        title.textContent = RETELL_LABELS[id] || id;
+        var play = document.createElement('button');
+        play.type = 'button';
+        play.textContent = retellPlaying === id ? 'Playing' : 'Play';
+        play.addEventListener('click', function () { playRetell(id, play); });
+        var dl = document.createElement('button');
+        dl.type = 'button';
+        dl.className = 'dl';
+        dl.textContent = 'Download';
+        dl.addEventListener('click', function () { downloadRetell(id, dl); });
+        row.appendChild(title);
+        row.appendChild(play);
+        row.appendChild(dl);
+        list.appendChild(row);
+      });
+      empty.hidden = any;
+      empty.textContent = any ? '' : 'No saved speaking yet.';
+    }).catch(function () {
+      empty.hidden = false;
+      empty.textContent = 'Speaking will show up when the connection is back.';
+    });
+  }
+
+  function playRetell(id, btn) {
+    if (retellPlaying === id) {
+      retellPlayer.pause();
+      retellPlaying = '';
+      refreshRetells();
+      return;
+    }
+    btn.textContent = '…';
+    RF.fetchRetellBlob(id).then(function (got) {
+      if (!got || !got.blob) { btn.textContent = 'Play'; return; }
+      var url = URL.createObjectURL(got.blob);
+      retellPlayer.src = url;
+      retellPlaying = id;
+      retellPlayer.onended = function () {
+        retellPlaying = '';
+        URL.revokeObjectURL(url);
+        refreshRetells();
+      };
+      var p = retellPlayer.play();
+      if (p && p.catch) p.catch(function () { retellPlaying = ''; refreshRetells(); });
+      refreshRetells();
+    }).catch(function () { btn.textContent = 'Play'; });
+  }
+
+  function downloadRetell(id, btn) {
+    var label = btn.textContent;
+    btn.textContent = '…';
+    RF.fetchRetellBlob(id).then(function (got) {
+      btn.textContent = label;
+      if (!got || !got.blob) return;
+      var url = URL.createObjectURL(got.blob);
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = got.filename || ('miles-' + id + '-retell.m4a');
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(function () { URL.revokeObjectURL(url); }, 4000);
+    }).catch(function () { btn.textContent = label; });
   }
 
   function shakeGate(msg) {

@@ -80,21 +80,210 @@
     return res.json();
   }
 
+  var UNIT_IDS = ['unit1', 'unit2', 'unit3', 'unit4', 'scienceReview'];
+
+  function isUnit(id) {
+    return UNIT_IDS.indexOf(id) >= 0;
+  }
+
+  // One write at a time so a map-part PUT cannot race a session PUT on this iPad.
+  var writeChain = Promise.resolve();
+  function enqueueWrite(run) {
+    var next = writeChain.then(run, run);
+    writeChain = next.then(function () {}, function () {});
+    return next;
+  }
+
+  function warnProgress(label, err) {
+    try {
+      console.warn('[RFProgress]', label, err && err.message);
+    } catch (e) {}
+  }
+
   /**
    * Soft-fail mark: PUT { completed: { [flag]: true } }.
    * No-op when family key missing. Never throws to callers.
+   * Kept for older callers. New lessons use markSessionDone.
    */
   function markComplete(flag) {
-    if (!flag) return Promise.resolve(null);
+    if (!flag || !isUnit(flag)) return Promise.resolve(null);
     if (!getFamilyKey()) return Promise.resolve(null);
     var completed = {};
     completed[flag] = true;
-    return putProgress({ completed: completed }).catch(function (err) {
-      try {
-        console.warn('[RFProgress] markComplete failed', flag, err && err.message);
-      } catch (e) {}
+    return enqueueWrite(function () {
+      return putProgress({ completed: completed });
+    }).catch(function (err) {
+      warnProgress('markComplete failed ' + flag, err);
       return null;
     });
+  }
+
+  /**
+   * OR-merge one unit's footprint. Missing fields are left unchanged on the server.
+   * patch: { sessionADone, sessionBDone, retellDone, part, completed }
+   * `part` is 1–4. `completed` sets the whole-lesson star (never clears it).
+   */
+  function markFootprint(unitId, patch) {
+    if (!isUnit(unitId)) return Promise.resolve(null);
+    if (!getFamilyKey()) return Promise.resolve(null);
+    patch = patch || {};
+    var one = {};
+    if (patch.sessionADone) one.sessionADone = true;
+    if (patch.sessionBDone) one.sessionBDone = true;
+    if (patch.retellDone) one.retellDone = true;
+    var part = +patch.part;
+    if (part >= 1 && part <= 4) {
+      var parts = [false, false, false, false];
+      parts[part - 1] = true;
+      one.mapParts = parts;
+    }
+    var body = { footprints: {} };
+    body.footprints[unitId] = one;
+    if (patch.completed) {
+      body.completed = {};
+      body.completed[unitId] = true;
+    }
+    return enqueueWrite(function () {
+      return putProgress(body);
+    }).catch(function (err) {
+      warnProgress('markFootprint failed ' + unitId, err);
+      return null;
+    });
+  }
+
+  var partMemo = Object.create(null);
+
+  /** Map tap or natural play through a part. Deduped per page load; retries if the PUT failed. */
+  function notePart(unitId, part) {
+    var p = +part;
+    if (!isUnit(unitId) || p < 1 || p > 4) return Promise.resolve(null);
+    var k = unitId + ':' + p;
+    if (partMemo[k]) return Promise.resolve(null);
+    if (!getFamilyKey()) {
+      partMemo[k] = 'nokey';
+      return Promise.resolve(null);
+    }
+    partMemo[k] = 'pending';
+    return markFootprint(unitId, { part: p }).then(function (res) {
+      if (res) partMemo[k] = 'ok';
+      else delete partMemo[k];
+      return res;
+    });
+  }
+
+  /**
+   * End of a listening path.
+   * Units 1–4: record that session. The whole-lesson star turns on only when both
+   * sessions are stored (Worker derives it). Weather review is a single path, so
+   * finishing it still sets completed — same moment as the old markComplete.
+   */
+  function markSessionDone(unitId, sess) {
+    var patch = sess === 'B' ? { sessionBDone: true } : { sessionADone: true };
+    if (unitId === 'scienceReview') patch.completed = true;
+    return markFootprint(unitId, patch);
+  }
+
+  /** Child advanced past a retell (reveal + continue). Boolean only. */
+  function noteRetell(unitId) {
+    return markFootprint(unitId, { retellDone: true });
+  }
+
+  function extFromType(contentType) {
+    var b = String(contentType || '').split(';')[0].trim().toLowerCase();
+    if (b.indexOf('webm') >= 0) return 'webm';
+    if (b.indexOf('wav') >= 0) return 'wav';
+    if (b.indexOf('mpeg') >= 0 || b === 'audio/mp3') return 'mp3';
+    return 'm4a';
+  }
+
+  function retellFilename(unitId, contentType) {
+    return 'miles-' + unitId + '-retell.' + extFromType(contentType);
+  }
+
+  /**
+   * Upload a retell blob. Null when there is no family key.
+   * Throws on HTTP errors so the recorder can offer Save again.
+   */
+  function uploadRetell(unitId, blob, durationMs) {
+    if (!isUnit(unitId) || !blob) return Promise.resolve(null);
+    var headers = authHeaders();
+    if (!headers) return Promise.resolve(null);
+    headers['Content-Type'] = blob.type || 'application/octet-stream';
+    if (durationMs != null && isFinite(durationMs)) {
+      headers['X-Duration-Ms'] = String(Math.max(0, Math.round(durationMs)));
+    }
+    return enqueueWrite(function () {
+      return fetch(API_BASE + '/retell/' + encodeURIComponent(unitId), {
+        method: 'POST',
+        headers: headers,
+        body: blob,
+      }).then(function (res) {
+        if (!res.ok) throw new Error('retell_post_' + res.status);
+        return res.json();
+      });
+    });
+  }
+
+  function fetchRetellBlob(unitId) {
+    if (!isUnit(unitId)) return Promise.resolve(null);
+    var headers = authHeaders();
+    if (!headers) return Promise.resolve(null);
+    return fetch(API_BASE + '/retell/' + encodeURIComponent(unitId), {
+      method: 'GET',
+      headers: { Authorization: headers.Authorization },
+    }).then(function (res) {
+      if (res.status === 404) return null;
+      if (!res.ok) throw new Error('retell_get_' + res.status);
+      var ct = res.headers.get('Content-Type') || 'audio/mp4';
+      return res.blob().then(function (blob) {
+        var base = ct.split(';')[0];
+        if (base && (!blob.type || blob.type === 'application/octet-stream')) {
+          blob = new Blob([blob], { type: base });
+        }
+        return { blob: blob, contentType: ct, filename: retellFilename(unitId, ct) };
+      });
+    });
+  }
+
+  function emptyFootprint() {
+    return { sessionADone: false, sessionBDone: false, mapParts: [false, false, false, false], retellDone: false };
+  }
+
+  /** Fill missing fields so old KV records still render. Does not invent audio. */
+  function presentProgress(data) {
+    var src = data || {};
+    var completed = {};
+    var footprints = {};
+    var retells = {};
+    UNIT_IDS.forEach(function (id) {
+      var raw = src.footprints && src.footprints[id];
+      var parts = [false, false, false, false];
+      var mp = raw && raw.mapParts;
+      if (Array.isArray(mp)) {
+        for (var i = 0; i < 4; i++) parts[i] = !!mp[i];
+      }
+      var fp = {
+        sessionADone: !!(raw && raw.sessionADone),
+        sessionBDone: !!(raw && raw.sessionBDone),
+        retellDone: !!(raw && raw.retellDone),
+        mapParts: parts,
+      };
+      var done = !!(src.completed && src.completed[id]);
+      if (id === 'scienceReview') done = done || fp.sessionADone;
+      else done = done || (fp.sessionADone && fp.sessionBDone);
+      completed[id] = done;
+      footprints[id] = fp;
+      var r = src.retells && src.retells[id];
+      retells[id] = r && (r.recordedAt || r.contentType || r.bytes) ? r : null;
+    });
+    return {
+      learner: src.learner || DEFAULT_NAME,
+      completed: completed,
+      footprints: footprints,
+      retells: retells,
+      unitsOpen: src.unitsOpen || 0,
+      totalUnits: src.totalUnits || 16,
+    };
   }
 
   function lsGet(k, fallback) {
@@ -265,6 +454,16 @@
     fetchProgress: fetchProgress,
     putProgress: putProgress,
     markComplete: markComplete,
+    markFootprint: markFootprint,
+    markSessionDone: markSessionDone,
+    notePart: notePart,
+    noteRetell: noteRetell,
+    uploadRetell: uploadRetell,
+    fetchRetellBlob: fetchRetellBlob,
+    retellFilename: retellFilename,
+    presentProgress: presentProgress,
+    emptyFootprint: emptyFootprint,
+    UNIT_IDS: UNIT_IDS,
     getTextSize: getTextSize,
     setTextSize: setTextSize,
     cycleTextSize: cycleTextSize,

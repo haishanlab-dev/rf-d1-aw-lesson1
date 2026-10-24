@@ -108,7 +108,7 @@
     }
     .stop {
       grid-template-columns: 1fr; text-align: center; padding: 16px 12px 18px;
-      position: relative; z-index: 1; min-height: 210px;
+      position: relative; z-index: 1; min-height: 248px;
     }
     .stop-badge { margin: 0 auto 10px; }
     .stop .tag { justify-self: center; }
@@ -120,6 +120,34 @@
     font-size: 14px; font-weight: 800; color: var(--ink); line-height: 1.4;
   }
   .cheer[hidden] { display: none !important; }
+  .fp {
+    display: flex; flex-wrap: wrap; gap: 4px; align-items: center;
+    margin-top: 8px;
+  }
+  .pip, .spoke-btn {
+    font-size: 11px; font-weight: 800; line-height: 1;
+    padding: 4px 7px; border-radius: 999px;
+    background: #F3EDE0; color: #8A8175; border: 0;
+  }
+  .pip.on { background: #E4F3EA; color: var(--green); }
+  .part-pips { display: inline-flex; gap: 3px; align-items: center; padding: 0 2px; }
+  .part-pips i {
+    width: 8px; height: 8px; border-radius: 50%;
+    background: #E2D6C2; display: block;
+  }
+  .part-pips i.on { background: var(--blue); }
+  .spoke-btn {
+    background: #FFF4D6; color: #8A6A12; cursor: pointer;
+    font-family: inherit; touch-action: manipulation;
+  }
+  .spoke-btn[hidden] { display: none !important; }
+  .spoke-btn.is-on { background: #E4F3EA; color: var(--green); }
+  .star-slot.partial {
+    background: #FBF6E9; border-color: #E8C04A; color: #C9A63A;
+  }
+  @media (min-width: 900px) {
+    .fp { justify-content: center; }
+  }
   .shell-tabs { z-index: 40; flex-shrink: 0; }
   #wrap { min-height: 100%; min-height: 100dvh; }
 </style>
@@ -153,6 +181,7 @@
             <div class="copy">
               <strong>1 · Animals' Weather</strong>
               <span class="sub">Cows, horses, rabbits · Unit 1</span>
+              <div class="fp" hidden></div>
             </div>
             <span class="tag">Let’s go</span>
           </a>
@@ -161,6 +190,7 @@
             <div class="copy">
               <strong>2 · A Rainy Day</strong>
               <span class="sub">Clouds &amp; rain · Unit 2</span>
+              <div class="fp" hidden></div>
             </div>
             <span class="tag">Open</span>
           </a>
@@ -169,6 +199,7 @@
             <div class="copy">
               <strong>3 · Rain, Snow, and Ice</strong>
               <span class="sub">Cold weather · Unit 3</span>
+              <div class="fp" hidden></div>
             </div>
             <span class="tag">Open</span>
           </a>
@@ -177,6 +208,7 @@
             <div class="copy">
               <strong>4 · Fish from the Sky</strong>
               <span class="sub">A wild weather tale · Unit 4</span>
+              <div class="fp" hidden></div>
             </div>
             <span class="tag">Open</span>
           </a>
@@ -185,6 +217,7 @@
             <div class="copy">
               <strong>Weather review</strong>
               <span class="sub">All four stops · one adventure</span>
+              <div class="fp" hidden></div>
             </div>
             <span class="tag">Open</span>
           </a>
@@ -229,43 +262,112 @@
   var cheer = document.getElementById('cheer');
   var syncSoft = document.getElementById('syncSoft');
 
+  var subs = {};
+  document.querySelectorAll('#lessonList .stop').forEach(function (el) {
+    var sub = el.querySelector('.sub');
+    if (sub) subs[el.getAttribute('data-flag')] = sub.textContent;
+  });
+
+  var player = new Audio();
+  player.setAttribute('playsinline', '');
+  var playingFlag = '';
+  var playUrl = '';
+
   function countDone(completed) {
     var n = 0;
     FLAGS.forEach(function (f) { if (completed && completed[f]) n++; });
     return n;
   }
 
-  function renderStars(n) {
+  function hasFootprint(fp) {
+    if (!fp) return false;
+    if (fp.sessionADone || fp.sessionBDone || fp.retellDone) return true;
+    return (fp.mapParts || []).some(Boolean);
+  }
+
+  function renderStars(completed, footprints) {
     starRow.innerHTML = '';
-    for (var i = 0; i < FLAGS.length; i++) {
+    var n = 0;
+    FLAGS.forEach(function (id) {
+      var done = !!(completed && completed[id]);
+      var partial = !done && hasFootprint(footprints && footprints[id]);
+      if (done) n++;
       var slot = document.createElement('div');
-      slot.className = 'star-slot' + (i < n ? ' on' : '');
-      slot.innerHTML = '<span class="ms">' + (i < n ? 'star' : 'star_border') + '</span>';
+      slot.className = 'star-slot' + (done ? ' on' : (partial ? ' partial' : ''));
+      var icon = done ? 'star' : (partial ? 'star_half' : 'star_border');
+      slot.innerHTML = '<span class="ms">' + icon + '</span>';
       starRow.appendChild(slot);
-    }
+    });
     var meta = document.createElement('div');
     meta.className = 'star-meta';
     meta.innerHTML = '<span>' + n + '</span> / ' + FLAGS.length + ' stars';
     starRow.appendChild(meta);
+    return n;
   }
 
-  function renderStops(completed) {
+  function pip(text, on) {
+    return '<span class="pip' + (on ? ' on' : '') + '">' + text + '</span>';
+  }
+
+  function footprintHtml(flag, fp) {
+    fp = fp || { sessionADone: false, sessionBDone: false, mapParts: [false, false, false, false], retellDone: false };
+    var parts = fp.mapParts || [];
+    var dots = '';
+    for (var i = 0; i < 4; i++) dots += '<i class="' + (parts[i] ? 'on' : '') + '"></i>';
+    var html = '';
+    if (flag === 'scienceReview') {
+      html += pip(fp.sessionADone ? 'Review done' : 'Review', fp.sessionADone);
+    } else {
+      html += pip('Session 1', fp.sessionADone);
+      html += pip('Session 2', fp.sessionBDone);
+    }
+    html += '<span class="part-pips" aria-label="Map parts">' + dots + '</span>';
+    html += pip(fp.retellDone ? 'Spoke' : 'Speaking', fp.retellDone);
+    return html;
+  }
+
+  function renderStops(completed, footprints, retells) {
     var firstOpen = null;
     document.querySelectorAll('#lessonList .stop').forEach(function (el) {
       var flag = el.getAttribute('data-flag');
+      var fp = footprints && footprints[flag];
       var done = !!(completed && completed[flag]);
+      var partial = !done && hasFootprint(fp);
       el.classList.toggle('done', done);
       el.classList.remove('next');
       var badge = el.querySelector('.stop-badge .ms');
       var tag = el.querySelector('.tag');
       var sub = el.querySelector('.sub');
+      var box = el.querySelector('.fp');
+      if (sub && subs[flag]) sub.textContent = subs[flag];
+      if (box) {
+        var show = done || partial || (retells && retells[flag]);
+        box.hidden = !show;
+        box.innerHTML = show ? footprintHtml(flag, fp) : '';
+        if (show && retells && retells[flag]) {
+          var btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'spoke-btn' + (playingFlag === flag ? ' is-on' : '');
+          btn.textContent = playingFlag === flag ? 'Playing' : 'I spoke';
+          btn.setAttribute('aria-label', 'Play speaking');
+          btn.addEventListener('click', function (ev) {
+            ev.preventDefault();
+            ev.stopPropagation();
+            togglePlay(flag, btn);
+          });
+          box.appendChild(btn);
+        }
+      }
       if (done) {
         if (badge) badge.textContent = 'check_circle';
         if (tag) tag.textContent = 'Star!';
-        if (sub) sub.textContent = 'Finished · soft star collected';
+      } else if (partial) {
+        var iconP = el.getAttribute('data-icon') || 'play_circle';
+        if (badge) badge.textContent = iconP === 'rainbow' ? 'brightness_5' : iconP;
+        if (tag) tag.textContent = 'On the way';
+        if (!firstOpen) firstOpen = el;
       } else {
         var icon = el.getAttribute('data-icon') || 'play_circle';
-        // map phishing (no good fish icon) stay; brightness_5 for review
         if (badge) badge.textContent = icon === 'rainbow' ? 'brightness_5' : icon;
         if (tag) tag.textContent = 'Open';
         if (!firstOpen) firstOpen = el;
@@ -278,37 +380,93 @@
     }
   }
 
-  function render(data, synced) {
-    var completed = (data && data.completed) || {};
-    var n = countDone(completed);
+  function anySpoke(footprints, retells) {
+    return FLAGS.some(function (id) {
+      return (footprints && footprints[id] && footprints[id].retellDone) || (retells && retells[id]);
+    });
+  }
+
+  function render(data) {
+    var view = RF.presentProgress ? RF.presentProgress(data) : { completed: {}, footprints: {}, retells: {} };
+    var n = countDone(view.completed);
     var who = RF.getLearnerName ? RF.getLearnerName() : 'Miles';
+    var started = FLAGS.some(function (id) { return hasFootprint(view.footprints[id]); });
     RF.applyPrefs && RF.applyPrefs();
-    renderStars(n);
-    renderStops(completed);
+    renderStars(view.completed, view.footprints);
+    renderStops(view.completed, view.footprints, view.retells);
     leadLine.textContent = n === 0
-      ? 'Collect soft stars on a little weather path. No shop. No leagues. Just your map.'
+      ? (started
+        ? 'Your weather path has started. Soft stars light when a lesson is finished.'
+        : 'Collect soft stars on a little weather path. No shop. No leagues. Just your map.')
       : (n === FLAGS.length
         ? who + ' finished the weather path — five soft stars!'
         : who + ' is walking the weather path · ' + n + ' soft star' + (n === 1 ? '' : 's') + ' so far.');
     cheer.hidden = false;
-    cheer.textContent = CHEERS[Math.min(n, CHEERS.length - 1)];
+    var line = CHEERS[Math.min(n, CHEERS.length - 1)];
+    if (anySpoke(view.footprints, view.retells)) line += ' You spoke — wonderful.';
+    cheer.textContent = line;
   }
 
+  function stopPlay() {
+    try { player.pause(); } catch (e) {}
+    playingFlag = '';
+    if (playUrl) {
+      try { URL.revokeObjectURL(playUrl); } catch (e) {}
+      playUrl = '';
+    }
+  }
+
+  function togglePlay(flag, btn) {
+    if (playingFlag === flag) {
+      stopPlay();
+      render(lastData);
+      return;
+    }
+    btn.textContent = '…';
+    RF.fetchRetellBlob(flag).then(function (got) {
+      if (!got || !got.blob) {
+        btn.textContent = 'I spoke';
+        return;
+      }
+      stopPlay();
+      playUrl = URL.createObjectURL(got.blob);
+      player.src = playUrl;
+      playingFlag = flag;
+      player.onended = function () {
+        stopPlay();
+        render(lastData);
+      };
+      var p = player.play();
+      if (p && p.catch) p.catch(function () {
+        stopPlay();
+        render(lastData);
+      });
+      render(lastData);
+    }).catch(function () {
+      btn.textContent = 'I spoke';
+    });
+  }
+
+  var lastData = null;
+
   async function refresh() {
+    if (RF.consumeKeyFromQuery) RF.consumeKeyFromQuery();
     var key = RF.getFamilyKey();
     if (!key) {
       syncSoft.hidden = false;
-      render(null, false);
+      lastData = null;
+      render(null);
       return;
     }
     syncSoft.hidden = true;
     try {
-      var data = await RF.fetchProgress();
-      render(data, true);
+      lastData = await RF.fetchProgress();
+      render(lastData);
     } catch (e) {
       syncSoft.hidden = false;
       syncSoft.textContent = 'Stars will catch up when the connection is back.';
-      render(null, false);
+      lastData = null;
+      render(null);
     }
   }
 
