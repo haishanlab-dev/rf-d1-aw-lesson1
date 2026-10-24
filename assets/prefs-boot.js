@@ -23,7 +23,6 @@
     css.textContent = [
       'html.miles-loading{background:#FBF6E9}',
       'html.miles-loading #wrap{visibility:hidden!important}',
-      'html.miles-loading body{visibility:hidden}',
       'html.miles-loading #milesSplash{visibility:visible!important}',
       '#milesSplash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;',
       'background:#FBF6E9;transition:opacity .28s ease}',
@@ -103,6 +102,10 @@
     if (done) return;
     done = true;
     document.documentElement.classList.remove('miles-loading');
+    try { document.documentElement.style.visibility = ''; } catch (e) {}
+    try { if (document.body) document.body.style.visibility = ''; } catch (e) {}
+    var wrap = document.getElementById('wrap');
+    if (wrap) wrap.style.visibility = '';
     var el = document.getElementById('milesSplash');
     if (!el) return;
     el.classList.add('out');
@@ -111,7 +114,10 @@
 
   var started = Date.now();
   var minMs = 480;
-  var fontsP = (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(function () {}) : Promise.resolve();
+  var fontsP = Promise.race([
+    (document.fonts && document.fonts.ready) ? document.fonts.ready.catch(function () {}) : Promise.resolve(),
+    new Promise(function (r) { setTimeout(r, 1200); })
+  ]);
   var loadP = new Promise(function (resolve) {
     if (document.readyState === 'complete') resolve();
     else window.addEventListener('load', resolve);
@@ -120,5 +126,5 @@
     var wait = Math.max(0, minMs - (Date.now() - started));
     setTimeout(enter, wait);
   });
-  setTimeout(enter, 4500);
+  setTimeout(enter, 2500);
 })();
