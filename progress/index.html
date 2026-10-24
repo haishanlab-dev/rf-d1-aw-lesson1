@@ -6,13 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Reading Future Discover 1 · Miles’s progress</title>
 <link rel="stylesheet" href="../assets/calm-shell.css">
+<link rel="stylesheet" href="../assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see ../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 <script src="../assets/progress-api.js"></script>
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
   <header class="shell-stats" aria-label="Top bar">
-    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <div class="stat miles"><span class="ms">face</span> <span data-learner-name>Miles</span></div>
     <a class="course-chip" href="../" style="text-decoration:none">
       <span class="ms">science</span>
       Science · Weather
@@ -26,7 +27,7 @@
       <div class="page-shell showcase">
         <div class="page-head">
           <div>
-            <h1>Miles’s weather journey</h1>
+            <h1 data-learner-name="journey">Miles’s weather journey</h1>
             <p>Soft stars for lessons you’ve finished · no shop, no leagues</p>
           </div>
           <div class="course-pill"><span class="ms">wb_sunny</span> Science · Weather</div>
@@ -36,7 +37,7 @@
           <div class="who">
             <div class="avatar"><span class="ms">face</span></div>
             <div>
-              <h2>Well done, Miles</h2>
+              <h2 data-learner-name="welldone">Well done, Miles</h2>
               <p id="doneLine">Open a lesson · tap Start · Eva reads with you</p>
             </div>
           </div>
@@ -165,6 +166,8 @@
   function render(data, synced) {
     var completed = (data && data.completed) || {};
     var n = countDone(completed);
+    var who = RF.getLearnerName ? RF.getLearnerName() : 'Miles';
+    RF.applyPrefs && RF.applyPrefs();
     doneCountLabel.textContent = String(n);
     doneBar.style.width = Math.round((n / FLAGS.length) * 100) + '%';
     if (n === 0) {
@@ -172,11 +175,11 @@
         ? 'Your map is ready · finish a lesson to light a star'
         : 'Open a lesson · tap Start · Eva reads with you';
     } else if (n === FLAGS.length) {
-      doneLine.textContent = 'All five weather lessons done · wonderful, Miles';
+      doneLine.textContent = 'All five weather lessons done · wonderful, ' + who;
     } else {
       doneLine.textContent = n === 1
-        ? '1 lesson done · keep going, Miles'
-        : n + ' lessons done · keep going, Miles';
+        ? '1 lesson done · keep going, ' + who
+        : n + ' lessons done · keep going, ' + who;
     }
 
     var streak = data && data.softStreakDays ? data.softStreakDays : 0;

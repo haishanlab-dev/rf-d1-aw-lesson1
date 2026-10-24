@@ -6,13 +6,64 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Reading Future Discover 1 · Parent settings</title>
 <link rel="stylesheet" href="../../assets/calm-shell.css">
+<link rel="stylesheet" href="../../assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see ../../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 <script src="../../assets/progress-api.js"></script>
+<style>
+  .gate-card {
+    max-width: 420px; margin: 24px auto 0;
+    background: var(--sheet); border: 2px solid var(--line); border-bottom-width: 5px;
+    border-radius: 20px; padding: 22px 20px 20px;
+  }
+  .gate-card h2 { margin: 0 0 6px; font-size: 22px; font-weight: 900; }
+  .gate-card .gate-sub { margin: 0 0 16px; font-size: 13px; font-weight: 700; color: var(--ink-muted); }
+  .gate-card .key-row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+  .gate-card input {
+    flex: 1; min-width: 140px;
+    border: 2px solid var(--line); border-radius: 12px;
+    padding: 12px 14px; font-size: 16px; font-weight: 700;
+    font-family: inherit; background: #fff; color: var(--ink);
+  }
+  .gate-card button.unlock {
+    border: 0; border-radius: 999px; padding: 12px 18px;
+    background: var(--blue); color: #fff; font-weight: 800; font-size: 14px;
+    font-family: inherit; cursor: pointer;
+  }
+  .gate-card .gate-status {
+    margin-top: 10px; font-size: 12px; font-weight: 700; color: var(--ink-muted); min-height: 1.2em;
+  }
+  .gate-card .gate-status.err { color: #B45309; }
+  .gate-card.shake { animation: gateShake .38s ease; }
+  @keyframes gateShake {
+    0%,100% { transform: translateX(0); }
+    20% { transform: translateX(-8px); }
+    40% { transform: translateX(8px); }
+    60% { transform: translateX(-5px); }
+    80% { transform: translateX(5px); }
+  }
+  #settingsPanel[hidden] { display: none !important; }
+  #gatePanel[hidden] { display: none !important; }
+  .name-edit {
+    display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;
+  }
+  .name-edit input {
+    flex: 1; min-width: 120px;
+    border: 2px solid var(--line); border-radius: 12px;
+    padding: 8px 12px; font-size: 15px; font-weight: 700;
+    font-family: inherit; background: #fff;
+  }
+  .name-edit button {
+    border: 0; border-radius: 999px; padding: 8px 14px;
+    background: var(--blue); color: #fff; font-weight: 800; font-size: 13px;
+    font-family: inherit; cursor: pointer;
+  }
+  .name-edit[hidden] { display: none !important; }
+</style>
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
   <header class="shell-stats" aria-label="Top bar">
-    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <div class="stat miles"><span class="ms">face</span> <span data-learner-name>Miles</span></div>
     <a class="course-chip" href="../../" style="text-decoration:none">
       <span class="ms">science</span>
       Science · Weather
@@ -27,26 +78,78 @@
         <div class="page-head">
           <div>
             <h1>Parent settings</h1>
-            <p>Family key &amp; sync</p>
+            <p id="headSub">Enter family key to unlock</p>
           </div>
           <a class="course-pill" href="../" style="text-decoration:none"><span class="ms">arrow_back</span> Back to Progress</a>
         </div>
 
-        <div class="prog-layout parent-only" style="grid-template-columns:1fr;max-width:560px">
-          <aside class="settings-card" aria-label="Sync">
-            <h3><span class="ms">cloud_sync</span> Progress sync</h3>
-            <div class="set-row family-key">
-              <div>
-                <strong>Family key</strong>
-                <span>Stored only on this device</span>
+        <div id="gatePanel" class="gate-card" aria-label="Unlock">
+          <h2>Parent settings</h2>
+          <p class="gate-sub">Family key required</p>
+          <div class="key-row">
+            <input id="gateKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
+            <button type="button" class="unlock" id="unlockBtn">Unlock</button>
+          </div>
+          <div class="gate-status" id="gateStatus"></div>
+        </div>
+
+        <div id="settingsPanel" hidden>
+          <div class="prog-layout parent-only">
+            <aside class="settings-card" aria-label="Course settings">
+              <h3><span class="ms">tune</span> Course settings</h3>
+
+              <div class="set-row pressable" id="rowVoice" role="button" tabindex="0">
+                <div>
+                  <strong>Voice</strong>
+                  <span class="row-status" id="voiceStatus"></span>
+                </div>
+                <div class="val" id="voiceVal">en-GB · Sonia</div>
               </div>
-              <div class="key-row">
-                <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
-                <button type="button" class="save-key" id="saveKeyBtn">Save</button>
+
+              <div class="set-row pressable" id="rowText" role="button" tabindex="0">
+                <div>
+                  <strong>Text size</strong>
+                  <span>Medium · Large · XL</span>
+                </div>
+                <div class="val" id="textVal">Large</div>
               </div>
-              <div class="key-status" id="keyStatus">Not set</div>
-            </div>
-          </aside>
+
+              <div class="set-row pressable" id="rowName" role="button" tabindex="0">
+                <div>
+                  <strong>Learner name</strong>
+                  <span>Shown on Progress &amp; chrome</span>
+                </div>
+                <div class="val" id="nameVal">Miles</div>
+              </div>
+              <div class="name-edit" id="nameEdit" hidden>
+                <input id="nameInput" type="text" maxlength="24" autocomplete="off" spellcheck="false" aria-label="Learner name">
+                <button type="button" id="nameSaveBtn">Save</button>
+              </div>
+
+              <div class="set-row pressable" id="rowFont" role="button" tabindex="0">
+                <div>
+                  <strong>Font</strong>
+                  <span>HarmonyOS Sans</span>
+                </div>
+                <div class="val" id="fontVal">On</div>
+              </div>
+            </aside>
+
+            <aside class="settings-card" aria-label="Sync">
+              <h3><span class="ms">cloud_sync</span> Progress sync</h3>
+              <div class="set-row family-key">
+                <div>
+                  <strong>Family key</strong>
+                  <span>Stored only on this device</span>
+                </div>
+                <div class="key-row">
+                  <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
+                  <button type="button" class="save-key" id="saveKeyBtn">Save</button>
+                </div>
+                <div class="key-status" id="keyStatus">Not set</div>
+              </div>
+            </aside>
+          </div>
         </div>
       </div>
     </div>
@@ -64,9 +167,90 @@
   var RF = window.RFProgress;
   if (!RF) return;
 
+  var SESSION_UNLOCK = 'rfParentUnlocked';
+  var gatePanel = document.getElementById('gatePanel');
+  var settingsPanel = document.getElementById('settingsPanel');
+  var headSub = document.getElementById('headSub');
+  var gateInput = document.getElementById('gateKeyInput');
+  var unlockBtn = document.getElementById('unlockBtn');
+  var gateStatus = document.getElementById('gateStatus');
+
   var keyInput = document.getElementById('familyKeyInput');
   var keyStatus = document.getElementById('keyStatus');
   var saveBtn = document.getElementById('saveKeyBtn');
+
+  var voiceVal = document.getElementById('voiceVal');
+  var voiceStatus = document.getElementById('voiceStatus');
+  var textVal = document.getElementById('textVal');
+  var nameVal = document.getElementById('nameVal');
+  var fontVal = document.getElementById('fontVal');
+  var nameEdit = document.getElementById('nameEdit');
+  var nameInput = document.getElementById('nameInput');
+  var nameSaveBtn = document.getElementById('nameSaveBtn');
+
+  var TEXT_LABELS = { medium: 'Medium', large: 'Large', xl: 'XL' };
+
+  function sessionUnlocked() {
+    try { return sessionStorage.getItem(SESSION_UNLOCK) === '1'; } catch (e) { return false; }
+  }
+  function setSessionUnlocked(on) {
+    try {
+      if (on) sessionStorage.setItem(SESSION_UNLOCK, '1');
+      else sessionStorage.removeItem(SESSION_UNLOCK);
+    } catch (e) {}
+  }
+
+  function showGate() {
+    gatePanel.hidden = false;
+    settingsPanel.hidden = true;
+    headSub.textContent = 'Enter family key to unlock';
+  }
+  function showSettings() {
+    gatePanel.hidden = true;
+    settingsPanel.hidden = false;
+    headSub.textContent = 'Course & sync';
+    refreshPrefsUi();
+    refreshSyncUi();
+  }
+
+  function shakeGate(msg) {
+    gateStatus.textContent = msg || 'Wrong key';
+    gateStatus.className = 'gate-status err';
+    gatePanel.classList.remove('shake');
+    void gatePanel.offsetWidth;
+    gatePanel.classList.add('shake');
+  }
+
+  async function tryUnlock(raw) {
+    var entered = String(raw || '').trim();
+    if (!entered) {
+      shakeGate('Enter family key');
+      return;
+    }
+    var saved = RF.getFamilyKey();
+    if (saved) {
+      if (entered !== saved) {
+        shakeGate('Wrong key');
+        return;
+      }
+      setSessionUnlocked(true);
+      showSettings();
+      return;
+    }
+    // First time on this device: verify with Worker, then save
+    gateStatus.textContent = 'Checking…';
+    gateStatus.className = 'gate-status';
+    var prev = RF.getFamilyKey();
+    RF.setFamilyKey(entered);
+    try {
+      await RF.fetchProgress();
+      setSessionUnlocked(true);
+      showSettings();
+    } catch (e) {
+      RF.setFamilyKey(prev || '');
+      shakeGate('Wrong key');
+    }
+  }
 
   function setKeyUi(hasKey, msg, cls) {
     if (keyStatus) {
@@ -75,7 +259,7 @@
     }
   }
 
-  async function refresh() {
+  async function refreshSyncUi() {
     var key = RF.getFamilyKey();
     if (!key) {
       setKeyUi(false);
@@ -90,24 +274,93 @@
     }
   }
 
+  function refreshPrefsUi() {
+    RF.applyPrefs();
+    voiceVal.textContent = RF.voiceLabel();
+    voiceStatus.textContent = '';
+    textVal.textContent = TEXT_LABELS[RF.getTextSize()] || 'Large';
+    nameVal.textContent = RF.getLearnerName();
+    fontVal.textContent = RF.getFontHarmony() ? 'On' : 'Off';
+    fontVal.className = 'val' + (RF.getFontHarmony() ? '' : ' soft');
+  }
+
+  function bindPress(el, fn) {
+    el.addEventListener('click', fn);
+    el.addEventListener('keydown', function (ev) {
+      if (ev.key === 'Enter' || ev.key === ' ') { ev.preventDefault(); fn(); }
+    });
+  }
+
+  bindPress(document.getElementById('rowVoice'), function () {
+    RF.cycleVoice();
+    RF.applyPrefs();
+    voiceVal.textContent = RF.voiceLabel();
+    voiceStatus.textContent = RF.getVoice() === 'en-US' ? 'Jenny (US)' : 'Sonia (British)';
+    voiceStatus.className = 'row-status flash';
+  });
+
+  bindPress(document.getElementById('rowText'), function () {
+    RF.cycleTextSize();
+    RF.applyPrefs();
+    textVal.textContent = TEXT_LABELS[RF.getTextSize()] || 'Large';
+  });
+
+  bindPress(document.getElementById('rowFont'), function () {
+    RF.toggleFontHarmony();
+    RF.applyPrefs();
+    fontVal.textContent = RF.getFontHarmony() ? 'On' : 'Off';
+    fontVal.className = 'val' + (RF.getFontHarmony() ? '' : ' soft');
+  });
+
+  bindPress(document.getElementById('rowName'), function () {
+    nameEdit.hidden = !nameEdit.hidden;
+    if (!nameEdit.hidden) {
+      nameInput.value = RF.getLearnerName();
+      nameInput.focus();
+      nameInput.select();
+    }
+  });
+
+  nameSaveBtn.addEventListener('click', function () {
+    RF.setLearnerName(nameInput.value);
+    RF.applyPrefs();
+    nameVal.textContent = RF.getLearnerName();
+    nameEdit.hidden = true;
+  });
+  nameInput.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter') nameSaveBtn.click();
+  });
+
   saveBtn.addEventListener('click', function () {
     var k = RF.setFamilyKey(keyInput.value);
     keyInput.value = '';
     if (!k) {
       setKeyUi(false, 'Cleared');
+      setSessionUnlocked(false);
+      showGate();
       return;
     }
-    refresh();
+    refreshSyncUi();
   });
-
   keyInput.addEventListener('keydown', function (ev) {
     if (ev.key === 'Enter') saveBtn.click();
   });
 
+  unlockBtn.addEventListener('click', function () { tryUnlock(gateInput.value); });
+  gateInput.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter') unlockBtn.click();
+  });
+
   RF.consumeKeyFromQuery();
-  if (RF.getFamilyKey()) setKeyUi(true, 'Checking…', 'ok');
-  else setKeyUi(false);
-  refresh();
+  RF.applyPrefs();
+
+  // Gate: need session unlock AND a saved family key (or unlock will set one)
+  if (sessionUnlocked() && RF.getFamilyKey()) {
+    showSettings();
+  } else {
+    setSessionUnlocked(false);
+    showGate();
+  }
 })();
 </script>
 </body>

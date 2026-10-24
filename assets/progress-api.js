@@ -1,5 +1,5 @@
 /**
- * Reading Future · Miles progress (Cloudflare Worker)
+ * Reading Future · Miles progress (Cloudflare Worker) + local prefs
  * Family key lives only in localStorage — never hardcode it here.
  */
 (function (global) {
@@ -7,6 +7,16 @@
 
   var API_BASE = 'https://rf-miles-progress.haishanlab.workers.dev';
   var STORAGE_KEY = 'rfMilesFamilyKey';
+  var K_TEXT = 'rfTextSize';
+  var K_FONT = 'rfFontHarmony';
+  var K_NAME = 'rfLearnerName';
+  var K_VOICE = 'rfVoice';
+
+  var TEXT_SIZES = ['medium', 'large', 'xl'];
+  var VOICES = ['en-GB', 'en-US'];
+  var VOICE_LABELS = { 'en-GB': 'en-GB · Sonia', 'en-US': 'en-US · Jenny' };
+  var DEFAULT_NAME = 'Miles';
+  var DEFAULT_VOICE = 'en-GB';
 
   function getFamilyKey() {
     try {
@@ -87,6 +97,152 @@
     });
   }
 
+  function lsGet(k, fallback) {
+    try {
+      var v = localStorage.getItem(k);
+      return v == null || v === '' ? fallback : v;
+    } catch (e) {
+      return fallback;
+    }
+  }
+
+  function lsSet(k, v) {
+    try {
+      localStorage.setItem(k, String(v));
+    } catch (e) {}
+  }
+
+  function getTextSize() {
+    var v = String(lsGet(K_TEXT, 'large')).toLowerCase();
+    return TEXT_SIZES.indexOf(v) >= 0 ? v : 'large';
+  }
+
+  function setTextSize(size) {
+    var v = String(size || '').toLowerCase();
+    if (TEXT_SIZES.indexOf(v) < 0) v = 'large';
+    lsSet(K_TEXT, v);
+    return v;
+  }
+
+  function cycleTextSize() {
+    var cur = getTextSize();
+    var i = TEXT_SIZES.indexOf(cur);
+    var next = TEXT_SIZES[(i + 1) % TEXT_SIZES.length];
+    return setTextSize(next);
+  }
+
+  function getFontHarmony() {
+    return lsGet(K_FONT, '1') !== '0';
+  }
+
+  function setFontHarmony(on) {
+    lsSet(K_FONT, on ? '1' : '0');
+    return !!on;
+  }
+
+  function toggleFontHarmony() {
+    return setFontHarmony(!getFontHarmony());
+  }
+
+  function getLearnerName() {
+    var n = String(lsGet(K_NAME, DEFAULT_NAME)).trim();
+    return n || DEFAULT_NAME;
+  }
+
+  function setLearnerName(name) {
+    var n = String(name || '').trim().slice(0, 24);
+    if (!n) n = DEFAULT_NAME;
+    lsSet(K_NAME, n);
+    return n;
+  }
+
+  function getVoice() {
+    var v = String(lsGet(K_VOICE, DEFAULT_VOICE) || DEFAULT_VOICE).trim();
+    return VOICES.indexOf(v) >= 0 ? v : DEFAULT_VOICE;
+  }
+
+  function setVoice(v) {
+    var voice = String(v || DEFAULT_VOICE).trim();
+    if (VOICES.indexOf(voice) < 0) voice = DEFAULT_VOICE;
+    lsSet(K_VOICE, voice);
+    return voice;
+  }
+
+  function cycleVoice() {
+    var cur = getVoice();
+    var i = VOICES.indexOf(cur);
+    var next = VOICES[(i + 1) % VOICES.length];
+    return setVoice(next);
+  }
+
+  function voiceLabel(v) {
+    var key = v || getVoice();
+    return VOICE_LABELS[key] || key;
+  }
+
+  function possessive(name) {
+    var n = String(name || DEFAULT_NAME);
+    if (/s$/i.test(n)) return n + '’';
+    return n + '’s';
+  }
+
+  function getPrefs() {
+    return {
+      textSize: getTextSize(),
+      fontHarmony: getFontHarmony(),
+      learnerName: getLearnerName(),
+      voice: getVoice(),
+    };
+  }
+
+  function applyPrefs() {
+    var root = document.documentElement;
+    if (!root) return getPrefs();
+    var prefs = getPrefs();
+    root.setAttribute('data-text-size', prefs.textSize);
+    root.setAttribute('data-font', prefs.fontHarmony ? 'harmony' : 'system');
+    root.setAttribute('data-voice', prefs.voice);
+
+    var name = prefs.learnerName;
+    var poss = possessive(name);
+
+    document.querySelectorAll('[data-learner-name]').forEach(function (el) {
+      var mode = el.getAttribute('data-learner-name') || 'plain';
+      if (mode === 'possessive') el.textContent = poss;
+      else if (mode === 'journey') el.textContent = poss + ' weather journey';
+      else if (mode === 'welldone') el.textContent = 'Well done, ' + name;
+      else el.textContent = name;
+    });
+
+    document.querySelectorAll('.stat.miles').forEach(function (el) {
+      var icon = el.querySelector('.ms');
+      var label = name;
+      el.textContent = '';
+      if (icon) el.appendChild(icon);
+      else {
+        var span = document.createElement('span');
+        span.className = 'ms';
+        span.textContent = 'face';
+        el.appendChild(span);
+      }
+      el.appendChild(document.createTextNode(' ' + label));
+    });
+
+    return prefs;
+  }
+
+  function bootApply() {
+    try {
+      applyPrefs();
+    } catch (e) {}
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', bootApply);
+  } else {
+    bootApply();
+  }
+
   global.RFProgress = {
     API_BASE: API_BASE,
     STORAGE_KEY: STORAGE_KEY,
@@ -96,5 +252,24 @@
     fetchProgress: fetchProgress,
     putProgress: putProgress,
     markComplete: markComplete,
+    getTextSize: getTextSize,
+    setTextSize: setTextSize,
+    cycleTextSize: cycleTextSize,
+    getFontHarmony: getFontHarmony,
+    setFontHarmony: setFontHarmony,
+    toggleFontHarmony: toggleFontHarmony,
+    getLearnerName: getLearnerName,
+    setLearnerName: setLearnerName,
+    getVoice: getVoice,
+    setVoice: setVoice,
+    cycleVoice: cycleVoice,
+    voiceLabel: voiceLabel,
+    VOICES: VOICES,
+    VOICE_LABELS: VOICE_LABELS,
+    possessive: possessive,
+    getPrefs: getPrefs,
+    applyPrefs: applyPrefs,
+    TEXT_SIZES: TEXT_SIZES,
+    DEFAULT_NAME: DEFAULT_NAME,
   };
 })(typeof window !== 'undefined' ? window : globalThis);

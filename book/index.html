@@ -6,12 +6,14 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Reading Future Discover 1 · Book</title>
 <link rel="stylesheet" href="../assets/calm-shell.css">
+<link rel="stylesheet" href="../assets/prefs.css">
+<script src="../assets/progress-api.js"></script>
 <!-- Fonts: HarmonyOS Sans (see ../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
   <header class="shell-stats" aria-label="Top bar">
-    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <div class="stat miles"><span class="ms">face</span> <span data-learner-name>Miles</span></div>
     <a class="course-chip" href="../" style="text-decoration:none">
       <span class="ms">science</span>
       Science · Weather
@@ -110,5 +112,6 @@
     <a class="tab" href="../progress/"><span class="ms">insights</span> Progress</a>
   </nav>
 </div>
+<script>if(window.RFProgress)RFProgress.applyPrefs();</script>
 </body>
 </html>
