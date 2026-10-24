@@ -44,6 +44,11 @@
   }
   #settingsPanel[hidden] { display: none !important; }
   #gatePanel[hidden] { display: none !important; }
+  /* Hard gate: settings never visible until Enter succeeds this visit */
+  html:not([data-parent-entered]) #settingsPanel { display: none !important; }
+  html:not([data-parent-entered]) #gatePanel { display: block !important; }
+  html[data-parent-entered] #gatePanel { display: none !important; }
+  html[data-parent-entered] #settingsPanel { display: block !important; }
   .name-edit {
     display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 8px;
   }
@@ -88,7 +93,7 @@
           <h2>Parent settings</h2>
           <p class="gate-sub">Enter family key</p>
           <div class="key-row">
-            <input id="gateKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
+            <input id="gateKeyInput" type="password" autocomplete="new-password" inputmode="numeric" spellcheck="false" placeholder="Family key" aria-label="Family key">
             <button type="button" class="enter" id="enterBtn">Enter</button>
           </div>
           <div class="gate-status" id="gateStatus"></div>
@@ -198,11 +203,15 @@
   var TEXT_LABELS = { medium: 'Medium', large: 'Large', xl: 'XL' };
 
   function showGate() {
+    try { document.documentElement.removeAttribute('data-parent-entered'); } catch (e) {}
     gatePanel.hidden = false;
     settingsPanel.hidden = true;
     headSub.textContent = 'Enter family key';
+    if (gateInput) gateInput.value = '';
+    if (gateStatus) { gateStatus.textContent = ''; gateStatus.className = 'gate-status'; }
   }
   function showSettings() {
+    try { document.documentElement.setAttribute('data-parent-entered', '1'); } catch (e) {}
     gatePanel.hidden = true;
     settingsPanel.hidden = false;
     headSub.textContent = 'Course & sync';
@@ -366,9 +375,13 @@
   RF.consumeKeyFromQuery();
   RF.applyPrefs();
 
-  // Always require Enter when opening this page (Back then return re-prompts)
+  // Always require Enter every visit (including bfcache Back/Forward)
   try { sessionStorage.removeItem('rfParentUnlocked'); } catch (e) {}
   showGate();
+  window.addEventListener('pageshow', function () {
+    showGate();
+    setTimeout(function () { if (gateInput) gateInput.focus(); }, 40);
+  });
   setTimeout(function () { if (gateInput) gateInput.focus(); }, 40);
 })();
 </script>
