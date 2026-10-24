@@ -101,6 +101,7 @@
               <div class="set-row pressable" id="rowVoice" role="button" tabindex="0">
                 <div>
                   <strong>Voice</strong>
+                  <span>Tap to switch · plays a sample</span>
                   <span class="row-status" id="voiceStatus"></span>
                 </div>
                 <div class="val" id="voiceVal">en-GB · Sonia</div>
@@ -304,12 +305,23 @@
     });
   }
 
+  var previewAudio = null;
+  function playVoicePreview(voice) {
+    var src = '../../assets/voice/preview/' + (voice === 'en-US' ? 'en-US' : 'en-GB') + '.mp3';
+    try {
+      if (previewAudio) { previewAudio.pause(); previewAudio = null; }
+      previewAudio = new Audio(src);
+      previewAudio.play().catch(function () {});
+    } catch (e) {}
+  }
+
   bindPress(document.getElementById('rowVoice'), function () {
-    RF.cycleVoice();
+    var v = RF.cycleVoice();
     RF.applyPrefs();
     voiceVal.textContent = RF.voiceLabel();
-    voiceStatus.textContent = RF.getVoice() === 'en-US' ? 'Jenny (US)' : 'Sonia (British)';
+    voiceStatus.textContent = v === 'en-US' ? 'Jenny (US) · preview' : 'Sonia (British) · preview';
     voiceStatus.className = 'row-status flash';
+    playVoicePreview(v);
   });
 
   bindPress(document.getElementById('rowText'), function () {
