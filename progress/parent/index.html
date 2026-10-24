@@ -85,10 +85,10 @@
 
         <div id="gatePanel" class="gate-card" aria-label="Unlock">
           <h2>Parent settings</h2>
-          <p class="gate-sub">Family key required</p>
+          <p class="gate-sub">Enter family key</p>
           <div class="key-row">
             <input id="gateKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
-            <button type="button" class="unlock" id="unlockBtn">Unlock</button>
+            <button type="button" class="unlock" id="unlockBtn">Enter</button>
           </div>
           <div class="gate-status" id="gateStatus"></div>
         </div>
@@ -137,16 +137,22 @@
 
             <aside class="settings-card" aria-label="Sync">
               <h3><span class="ms">cloud_sync</span> Progress sync</h3>
+              <div class="set-row" id="syncStatusRow">
+                <div>
+                  <strong>Sync</strong>
+                  <span id="keyStatus">Not set</span>
+                </div>
+                <div class="val" id="syncVal">—</div>
+              </div>
               <div class="set-row family-key">
                 <div>
-                  <strong>Family key</strong>
-                  <span>Stored only on this device</span>
+                  <strong>Change family key</strong>
+                  <span>Only if you need a new code</span>
                 </div>
                 <div class="key-row">
-                  <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Family key" aria-label="Family key">
-                  <button type="button" class="save-key" id="saveKeyBtn">Save</button>
+                  <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="New family key" aria-label="New family key">
+                  <button type="button" class="save-key" id="saveKeyBtn">Update</button>
                 </div>
-                <div class="key-status" id="keyStatus">Not set</div>
               </div>
             </aside>
           </div>
@@ -252,10 +258,17 @@
     }
   }
 
+  var syncVal = document.getElementById('syncVal');
+
   function setKeyUi(hasKey, msg, cls) {
     if (keyStatus) {
-      keyStatus.textContent = msg || (hasKey ? 'Saved' : 'Not set');
-      keyStatus.className = 'key-status' + (cls ? ' ' + cls : (hasKey ? ' ok' : ''));
+      keyStatus.textContent = msg || (hasKey ? 'Connected' : 'Not set');
+      keyStatus.className = cls ? cls : (hasKey ? 'ok' : '');
+      keyStatus.style.color = cls === 'err' ? '#B45309' : (hasKey ? 'var(--green)' : 'var(--ink-muted)');
+    }
+    if (syncVal) {
+      syncVal.textContent = hasKey ? (msg === 'Synced' || msg === 'Connected' ? 'On' : (cls === 'err' ? 'Error' : '…')) : 'Off';
+      syncVal.className = 'val' + (hasKey && cls !== 'err' ? '' : ' soft');
     }
   }
 
