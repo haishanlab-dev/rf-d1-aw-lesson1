@@ -219,6 +219,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 </div>
 <audio id="au" preload="auto" playsinline></audio>
 <script src="../assets/progress-api.js"></script>
+<script src="../assets/retell-recorder.js"></script>
 <script>
 function activeAUD(){
   try{
@@ -242,6 +243,7 @@ function fit(){/* fluid layout — no fixed stage scale */}
 addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEventListener('webkitfullscreenchange',fit);
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 let session='A', paused=false, actx=null, runId=0;
+var RF_UNIT='scienceReview';
 const $=id=>document.getElementById(id);
 
 function setPauseIcon(isPaused){
@@ -309,10 +311,10 @@ async function countdownN(id,nStart){
     tick(); log({ev:'cd',n}); await wait(CDSTEP,id);
   }
 }
-function waitForContinue(id){
+function waitForContinue(id, opts){
   return new Promise(res=>{
     if(QA){ setTimeout(()=>{ if(id===runId) res(); }, 80); return; }
-    holdResolve=()=>{ holdResolve=null; res(); };
+    holdResolve=()=>{ holdResolve=null; try{ if(window.RFRetell&&RFRetell.stopIfRecording) RFRetell.stopIfRecording(); }catch(_e){} res(); };
     paused=true; setPauseIcon(true);
     const panel=$('panel');
     if(panel && !panel.querySelector('.contbtn')){
@@ -320,6 +322,7 @@ function waitForContinue(id){
       b.onclick=()=>{ if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); } };
       panel.appendChild(b);
     }
+    if(panel && opts && opts.retell && window.RFRetell){ try{ RFRetell.mount(panel, RF_UNIT); }catch(_e){} }
     log({ev:'hold'});
   });
 }
@@ -347,6 +350,7 @@ function tryFullscreen(){try{const fsEl=document.getElementById('wrap')||documen
 addEventListener('fullscreenchange',syncFsChrome);addEventListener('webkitfullscreenchange',syncFsChrome);syncFsChrome();
 async function runFromIndex(startIdx){
   const id=++runId; paused=false; setPauseIcon(false); holdResolve=null;
+  try{ if(window.RFRetell&&RFRetell.discard) RFRetell.discard(); }catch(_e){}
   const start=SCREENS[startIdx]; if(!start)return;
   session=start.s;
   for(let i=startIdx;i<SCREENS.length;i++){
@@ -355,20 +359,27 @@ async function runFromIndex(startIdx){
     if(id!==runId)return;
     const k=String(sc.i).padStart(2,'0');
     log({ev:'screen',i:sc.i,part:sc.part,type:sc.type});
+    try{ if(window.RFProgress&&RFProgress.notePart) RFProgress.notePart(RF_UNIT, sc.part); }catch(_e){}
     if(sc.type==='pause'){
       render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;
       await wait(400/ (QA?4:1),id);await countdownN(id,5);if(id!==runId)return;
       render(sc,'reveal');log({ev:'reveal',i:sc.i});await play(k+'_rn',sc.dr,id);
     } else if(sc.type==='retell'){
       render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;
+      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT); }catch(_e){}
       await wait(400/ (QA?4:1),id);await countdownN(id, QA?3:10);if(id!==runId)return;
-      render(sc,'reveal');log({ev:'reveal',i:sc.i});await play(k+'_rn',sc.dr,id);if(id!==runId)return;
-      await waitForContinue(id); if(id!==runId)return;
+      try{ if(window.RFRetell&&RFRetell.stopIfRecording) await RFRetell.stopIfRecording(); }catch(_e){}
+      if(id!==runId)return;
+      render(sc,'reveal');log({ev:'reveal',i:sc.i});
+      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT); }catch(_e){}
+      await play(k+'_rn',sc.dr,id);if(id!==runId)return;
+      await waitForContinue(id, {retell:true}); if(id!==runId)return;
+      try{ if(window.RFProgress&&RFProgress.noteRetell) RFProgress.noteRetell(RF_UNIT); }catch(_e){}
     } else {render(sc,'show');await play(k+'_n',sc.dn,id);}
     if(id!==runId)return;await wait(GAP,id);
   }
   if(id!==runId)return;
-  log({ev:'sessionend',sess:start.s}); try{if(window.RFProgress)RFProgress.markComplete('scienceReview');}catch(_e){}
+  log({ev:'sessionend',sess:start.s}); try{if(window.RFProgress&&RFProgress.markSessionDone)RFProgress.markSessionDone(RF_UNIT, start.s); else if(window.RFProgress)RFProgress.markComplete(RF_UNIT);}catch(_e){}
   const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};p.appendChild(b);}
 }
 function jumpToPart(part){
