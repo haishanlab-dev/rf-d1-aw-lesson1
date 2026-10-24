@@ -1,0 +1,205 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+<title>Reading Future 第1课 · Animals' Weather · 语音互动 Demo</title>
+<style>
+  :root{
+    --sky:#2f8fd8; --sun:#ffc93c; --leaf:#5cc27a; --ink:#1d2b3a; --bg:#eaf6ff;
+    --body: clamp(32px, 3.1vw, 72px);     /* >= 32px everywhere; ~60px at 1920 */
+    --title: clamp(56px, 5.6vw, 128px);   /* ~107px at 1920 */
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;background:var(--bg);color:var(--ink);
+    font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC",system-ui,sans-serif;overflow:hidden}
+  #app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+  header{height:clamp(48px,6vh,80px);display:flex;align-items:center;gap:16px;padding:0 2vw;background:var(--sky);color:#fff;font-size:clamp(22px,1.6vw,34px);font-weight:700}
+  header .dots{margin-left:auto;display:flex;gap:10px}
+  header .dot{width:clamp(14px,1vw,22px);height:clamp(14px,1vw,22px);border-radius:50%;background:rgba(255,255,255,.4)}
+  header .dot.on{background:var(--sun)}
+  main{flex:1;min-height:0;display:flex;align-items:stretch;justify-content:center;padding:2vh 3vw;gap:3vw}
+  .pic{flex:0 0 44%;display:flex;align-items:center;justify-content:center;min-width:0;min-height:0}
+  .pic img{max-width:100%;max-height:100%;border-radius:28px;box-shadow:0 10px 30px rgba(0,0,0,.18);object-fit:contain;background:#fff}
+  .txt{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2.2vh}
+  h1{font-size:var(--title);line-height:1.1;color:var(--sky);font-weight:900;word-break:break-word}
+  .line{font-size:var(--body);line-height:1.3;font-weight:700}
+  .line.zh{color:#4a5a6a;font-weight:600}
+  .panel{font-size:var(--body);line-height:1.3;border-radius:24px;padding:1.4vh 1.6vw;display:none}
+  #mic{background:#fff;border:6px solid var(--leaf);display:none;align-items:center;gap:1.2vw}
+  #mic .ring{flex:0 0 auto;width:calc(var(--body)*2);height:calc(var(--body)*2);border-radius:50%;background:var(--leaf);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:900;animation:pulse 1s infinite}
+  @keyframes pulse{50%{transform:scale(1.08)}}
+  #heard{color:#2a6;font-weight:700}
+  #answer{background:#fff7d6;border:6px solid var(--sun)}
+  #feedback{font-size:var(--title);line-height:1.1}
+  footer{height:clamp(44px,5vh,70px);display:flex;align-items:center;justify-content:flex-end;padding:0 2vw;gap:1vw}
+  footer button{font-size:clamp(18px,1.2vw,26px);padding:6px 16px;border-radius:12px;border:2px solid #9bc;background:#fff;color:#567}
+  #start{position:fixed;inset:0;background:linear-gradient(160deg,#bfe6ff,#fff3c4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;z-index:10;text-align:center;padding:4vw}
+  #start h2{font-size:var(--title);color:var(--sky)}
+  #start p{font-size:var(--body)}
+  #startBtn{font-size:calc(var(--title)*1.1);font-weight:900;padding:3vh 7vw;border-radius:999px;border:0;background:var(--leaf);color:#fff;box-shadow:0 12px 0 #3a9a57;cursor:pointer}
+  #startBtn:active{transform:translateY(8px);box-shadow:0 4px 0 #3a9a57}
+  #warn{font-size:clamp(20px,1.5vw,30px)!important;color:#a55;max-width:70ch}
+  @media (orientation:portrait){ main{flex-direction:column;padding:2vh 4vw} .pic{flex:0 0 38%} .txt{justify-content:flex-start} }
+</style>
+</head>
+<body>
+<div id="app">
+  <header><span>Reading Future · 第1课 · Animals' Weather</span><div class="dots" id="dots"></div></header>
+  <main>
+    <div class="pic"><img id="img" alt=""></div>
+    <div class="txt">
+      <h1 id="title"></h1>
+      <div id="lines"></div>
+      <div class="panel" id="mic"><div class="ring" id="count">8</div><div>🎤 <span id="micMsg">请说…</span><div id="heard"></div></div></div>
+      <div class="panel" id="feedback"></div>
+      <div class="panel" id="answer"></div>
+    </div>
+  </main>
+  <footer><button id="pauseBtn">⏸ 暂停</button><button id="restartBtn">⟲ 从头开始</button></footer>
+</div>
+<div id="start">
+  <h2>🐴 Animals' Weather 🐰</h2>
+  <p>Eva老师的英语课 · 点一下就开始</p>
+  <button id="startBtn">▶ 开始</button>
+  <p id="warn"></p>
+</div>
+<script src="lesson_data.js"></script>
+<script>
+(() => {
+  const L = window.LESSON, S = L.screens;
+  const P = new URLSearchParams(location.search);
+  const FAST = P.has('fast');                    // QA: shortens waits
+  const MOCK = P.get('mock');                    // QA: "readthink=it is sunny|stretch=|game=小" fake recognizer
+  const WAIT = FAST ? 2500 : 8000;               // answer window
+  const $ = id => document.getElementById(id);
+  const log = (...a) => { (window.__log ||= []).push(a.join(' ')); console.log('[demo]', ...a); };
+  const audio = new Audio(); audio.preload = 'auto';
+  let paused = false, resumeFn = null, idx = 0, runId = 0;
+
+  // ---------- speech recognition (Web Speech API) ----------
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+  let mockMap = null;
+  if (MOCK !== null) { mockMap = {}; MOCK.split('|').forEach(p => { const [k, v=''] = p.split('='); mockMap[k] = v; }); }
+  function makeRecognizer(lang, sid) {
+    if (mockMap) {                                // fake recognizer with the same event interface
+      const r = { lang, interimResults: true, onresult:null, onerror:null, onend:null, _t:[] };
+      r.start = () => { const said = mockMap[sid];
+        if (said) { r._t.push(setTimeout(() => r.onresult && r.onresult({ resultIndex:0, results:[Object.assign([{transcript:said.slice(0,2)}],{isFinal:false})] }), 300));
+                    r._t.push(setTimeout(() => { r.onresult && r.onresult({ resultIndex:0, results:[Object.assign([{transcript:said}],{isFinal:true})] }); r.onend && r.onend(); }, 700)); }
+        else r._t.push(setTimeout(() => r.onend && r.onend(), WAIT + 200)); };
+      r.stop = r.abort = () => { r._t.forEach(clearTimeout); };
+      return r;
+    }
+    if (!SR) return null;
+    const r = new SR(); r.lang = lang; r.interimResults = true; r.continuous = false; r.maxAlternatives = 3;
+    return r;
+  }
+  // returns {text, status:'correct'|'wrong'|'heard'|'silent'}
+  function listen(q, sid) {
+    return new Promise(resolve => {
+      const mic = $('mic'); mic.style.display = 'flex'; $('heard').textContent = ''; $('micMsg').textContent = q.lang.startsWith('zh') ? '请说中文…' : 'Say it in English…';
+      let text = '', done = false, left = Math.round(WAIT/1000); $('count').textContent = left;
+      const tick = setInterval(() => { left = Math.max(0, left-1); $('count').textContent = left; }, 1000);
+      const judge = t => { const s = t.toLowerCase();
+        if (q.keys.some(k => s.includes(k.toLowerCase()))) return 'correct';
+        if (q.wrong.some(k => s.includes(k.toLowerCase()))) return 'wrong';
+        return t.trim() ? 'heard' : 'silent'; };
+      const finish = why => { if (done) return; done = true; clearInterval(tick); clearTimeout(timer);
+        try { rec && rec.abort(); } catch(e){}
+        const status = judge(text); log('rec done', sid, why, JSON.stringify(text), status);
+        setTimeout(() => { mic.style.display = 'none'; resolve({ text, status }); }, 600); };
+      let rec = null;
+      const timer = setTimeout(() => finish('timeout'), WAIT);
+      if (!makeRecognizer(q.lang, sid) && !mockMap) { $('micMsg').textContent = '这个浏览器不支持语音识别，请大声说给自己听'; log('rec unsupported'); return; }
+      const begin = viaTap => {
+        rec = makeRecognizer(q.lang, sid);
+        rec.onresult = e => { let t = ''; let fin = false;
+          for (let i = e.resultIndex; i < e.results.length; i++) { t += e.results[i][0].transcript; if (e.results[i].isFinal) fin = true; }
+          text = t; $('heard').textContent = '我听到：' + t;
+          if (judge(t) === 'correct' || fin) finish(fin ? 'final' : 'keyword'); };
+        rec.onerror = e => { log('rec error', e.error);
+          if (e.error === 'not-allowed' || e.error === 'service-not-allowed') { $('micMsg').textContent = '麦克风没打开（请允许麦克风）'; if (!viaTap) offerTap(); }
+          else if (e.error === 'network') $('micMsg').textContent = '语音识别需要联网'; };
+        rec.onend = () => { if (!done && text) finish('end'); };   // silence: keep countdown running
+        try { rec.start(); log('rec start', sid, q.lang, viaTap ? '(tap)' : ''); } catch (e) { log('rec start failed', e.message); if (!viaTap) offerTap(); }
+      };
+      // Some browsers (mainly Safari) only allow start() inside a tap: show one big button as a fallback
+      const offerTap = () => { if (done) return; $('micMsg').innerHTML = '<button id="tapMic" style="font-size:inherit;padding:.3em .8em;border-radius:999px;border:0;background:#5cc27a;color:#fff;font-weight:900">🎤 点一下再说</button>';
+        $('tapMic').onclick = () => { $('micMsg').textContent = '请说…'; begin(true); }; };
+      begin(false);
+    });
+  }
+
+  // ---------- audio ----------
+  function waitIfPaused() { return paused ? new Promise(r => resumeFn = r) : Promise.resolve(); }
+  function playClip(c, my) {
+    return new Promise(resolve => {
+      if (my !== runId) return resolve();
+      let settled = false; const ok = how => { if (settled) return; settled = true; log('clip ended', c.src, how); resolve(); };
+      audio.onended = () => ok('ended');
+      audio.onerror = () => { log('clip error -> speechSynthesis', c.src); speak(c).then(() => ok('tts-fallback')); };
+      audio.src = c.src;
+      audio.play().then(() => log('clip play', c.src)).catch(err => { log('play() rejected', err.name); speak(c).then(() => ok('tts-fallback')); });
+    });
+  }
+  function speak(c) {   // fallback: browser built-in TTS
+    return new Promise(res => { if (!('speechSynthesis' in window)) return setTimeout(res, 1500);
+      const u = new SpeechSynthesisUtterance(c.text); u.lang = c.lang; u.rate = 0.85; u.onend = u.onerror = () => res();
+      speechSynthesis.cancel(); speechSynthesis.speak(u); setTimeout(res, 15000); });
+  }
+  async function playAll(list, my) { for (const c of list) { await waitIfPaused(); if (my !== runId) return; await playClip(c, my); } }
+  const sleep = ms => new Promise(r => setTimeout(r, FAST ? Math.min(ms, 300) : ms));
+  function beep() { try { const ac = window.__ac ||= new (window.AudioContext||window.webkitAudioContext)();
+      const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 880; g.gain.value = .15; o.connect(g).connect(ac.destination); o.start(); o.stop(ac.currentTime + .25); } catch(e){} return sleep(350); }
+
+  // ---------- screens ----------
+  function render(i) {
+    const s = S[i]; document.body.dataset.screen = s.id;
+    $('img').src = s.img; $('img').alt = s.title; $('title').textContent = (s.emoji ? s.emoji + ' ' : '') + s.title;
+    $('lines').innerHTML = s.lines.map(l => `<div class="line ${/[\u4e00-\u9fff]/.test(l) && !/[a-z]{4}/i.test(l.replace(/main idea|detail/g,'')) ? 'zh':''}">${l}</div>`).join('');
+    ['mic','feedback','answer'].forEach(id => $(id).style.display = 'none');
+    $('dots').innerHTML = S.map((_, k) => `<span class="dot ${k<=i?'on':''}"></span>`).join('');
+    log('screen', i, s.id);
+  }
+  async function run(i) {
+    const my = ++runId;
+    for (idx = i; idx < S.length; idx++) {
+      if (my !== runId) return;
+      const s = S[idx]; render(idx);
+      await playAll(s.clips, my); if (my !== runId) return;
+      if (s.q) {
+        await beep(); await waitIfPaused();
+        const r = await listen(s.q, s.id); if (my !== runId) return;
+        const fb = $('feedback'); fb.style.display = 'block';
+        fb.textContent = { correct:'🎉 答对了！', wrong:'🤔 再想一想', heard:'👍 说得好！', silent:'⏰ 我们看答案' }[r.status];
+        await playAll([L.common[r.status === 'wrong' ? 'wrongfb' : r.status]], my);
+        $('answer').innerHTML = '✅ ' + s.q.answer; $('answer').style.display = 'block';
+        await playAll(s.q.aclips, my);
+        await sleep(1500);
+      } else await sleep(700);
+    }
+    log('lesson done');
+  }
+
+  // ---------- start / controls ----------
+  if (!SR && !mockMap) $('warn').textContent = '提示：这个浏览器不支持语音识别（请用 Chrome 或 Safari）。课程仍可播放，答题时会倒计时后直接给答案。';
+  if (location.protocol === 'file:') $('warn').textContent += ' 提示：直接双击打开时麦克风可能不可用，建议运行 start.command / start.bat 用本地网址打开。';
+  $('startBtn').onclick = async () => {
+    $('start').style.display = 'none';
+    // unlock audio + ask mic permission once, inside the tap
+    try { window.__ac ||= new (window.AudioContext||window.webkitAudioContext)(); window.__ac.resume(); } catch(e){}
+    if (!mockMap && navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(st => { st.getTracks().forEach(t => t.stop()); log('mic permission ok'); })
+        .catch(e => log('mic permission failed', e.name));
+    }
+    run(+(P.get('from') || 0));
+  };
+  $('pauseBtn').onclick = () => { paused = !paused; $('pauseBtn').textContent = paused ? '▶ 继续' : '⏸ 暂停';
+    if (paused) audio.pause(); else { audio.play().catch(()=>{}); resumeFn && resumeFn(); resumeFn = null; } };
+  $('restartBtn').onclick = () => { audio.pause(); paused = false; $('pauseBtn').textContent = '⏸ 暂停'; run(0); };
+  window.__demo = { S, render };
+})();
+</script>
+</body>
+</html>
