@@ -7,9 +7,120 @@
 <title>Reading Future Discover 1 · Miles’s progress</title>
 <link rel="stylesheet" href="../assets/calm-shell.css">
 <link rel="stylesheet" href="../assets/prefs.css">
-<!-- Fonts: HarmonyOS Sans (see ../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 <script src="../assets/prefs-boot.js"></script>
 <script src="../assets/progress-api.js"></script>
+<style>
+  .journey-hero {
+    background: linear-gradient(160deg, #FFFDF8 0%, #E8F3FC 55%, #FBF6E9 100%);
+    border: 2px solid var(--line); border-bottom-width: 5px;
+    border-radius: 24px; padding: 22px 20px 18px; margin-bottom: 18px;
+    position: relative; overflow: hidden;
+  }
+  .journey-hero::before {
+    content: ""; position: absolute; inset: -20% -10% auto auto;
+    width: 180px; height: 180px; border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,192,74,.35), transparent 70%);
+    pointer-events: none;
+  }
+  .journey-kicker {
+    margin: 0 0 6px; font-size: 13px; font-weight: 800;
+    letter-spacing: .08em; text-transform: uppercase; color: var(--blue-deep);
+  }
+  .journey-hero h1 {
+    margin: 0 0 8px; font-size: clamp(28px, 4vw, 42px); font-weight: 900; color: var(--ink);
+  }
+  .journey-hero .lead {
+    margin: 0 0 16px; font-size: 15px; font-weight: 700; color: var(--ink-muted); line-height: 1.4;
+    max-width: 36em;
+  }
+  .star-row {
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+  }
+  .star-slot {
+    width: 44px; height: 44px; border-radius: 14px;
+    display: grid; place-items: center;
+    background: #F3EDE0; border: 2px solid var(--line);
+    color: #C5BBA8; transition: transform .2s ease, background .2s ease, color .2s ease, border-color .2s ease;
+  }
+  .star-slot .ms { font-size: 26px; }
+  .star-slot.on {
+    background: #FFF4D6; border-color: #E8C04A; color: #C9A63A;
+    transform: scale(1.06);
+    animation: starPop .45s ease;
+  }
+  @keyframes starPop {
+    0% { transform: scale(.7); }
+    60% { transform: scale(1.15); }
+    100% { transform: scale(1.06); }
+  }
+  .star-meta {
+    margin-left: auto; font-size: 14px; font-weight: 800; color: var(--ink);
+  }
+  .star-meta span { color: var(--blue-deep); }
+
+  .path-title {
+    margin: 0 0 10px; font-size: 16px; font-weight: 900;
+    color: var(--ink-muted); text-transform: uppercase; letter-spacing: .06em;
+  }
+  .weather-path {
+    display: grid; gap: 12px;
+  }
+  .stop {
+    display: grid; grid-template-columns: 64px 1fr auto; gap: 14px; align-items: center;
+    background: var(--sheet); border: 2px solid var(--line); border-bottom-width: 5px;
+    border-radius: 20px; padding: 14px 16px; text-decoration: none; color: inherit;
+    transition: transform .12s ease, border-color .12s ease;
+  }
+  .stop:active { transform: translateY(1px); border-bottom-width: 4px; }
+  .stop-badge {
+    width: 64px; height: 64px; border-radius: 18px;
+    display: grid; place-items: center;
+    background: var(--blue-soft); color: var(--blue-deep);
+    border: 2px solid var(--blue-border);
+  }
+  .stop-badge .ms { font-size: 34px; }
+  .stop.done .stop-badge {
+    background: #E4F3EA; border-color: #9BC9AB; color: var(--green);
+  }
+  .stop.next:not(.done) {
+    border-color: var(--blue-border);
+    box-shadow: 0 0 0 3px rgba(61,122,181,.12);
+  }
+  .stop strong { display: block; font-size: 18px; font-weight: 900; }
+  .stop .sub { display: block; margin-top: 4px; font-size: 13px; font-weight: 700; color: var(--ink-muted); }
+  .stop .tag {
+    border-radius: 999px; padding: 8px 12px; font-size: 13px; font-weight: 800;
+    background: var(--blue-soft); color: var(--blue-deep); white-space: nowrap;
+  }
+  .stop.done .tag { background: #E4F3EA; color: var(--green); }
+  .trail {
+    display: none;
+  }
+  @media (min-width: 900px) {
+    .weather-path {
+      grid-template-columns: repeat(5, 1fr);
+      gap: 14px; align-items: stretch;
+      position: relative;
+    }
+    .weather-path::before {
+      content: ""; position: absolute; left: 8%; right: 8%; top: 48px;
+      height: 4px; border-radius: 999px; background: #E2D6C2; z-index: 0;
+    }
+    .stop {
+      grid-template-columns: 1fr; text-align: center; padding: 16px 12px 18px;
+      position: relative; z-index: 1; min-height: 210px;
+    }
+    .stop-badge { margin: 0 auto 10px; }
+    .stop .tag { justify-self: center; }
+    .stop .copy { min-height: 4.2em; }
+  }
+  .cheer {
+    margin: 16px 0 0; padding: 12px 14px; border-radius: 14px;
+    background: #FFF4D6; border: 1px solid #F0D48A;
+    font-size: 14px; font-weight: 800; color: var(--ink); line-height: 1.4;
+  }
+  .cheer[hidden] { display: none !important; }
+</style>
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
@@ -26,87 +137,61 @@
   <div class="shell-main">
     <div class="shell-stage-fill">
       <div class="page-shell showcase">
-        <div class="page-head">
-          <div>
-            <h1 data-learner-name="journey">Miles’s weather journey</h1>
-            <p>Soft stars for lessons you’ve finished · no shop, no leagues</p>
-          </div>
-          <div class="course-pill"><span class="ms">wb_sunny</span> Science · Weather</div>
+        <section class="journey-hero" aria-label="Journey">
+          <p class="journey-kicker">Science · Weather</p>
+          <h1 data-learner-name="journey">Miles’s weather journey</h1>
+          <p class="lead" id="leadLine">Collect soft stars on a little weather path. No shop. No leagues. Just your map.</p>
+          <div class="star-row" id="starRow" aria-label="Stars collected"></div>
+        </section>
+
+        <h3 class="path-title">Your weather path</h3>
+        <div class="weather-path" id="lessonList">
+          <a class="stop" data-flag="unit1" data-icon="pets" data-label="Animals &amp; weather" href="../">
+            <div class="stop-badge"><span class="ms">pets</span></div>
+            <div class="copy">
+              <strong>1 · Animals' Weather</strong>
+              <span class="sub">Cows, horses, rabbits · Unit 1</span>
+            </div>
+            <span class="tag">Let’s go</span>
+          </a>
+          <a class="stop" data-flag="unit2" data-icon="umbrella" data-label="Rainy day" href="../unit2/">
+            <div class="stop-badge"><span class="ms">umbrella</span></div>
+            <div class="copy">
+              <strong>2 · A Rainy Day</strong>
+              <span class="sub">Clouds &amp; rain · Unit 2</span>
+            </div>
+            <span class="tag">Open</span>
+          </a>
+          <a class="stop" data-flag="unit3" data-icon="ac_unit" data-label="Snow &amp; ice" href="../unit3/">
+            <div class="stop-badge"><span class="ms">ac_unit</span></div>
+            <div class="copy">
+              <strong>3 · Rain, Snow, and Ice</strong>
+              <span class="sub">Cold weather · Unit 3</span>
+            </div>
+            <span class="tag">Open</span>
+          </a>
+          <a class="stop" data-flag="unit4" data-icon="water_drop" data-label="Fish from the sky" href="../unit4/">
+            <div class="stop-badge"><span class="ms">water_drop</span></div>
+            <div class="copy">
+              <strong>4 · Fish from the Sky</strong>
+              <span class="sub">A wild weather tale · Unit 4</span>
+            </div>
+            <span class="tag">Open</span>
+          </a>
+          <a class="stop" data-flag="scienceReview" data-icon="rainbow" data-label="Weather review" href="../science-review/">
+            <div class="stop-badge"><span class="ms">brightness_5</span></div>
+            <div class="copy">
+              <strong>Weather review</strong>
+              <span class="sub">All four stops · one adventure</span>
+            </div>
+            <span class="tag">Open</span>
+          </a>
         </div>
 
-        <div class="showcase-hero">
-          <div class="who">
-            <div class="avatar"><span class="ms">face</span></div>
-            <div>
-              <h2 data-learner-name="welldone">Well done, Miles</h2>
-              <p id="doneLine">Open a lesson · tap Start · Eva reads with you</p>
-            </div>
-          </div>
-
-          <div class="meters showcase-meters">
-            <div class="meter">
-              <label>Lessons done</label>
-              <strong id="doneCountLabel">0</strong>
-              <span>of 5 weather lessons</span>
-              <div class="bar-wrap"><i id="doneBar" style="width:0%"></i></div>
-            </div>
-            <div class="meter" id="streakMeter" hidden>
-              <label>Gentle days</label>
-              <strong id="streakLabel">0</strong>
-              <span>Just a soft reminder · not a lock</span>
-            </div>
-          </div>
-
-          <p class="showcase-soft" id="syncSoft" hidden>
-            Stars light up after a grown-up connects this iPad once.
-          </p>
-        </div>
-
-        <div>
-          <h3 class="showcase-list-title">Your weather map</h3>
-          <div class="recent-list showcase-list" id="lessonList">
-            <a class="recent-item" data-flag="unit1" href="../" style="text-decoration:none;color:inherit">
-              <span class="ms ico">play_circle</span>
-              <div>
-                <strong>1 · Animals' Weather</strong>
-                <span class="sub">Unit 1 · open anytime</span>
-              </div>
-              <span class="status-pill">Open</span>
-            </a>
-            <a class="recent-item" data-flag="unit2" href="../unit2/" style="text-decoration:none;color:inherit">
-              <span class="ms ico">play_circle</span>
-              <div>
-                <strong>2 · A Rainy Day</strong>
-                <span class="sub">Unit 2</span>
-              </div>
-              <span class="status-pill">Open</span>
-            </a>
-            <a class="recent-item" data-flag="unit3" href="../unit3/" style="text-decoration:none;color:inherit">
-              <span class="ms ico">play_circle</span>
-              <div>
-                <strong>3 · Rain, Snow, and Ice</strong>
-                <span class="sub">Unit 3</span>
-              </div>
-              <span class="status-pill">Open</span>
-            </a>
-            <a class="recent-item" data-flag="unit4" href="../unit4/" style="text-decoration:none;color:inherit">
-              <span class="ms ico">play_circle</span>
-              <div>
-                <strong>4 · Fish from the Sky</strong>
-                <span class="sub">Unit 4</span>
-              </div>
-              <span class="status-pill">Open</span>
-            </a>
-            <a class="recent-item" data-flag="scienceReview" href="../science-review/" style="text-decoration:none;color:inherit">
-              <span class="ms ico">replay</span>
-              <div>
-                <strong>Weather review</strong>
-                <span class="sub">Units 1–4 together</span>
-              </div>
-              <span class="status-pill">Open</span>
-            </a>
-          </div>
-        </div>
+        <p class="cheer" id="cheer" hidden></p>
+        <p class="showcase-soft" id="syncSoft" hidden style="margin-top:14px">
+          Stars light up after a grown-up connects this iPad once.
+        </p>
 
         <footer class="showcase-foot">
           <a class="parent-entry" href="./parent/?gate=1">Parent settings</a>
@@ -128,11 +213,18 @@
   if (!RF) return;
 
   var FLAGS = ['unit1', 'unit2', 'unit3', 'unit4', 'scienceReview'];
-  var doneLine = document.getElementById('doneLine');
-  var doneCountLabel = document.getElementById('doneCountLabel');
-  var doneBar = document.getElementById('doneBar');
-  var streakMeter = document.getElementById('streakMeter');
-  var streakLabel = document.getElementById('streakLabel');
+  var CHEERS = [
+    'Your path is waiting · tap a stop and Eva will read with you.',
+    'First star on! The weather path is waking up.',
+    'Two stars · rain and sun are becoming friends on your map.',
+    'Three stars · you are a real weather explorer now.',
+    'Four stars · only the big review rainbow left!',
+    'Five stars · the whole weather journey is yours. Wonderful!'
+  ];
+
+  var starRow = document.getElementById('starRow');
+  var leadLine = document.getElementById('leadLine');
+  var cheer = document.getElementById('cheer');
   var syncSoft = document.getElementById('syncSoft');
 
   function countDone(completed) {
@@ -141,27 +233,47 @@
     return n;
   }
 
-  function renderLessons(completed) {
-    document.querySelectorAll('#lessonList .recent-item').forEach(function (el) {
+  function renderStars(n) {
+    starRow.innerHTML = '';
+    for (var i = 0; i < FLAGS.length; i++) {
+      var slot = document.createElement('div');
+      slot.className = 'star-slot' + (i < n ? ' on' : '');
+      slot.innerHTML = '<span class="ms">' + (i < n ? 'star' : 'star_border') + '</span>';
+      starRow.appendChild(slot);
+    }
+    var meta = document.createElement('div');
+    meta.className = 'star-meta';
+    meta.innerHTML = '<span>' + n + '</span> / ' + FLAGS.length + ' stars';
+    starRow.appendChild(meta);
+  }
+
+  function renderStops(completed) {
+    var firstOpen = null;
+    document.querySelectorAll('#lessonList .stop').forEach(function (el) {
       var flag = el.getAttribute('data-flag');
       var done = !!(completed && completed[flag]);
       el.classList.toggle('done', done);
-      var ico = el.querySelector('.ico');
-      if (ico) ico.textContent = done ? 'check_circle' : (flag === 'scienceReview' ? 'replay' : 'play_circle');
-      var pill = el.querySelector('.status-pill');
-      if (pill) pill.textContent = done ? 'Done' : 'Open';
+      el.classList.remove('next');
+      var badge = el.querySelector('.stop-badge .ms');
+      var tag = el.querySelector('.tag');
       var sub = el.querySelector('.sub');
-      if (!sub) return;
       if (done) {
-        sub.textContent = flag === 'scienceReview' ? 'Finished · nice work' : 'Finished · nice work';
-      } else if (flag === 'unit1') {
-        sub.textContent = 'Unit 1 · open anytime';
-      } else if (flag === 'scienceReview') {
-        sub.textContent = 'Units 1–4 together';
+        if (badge) badge.textContent = 'check_circle';
+        if (tag) tag.textContent = 'Star!';
+        if (sub) sub.textContent = 'Finished · soft star collected';
       } else {
-        sub.textContent = 'Unit ' + flag.replace('unit', '');
+        var icon = el.getAttribute('data-icon') || 'play_circle';
+        // map phishing (no good fish icon) stay; brightness_5 for review
+        if (badge) badge.textContent = icon === 'rainbow' ? 'brightness_5' : icon;
+        if (tag) tag.textContent = 'Open';
+        if (!firstOpen) firstOpen = el;
       }
     });
+    if (firstOpen) {
+      firstOpen.classList.add('next');
+      var tag = firstOpen.querySelector('.tag');
+      if (tag && !firstOpen.classList.contains('done')) tag.textContent = 'Next';
+    }
   }
 
   function render(data, synced) {
@@ -169,29 +281,15 @@
     var n = countDone(completed);
     var who = RF.getLearnerName ? RF.getLearnerName() : 'Miles';
     RF.applyPrefs && RF.applyPrefs();
-    doneCountLabel.textContent = String(n);
-    doneBar.style.width = Math.round((n / FLAGS.length) * 100) + '%';
-    if (n === 0) {
-      doneLine.textContent = synced
-        ? 'Your map is ready · finish a lesson to light a star'
-        : 'Open a lesson · tap Start · Eva reads with you';
-    } else if (n === FLAGS.length) {
-      doneLine.textContent = 'All five weather lessons done · wonderful, ' + who;
-    } else {
-      doneLine.textContent = n === 1
-        ? '1 lesson done · keep going, ' + who
-        : n + ' lessons done · keep going, ' + who;
-    }
-
-    var streak = data && data.softStreakDays ? data.softStreakDays : 0;
-    if (streak > 0) {
-      streakMeter.hidden = false;
-      streakLabel.textContent = String(streak);
-    } else {
-      streakMeter.hidden = true;
-    }
-
-    renderLessons(completed);
+    renderStars(n);
+    renderStops(completed);
+    leadLine.textContent = n === 0
+      ? 'Collect soft stars on a little weather path. No shop. No leagues. Just your map.'
+      : (n === FLAGS.length
+        ? who + ' finished the weather path — five soft stars!'
+        : who + ' is walking the weather path · ' + n + ' soft star' + (n === 1 ? '' : 's') + ' so far.');
+    cheer.hidden = false;
+    cheer.textContent = CHEERS[Math.min(n, CHEERS.length - 1)];
   }
 
   async function refresh() {
