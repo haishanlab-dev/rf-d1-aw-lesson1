@@ -7,6 +7,7 @@
 <title>Reading Future Discover 1 · Progress</title>
 <link rel="stylesheet" href="../assets/calm-shell.css">
 <!-- Fonts: HarmonyOS Sans (see ../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
+<script src="../assets/progress-api.js"></script>
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
@@ -30,6 +31,10 @@
           </div>
         </div>
 
+        <div id="keyBanner" class="prog-banner" role="status">
+          Paste the family key from Eva chat (Progress Settings below) to sync Miles’s progress across devices via Cloudflare.
+        </div>
+
         <div class="prog-layout">
           <div class="prog-hero">
             <div class="who">
@@ -43,54 +48,59 @@
             <div class="meters">
               <div class="meter">
                 <label>Units open</label>
-                <strong>4 / 16</strong>
+                <strong id="unitsOpenLabel">— / 16</strong>
                 <span>Science · Weather (1–4 + review)</span>
-                <div class="bar-wrap"><i style="width:25%"></i></div>
+                <div class="bar-wrap"><i id="unitsOpenBar" style="width:0%"></i></div>
               </div>
               <div class="meter">
                 <label>Soft streak</label>
-                <strong>—</strong>
+                <strong id="streakLabel">—</strong>
                 <span>Gentle reminder only · not a lock</span>
               </div>
             </div>
 
             <div>
               <h3 style="margin:0 0 10px;font-size:16px;font-weight:900;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em">Lessons</h3>
-              <div class="recent-list">
-                <a class="recent-item" href="../" style="text-decoration:none;color:inherit">
-                  <span class="ms">play_circle</span>
+              <div class="recent-list" id="lessonList">
+                <a class="recent-item" data-flag="unit1" href="../" style="text-decoration:none;color:inherit">
+                  <span class="ms ico">play_circle</span>
                   <div>
                     <strong>1 · Animals' Weather</strong>
-                    <span>Unit 1 · open lesson</span>
+                    <span class="sub">Unit 1 · open lesson</span>
                   </div>
+                  <span class="status-pill">Open</span>
                 </a>
-                <a class="recent-item" href="../unit2/" style="text-decoration:none;color:inherit">
-                  <span class="ms">play_circle</span>
+                <a class="recent-item" data-flag="unit2" href="../unit2/" style="text-decoration:none;color:inherit">
+                  <span class="ms ico">play_circle</span>
                   <div>
                     <strong>2 · A Rainy Day</strong>
-                    <span>Unit 2</span>
+                    <span class="sub">Unit 2</span>
                   </div>
+                  <span class="status-pill">Open</span>
                 </a>
-                <a class="recent-item" href="../unit3/" style="text-decoration:none;color:inherit">
-                  <span class="ms">play_circle</span>
+                <a class="recent-item" data-flag="unit3" href="../unit3/" style="text-decoration:none;color:inherit">
+                  <span class="ms ico">play_circle</span>
                   <div>
                     <strong>3 · Rain, Snow, and Ice</strong>
-                    <span>Unit 3</span>
+                    <span class="sub">Unit 3</span>
                   </div>
+                  <span class="status-pill">Open</span>
                 </a>
-                <a class="recent-item" href="../unit4/" style="text-decoration:none;color:inherit">
-                  <span class="ms">play_circle</span>
+                <a class="recent-item" data-flag="unit4" href="../unit4/" style="text-decoration:none;color:inherit">
+                  <span class="ms ico">play_circle</span>
                   <div>
                     <strong>4 · Fish from the Sky</strong>
-                    <span>Unit 4</span>
+                    <span class="sub">Unit 4</span>
                   </div>
+                  <span class="status-pill">Open</span>
                 </a>
-                <a class="recent-item" href="../science-review/" style="text-decoration:none;color:inherit">
-                  <span class="ms">replay</span>
+                <a class="recent-item" data-flag="scienceReview" href="../science-review/" style="text-decoration:none;color:inherit">
+                  <span class="ms ico">replay</span>
                   <div>
                     <strong>Weather review</strong>
-                    <span>Units 1–4 review path</span>
+                    <span class="sub">Units 1–4 review path</span>
                   </div>
+                  <span class="status-pill">Open</span>
                 </a>
               </div>
             </div>
@@ -98,6 +108,17 @@
 
           <aside class="settings-card" aria-label="Settings">
             <h3><span class="ms">tune</span> Settings</h3>
+            <div class="set-row family-key">
+              <div>
+                <strong>Family key</strong>
+                <span>Syncs Progress via Cloudflare · keep private</span>
+              </div>
+              <div class="key-row">
+                <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste family key" aria-label="Family key">
+                <button type="button" class="save-key" id="saveKeyBtn">Save</button>
+              </div>
+              <div class="key-status" id="keyStatus">Not set · Progress stays local until saved</div>
+            </div>
             <div class="set-row">
               <div>
                 <strong>Voice</strong>
@@ -128,9 +149,9 @@
             </div>
             <p class="parent-note">
               <strong>Parent note:</strong>
-              Open offline on iPad · tap Start · Eva speaks to Miles.
-              Pause anytime. No account, no shop, no leagues.
-              Settings here are notes for now (not live toggles).
+              Progress syncs via Cloudflare when a family key is set on this iPad.
+              Open a lesson · tap Start · Eva speaks to Miles. Pause anytime.
+              No shop, no leagues. Voice / text size / font here are notes (not live toggles).
             </p>
           </aside>
         </div>
@@ -145,5 +166,94 @@
     <a class="tab on" href="./"><span class="ms">insights</span> Progress</a>
   </nav>
 </div>
+<script>
+(function () {
+  var RF = window.RFProgress;
+  if (!RF) return;
+
+  var banner = document.getElementById('keyBanner');
+  var unitsLabel = document.getElementById('unitsOpenLabel');
+  var unitsBar = document.getElementById('unitsOpenBar');
+  var streakLabel = document.getElementById('streakLabel');
+  var keyInput = document.getElementById('familyKeyInput');
+  var keyStatus = document.getElementById('keyStatus');
+  var saveBtn = document.getElementById('saveKeyBtn');
+
+  function setKeyUi(hasKey, msg, cls) {
+    if (banner) banner.classList.toggle('hidden', !!hasKey);
+    if (keyStatus) {
+      keyStatus.textContent = msg || (hasKey ? 'Saved on this device' : 'Not set · Progress stays local until saved');
+      keyStatus.className = 'key-status' + (cls ? ' ' + cls : (hasKey ? ' ok' : ''));
+    }
+  }
+
+  function render(data) {
+    if (!data) {
+      unitsLabel.textContent = '— / 16';
+      unitsBar.style.width = '0%';
+      streakLabel.textContent = '—';
+      return;
+    }
+    var open = typeof data.unitsOpen === 'number' ? data.unitsOpen : 0;
+    var total = typeof data.totalUnits === 'number' ? data.totalUnits : 16;
+    unitsLabel.textContent = open + ' / ' + total;
+    var pct = total > 0 ? Math.min(100, Math.round((open / total) * 100)) : 0;
+    unitsBar.style.width = pct + '%';
+    var streak = data.softStreakDays || 0;
+    streakLabel.textContent = streak > 0 ? String(streak) : '—';
+
+    var completed = (data && data.completed) || {};
+    document.querySelectorAll('#lessonList .recent-item').forEach(function (el) {
+      var flag = el.getAttribute('data-flag');
+      var done = !!completed[flag];
+      el.classList.toggle('done', done);
+      var ico = el.querySelector('.ico');
+      if (ico) ico.textContent = done ? 'check_circle' : (flag === 'scienceReview' ? 'replay' : 'play_circle');
+      var pill = el.querySelector('.status-pill');
+      if (pill) pill.textContent = done ? 'Done' : 'Open';
+      var sub = el.querySelector('.sub');
+      if (sub && flag === 'unit1') sub.textContent = done ? 'Unit 1 · completed' : 'Unit 1 · open lesson';
+    });
+  }
+
+  async function refresh() {
+    var key = RF.getFamilyKey();
+    if (!key) {
+      setKeyUi(false);
+      render(null);
+      return;
+    }
+    setKeyUi(true, 'Saved on this device · loading…', 'ok');
+    try {
+      var data = await RF.fetchProgress();
+      setKeyUi(true, 'Synced via Cloudflare', 'ok');
+      render(data);
+    } catch (e) {
+      setKeyUi(true, 'Key saved, but sync failed — check the key or network', 'err');
+      render(null);
+    }
+  }
+
+  saveBtn.addEventListener('click', function () {
+    var k = RF.setFamilyKey(keyInput.value);
+    keyInput.value = '';
+    if (!k) {
+      setKeyUi(false, 'Cleared · paste a key to sync again');
+      render(null);
+      return;
+    }
+    refresh();
+  });
+
+  keyInput.addEventListener('keydown', function (ev) {
+    if (ev.key === 'Enter') saveBtn.click();
+  });
+
+  RF.consumeKeyFromQuery();
+  if (RF.getFamilyKey()) setKeyUi(true, 'Saved on this device · loading…', 'ok');
+  else setKeyUi(false);
+  refresh();
+})();
+</script>
 </body>
 </html>
