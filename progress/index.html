@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>Reading Future Discover 1 · Progress</title>
+<title>Reading Future Discover 1 · Miles’s progress</title>
 <link rel="stylesheet" href="../assets/calm-shell.css">
 <!-- Fonts: HarmonyOS Sans (see ../assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 <script src="../assets/progress-api.js"></script>
@@ -18,143 +18,97 @@
       Science · Weather
       <span class="ms">chevron_right</span>
     </a>
-    <div class="stat last"><span class="ms">insights</span> Progress</div>
+    <div class="stat last"><span class="ms">star</span> Your journey</div>
   </header>
 
   <div class="shell-main">
     <div class="shell-stage-fill">
-      <div class="page-shell">
+      <div class="page-shell showcase">
         <div class="page-head">
           <div>
-            <h1>Progress</h1>
-            <p>Parent-friendly snapshot · no hearts / shop pressure</p>
+            <h1>Miles’s weather journey</h1>
+            <p>Soft stars for lessons you’ve finished · no shop, no leagues</p>
           </div>
+          <div class="course-pill"><span class="ms">wb_sunny</span> Science · Weather</div>
         </div>
 
-        <div id="keyBanner" class="prog-banner" role="status">
-          Paste the family key from Eva chat (Progress Settings below) to sync Miles’s progress across devices via Cloudflare.
-        </div>
-
-        <div class="prog-layout">
-          <div class="prog-hero">
-            <div class="who">
-              <div class="avatar"><span class="ms">face</span></div>
-              <div>
-                <h2>Miles</h2>
-                <p>Discover 1 · British English · parent-operated</p>
-              </div>
-            </div>
-
-            <div class="meters">
-              <div class="meter">
-                <label>Units open</label>
-                <strong id="unitsOpenLabel">— / 16</strong>
-                <span>Science · Weather (1–4 + review)</span>
-                <div class="bar-wrap"><i id="unitsOpenBar" style="width:0%"></i></div>
-              </div>
-              <div class="meter">
-                <label>Soft streak</label>
-                <strong id="streakLabel">—</strong>
-                <span>Gentle reminder only · not a lock</span>
-              </div>
-            </div>
-
+        <div class="showcase-hero">
+          <div class="who">
+            <div class="avatar"><span class="ms">face</span></div>
             <div>
-              <h3 style="margin:0 0 10px;font-size:16px;font-weight:900;color:var(--ink-muted);text-transform:uppercase;letter-spacing:.06em">Lessons</h3>
-              <div class="recent-list" id="lessonList">
-                <a class="recent-item" data-flag="unit1" href="../" style="text-decoration:none;color:inherit">
-                  <span class="ms ico">play_circle</span>
-                  <div>
-                    <strong>1 · Animals' Weather</strong>
-                    <span class="sub">Unit 1 · open lesson</span>
-                  </div>
-                  <span class="status-pill">Open</span>
-                </a>
-                <a class="recent-item" data-flag="unit2" href="../unit2/" style="text-decoration:none;color:inherit">
-                  <span class="ms ico">play_circle</span>
-                  <div>
-                    <strong>2 · A Rainy Day</strong>
-                    <span class="sub">Unit 2</span>
-                  </div>
-                  <span class="status-pill">Open</span>
-                </a>
-                <a class="recent-item" data-flag="unit3" href="../unit3/" style="text-decoration:none;color:inherit">
-                  <span class="ms ico">play_circle</span>
-                  <div>
-                    <strong>3 · Rain, Snow, and Ice</strong>
-                    <span class="sub">Unit 3</span>
-                  </div>
-                  <span class="status-pill">Open</span>
-                </a>
-                <a class="recent-item" data-flag="unit4" href="../unit4/" style="text-decoration:none;color:inherit">
-                  <span class="ms ico">play_circle</span>
-                  <div>
-                    <strong>4 · Fish from the Sky</strong>
-                    <span class="sub">Unit 4</span>
-                  </div>
-                  <span class="status-pill">Open</span>
-                </a>
-                <a class="recent-item" data-flag="scienceReview" href="../science-review/" style="text-decoration:none;color:inherit">
-                  <span class="ms ico">replay</span>
-                  <div>
-                    <strong>Weather review</strong>
-                    <span class="sub">Units 1–4 review path</span>
-                  </div>
-                  <span class="status-pill">Open</span>
-                </a>
-              </div>
+              <h2>Well done, Miles</h2>
+              <p id="doneLine">Open a lesson · tap Start · Eva reads with you</p>
             </div>
           </div>
 
-          <aside class="settings-card" aria-label="Settings">
-            <h3><span class="ms">tune</span> Settings</h3>
-            <div class="set-row family-key">
-              <div>
-                <strong>Family key</strong>
-                <span>Syncs Progress via Cloudflare · keep private</span>
-              </div>
-              <div class="key-row">
-                <input id="familyKeyInput" type="password" autocomplete="off" spellcheck="false" placeholder="Paste family key" aria-label="Family key">
-                <button type="button" class="save-key" id="saveKeyBtn">Save</button>
-              </div>
-              <div class="key-status" id="keyStatus">Not set · Progress stays local until saved</div>
+          <div class="meters showcase-meters">
+            <div class="meter">
+              <label>Lessons done</label>
+              <strong id="doneCountLabel">0</strong>
+              <span>of 5 weather lessons</span>
+              <div class="bar-wrap"><i id="doneBar" style="width:0%"></i></div>
             </div>
-            <div class="set-row">
-              <div>
-                <strong>Voice</strong>
-                <span>British English · Sonia</span>
-              </div>
-              <div class="val">en-GB</div>
+            <div class="meter" id="streakMeter" hidden>
+              <label>Gentle days</label>
+              <strong id="streakLabel">0</strong>
+              <span>Just a soft reminder · not a lock</span>
             </div>
-            <div class="set-row">
-              <div>
-                <strong>Text size</strong>
-                <span>Large for iPad reading</span>
-              </div>
-              <div class="val">Large</div>
-            </div>
-            <div class="set-row">
-              <div>
-                <strong>Learner name</strong>
-                <span>Spoken by Eva</span>
-              </div>
-              <div class="val">Miles</div>
-            </div>
-            <div class="set-row">
-              <div>
-                <strong>Font</strong>
-                <span>HarmonyOS Sans</span>
-              </div>
-              <div class="val">On</div>
-            </div>
-            <p class="parent-note">
-              <strong>Parent note:</strong>
-              Progress syncs via Cloudflare when a family key is set on this iPad.
-              Open a lesson · tap Start · Eva speaks to Miles. Pause anytime.
-              No shop, no leagues. Voice / text size / font here are notes (not live toggles).
-            </p>
-          </aside>
+          </div>
+
+          <p class="showcase-soft" id="syncSoft" hidden>
+            Stars light up after a grown-up connects this iPad once.
+          </p>
         </div>
+
+        <div>
+          <h3 class="showcase-list-title">Your weather map</h3>
+          <div class="recent-list showcase-list" id="lessonList">
+            <a class="recent-item" data-flag="unit1" href="../" style="text-decoration:none;color:inherit">
+              <span class="ms ico">play_circle</span>
+              <div>
+                <strong>1 · Animals' Weather</strong>
+                <span class="sub">Unit 1 · open anytime</span>
+              </div>
+              <span class="status-pill">Open</span>
+            </a>
+            <a class="recent-item" data-flag="unit2" href="../unit2/" style="text-decoration:none;color:inherit">
+              <span class="ms ico">play_circle</span>
+              <div>
+                <strong>2 · A Rainy Day</strong>
+                <span class="sub">Unit 2</span>
+              </div>
+              <span class="status-pill">Open</span>
+            </a>
+            <a class="recent-item" data-flag="unit3" href="../unit3/" style="text-decoration:none;color:inherit">
+              <span class="ms ico">play_circle</span>
+              <div>
+                <strong>3 · Rain, Snow, and Ice</strong>
+                <span class="sub">Unit 3</span>
+              </div>
+              <span class="status-pill">Open</span>
+            </a>
+            <a class="recent-item" data-flag="unit4" href="../unit4/" style="text-decoration:none;color:inherit">
+              <span class="ms ico">play_circle</span>
+              <div>
+                <strong>4 · Fish from the Sky</strong>
+                <span class="sub">Unit 4</span>
+              </div>
+              <span class="status-pill">Open</span>
+            </a>
+            <a class="recent-item" data-flag="scienceReview" href="../science-review/" style="text-decoration:none;color:inherit">
+              <span class="ms ico">replay</span>
+              <div>
+                <strong>Weather review</strong>
+                <span class="sub">Units 1–4 together</span>
+              </div>
+              <span class="status-pill">Open</span>
+            </a>
+          </div>
+        </div>
+
+        <footer class="showcase-foot">
+          <a class="parent-entry" href="./parent/">Parent settings</a>
+        </footer>
       </div>
     </div>
   </div>
@@ -171,87 +125,89 @@
   var RF = window.RFProgress;
   if (!RF) return;
 
-  var banner = document.getElementById('keyBanner');
-  var unitsLabel = document.getElementById('unitsOpenLabel');
-  var unitsBar = document.getElementById('unitsOpenBar');
+  var FLAGS = ['unit1', 'unit2', 'unit3', 'unit4', 'scienceReview'];
+  var doneLine = document.getElementById('doneLine');
+  var doneCountLabel = document.getElementById('doneCountLabel');
+  var doneBar = document.getElementById('doneBar');
+  var streakMeter = document.getElementById('streakMeter');
   var streakLabel = document.getElementById('streakLabel');
-  var keyInput = document.getElementById('familyKeyInput');
-  var keyStatus = document.getElementById('keyStatus');
-  var saveBtn = document.getElementById('saveKeyBtn');
+  var syncSoft = document.getElementById('syncSoft');
 
-  function setKeyUi(hasKey, msg, cls) {
-    if (banner) banner.classList.toggle('hidden', !!hasKey);
-    if (keyStatus) {
-      keyStatus.textContent = msg || (hasKey ? 'Saved on this device' : 'Not set · Progress stays local until saved');
-      keyStatus.className = 'key-status' + (cls ? ' ' + cls : (hasKey ? ' ok' : ''));
-    }
+  function countDone(completed) {
+    var n = 0;
+    FLAGS.forEach(function (f) { if (completed && completed[f]) n++; });
+    return n;
   }
 
-  function render(data) {
-    if (!data) {
-      unitsLabel.textContent = '— / 16';
-      unitsBar.style.width = '0%';
-      streakLabel.textContent = '—';
-      return;
-    }
-    var open = typeof data.unitsOpen === 'number' ? data.unitsOpen : 0;
-    var total = typeof data.totalUnits === 'number' ? data.totalUnits : 16;
-    unitsLabel.textContent = open + ' / ' + total;
-    var pct = total > 0 ? Math.min(100, Math.round((open / total) * 100)) : 0;
-    unitsBar.style.width = pct + '%';
-    var streak = data.softStreakDays || 0;
-    streakLabel.textContent = streak > 0 ? String(streak) : '—';
-
-    var completed = (data && data.completed) || {};
+  function renderLessons(completed) {
     document.querySelectorAll('#lessonList .recent-item').forEach(function (el) {
       var flag = el.getAttribute('data-flag');
-      var done = !!completed[flag];
+      var done = !!(completed && completed[flag]);
       el.classList.toggle('done', done);
       var ico = el.querySelector('.ico');
       if (ico) ico.textContent = done ? 'check_circle' : (flag === 'scienceReview' ? 'replay' : 'play_circle');
       var pill = el.querySelector('.status-pill');
       if (pill) pill.textContent = done ? 'Done' : 'Open';
       var sub = el.querySelector('.sub');
-      if (sub && flag === 'unit1') sub.textContent = done ? 'Unit 1 · completed' : 'Unit 1 · open lesson';
+      if (!sub) return;
+      if (done) {
+        sub.textContent = flag === 'scienceReview' ? 'Finished · nice work' : 'Finished · nice work';
+      } else if (flag === 'unit1') {
+        sub.textContent = 'Unit 1 · open anytime';
+      } else if (flag === 'scienceReview') {
+        sub.textContent = 'Units 1–4 together';
+      } else {
+        sub.textContent = 'Unit ' + flag.replace('unit', '');
+      }
     });
+  }
+
+  function render(data, synced) {
+    var completed = (data && data.completed) || {};
+    var n = countDone(completed);
+    doneCountLabel.textContent = String(n);
+    doneBar.style.width = Math.round((n / FLAGS.length) * 100) + '%';
+    if (n === 0) {
+      doneLine.textContent = synced
+        ? 'Your map is ready · finish a lesson to light a star'
+        : 'Open a lesson · tap Start · Eva reads with you';
+    } else if (n === FLAGS.length) {
+      doneLine.textContent = 'All five weather lessons done · wonderful, Miles';
+    } else {
+      doneLine.textContent = n === 1
+        ? '1 lesson done · keep going, Miles'
+        : n + ' lessons done · keep going, Miles';
+    }
+
+    var streak = data && data.softStreakDays ? data.softStreakDays : 0;
+    if (streak > 0) {
+      streakMeter.hidden = false;
+      streakLabel.textContent = String(streak);
+    } else {
+      streakMeter.hidden = true;
+    }
+
+    renderLessons(completed);
   }
 
   async function refresh() {
     var key = RF.getFamilyKey();
     if (!key) {
-      setKeyUi(false);
-      render(null);
+      syncSoft.hidden = false;
+      render(null, false);
       return;
     }
-    setKeyUi(true, 'Saved on this device · loading…', 'ok');
+    syncSoft.hidden = true;
     try {
       var data = await RF.fetchProgress();
-      setKeyUi(true, 'Synced via Cloudflare', 'ok');
-      render(data);
+      render(data, true);
     } catch (e) {
-      setKeyUi(true, 'Key saved, but sync failed — check the key or network', 'err');
-      render(null);
+      syncSoft.hidden = false;
+      syncSoft.textContent = 'Stars will catch up when the connection is back.';
+      render(null, false);
     }
   }
 
-  saveBtn.addEventListener('click', function () {
-    var k = RF.setFamilyKey(keyInput.value);
-    keyInput.value = '';
-    if (!k) {
-      setKeyUi(false, 'Cleared · paste a key to sync again');
-      render(null);
-      return;
-    }
-    refresh();
-  });
-
-  keyInput.addEventListener('keydown', function (ev) {
-    if (ev.key === 'Enter') saveBtn.click();
-  });
-
-  RF.consumeKeyFromQuery();
-  if (RF.getFamilyKey()) setKeyUi(true, 'Saved on this device · loading…', 'ok');
-  else setKeyUi(false);
   refresh();
 })();
 </script>
