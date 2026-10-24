@@ -4,3 +4,7 @@
 - Voice interaction demo: `/voice/`
 
 Do not share widely: contains textbook page images.
+
+- [Main lesson](./)
+- [Voice demo](./voice/)
+- [21st Century Skills sample](./21st/)
