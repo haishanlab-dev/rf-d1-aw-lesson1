@@ -14,7 +14,7 @@
   } catch (e) {}
 })();
 
-/** Miles splash — show logo while fonts/resources settle, then enter page. */
+/** Miles splash — reuse top-left chrome: Material face icon + learner name. */
 (function () {
   var STYLE_ID = 'milesSplashStyle';
   if (!document.getElementById(STYLE_ID)) {
@@ -27,7 +27,12 @@
       'html.miles-loading #milesSplash{visibility:visible!important}',
       '#milesSplash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;',
       'background:#FBF6E9;transition:opacity .28s ease}',
-      '#milesSplash img{width:min(300px,56vw);max-width:360px;height:auto;display:block}',
+      '#milesSplash .miles-splash-mark{display:inline-flex;align-items:center;gap:14px;',
+      'font-family:var(--font-harmony),system-ui,-apple-system,"Segoe UI",sans-serif;',
+      'font-weight:800;font-size:clamp(28px,5vw,44px);color:#1F2A44;line-height:1}',
+      '#milesSplash .miles-splash-mark .ms{font-size:clamp(40px,7vw,56px);color:#3D7AB5;',
+      'font-family:"Material Symbols Rounded",sans-serif;font-variation-settings:"FILL" 1,"wght" 500,"GRAD" 0,"opsz" 48;',
+      'font-style:normal;font-weight:normal;line-height:1;display:inline-flex}',
       '#milesSplash.out{opacity:0;pointer-events:none}'
     ].join('');
     (document.head || document.documentElement).appendChild(css);
@@ -38,29 +43,55 @@
     var scripts = document.getElementsByTagName('script');
     for (var i = 0; i < scripts.length; i++) {
       var s = scripts[i].src || '';
-      var m = s.match(/^(.*\/)?assets\/prefs-boot\.js(?:\?.*)?$/);
-      if (m) return (m[1] || '') + 'assets/';
+      var m = s.match(/^(.*\/)assets\/prefs-boot\.js(?:\?.*)?$/);
+      if (m) return m[1] + 'assets/';
     }
-    // fallback by path depth
     var path = location.pathname || '';
     if (path.indexOf('/progress/parent') >= 0) return '../../assets/';
-    if (path.indexOf('/progress') >= 0 || path.indexOf('/unit') >= 0 || path.indexOf('/book') >= 0 || path.indexOf('/science-review') >= 0) return '../assets/';
+    if (/\/(progress|unit\d+|book|science-review)(\/|$)/.test(path)) return '../assets/';
     return 'assets/';
+  }
+
+  function ensureIconFont() {
+    var href = assetBase() + 'fonts/material-symbols.css';
+    var links = document.getElementsByTagName('link');
+    for (var i = 0; i < links.length; i++) {
+      if ((links[i].href || '').indexOf('material-symbols') >= 0) return;
+    }
+    // calm-shell @imports it — still add direct link so splash icons work early
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = href;
+    (document.head || document.documentElement).appendChild(link);
+  }
+
+  function learnerName() {
+    try {
+      var n = (localStorage.getItem('rfLearnerName') || 'Miles').trim();
+      return n || 'Miles';
+    } catch (e) { return 'Miles'; }
   }
 
   function mount() {
     if (document.getElementById('milesSplash')) return;
+    ensureIconFont();
     var el = document.createElement('div');
     el.id = 'milesSplash';
     el.setAttribute('role', 'status');
     el.setAttribute('aria-live', 'polite');
     el.setAttribute('aria-label', 'Loading');
-    var img = document.createElement('img');
-    img.alt = 'Miles';
-    img.width = 300;
-    img.height = 80;
-    img.src = assetBase() + 'brand/miles-logo.svg';
-    el.appendChild(img);
+    var mark = document.createElement('div');
+    mark.className = 'miles-splash-mark';
+    var icon = document.createElement('span');
+    icon.className = 'ms';
+    icon.setAttribute('aria-hidden', 'true');
+    icon.textContent = 'face';
+    var name = document.createElement('span');
+    name.className = 'miles-splash-name';
+    name.textContent = learnerName();
+    mark.appendChild(icon);
+    mark.appendChild(name);
+    el.appendChild(mark);
     document.body.appendChild(el);
   }
 
