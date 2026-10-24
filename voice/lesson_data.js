@@ -5,23 +5,23 @@ window.LESSON = {
    "img": "img/title.jpg",
    "title": "Animals' Weather",
    "lines": [
-    "第1课 · 动物的天气"
+    "Lesson 1"
    ],
    "clips": [
     {
      "src": "audio/title_0.mp3",
-     "text": "想想你好！我是Eva老师。今天我们学 Reading Future 第一课。",
-     "lang": "zh-CN"
+     "text": "Hello! I'm Eva, your English teacher. Today we start Reading Future, Lesson 1.",
+     "lang": "en-GB"
     },
     {
      "src": "audio/title_1.mp3",
      "text": "Animals' Weather.",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/title_2.mp3",
-     "text": "动物的天气。准备好了吗？出发！",
-     "lang": "zh-CN"
+     "text": "Are you ready? Let's go!",
+     "lang": "en-GB"
     }
    ]
   },
@@ -30,28 +30,27 @@ window.LESSON = {
    "img": "img/readthink.jpg",
    "title": "Read and Think",
    "lines": [
-    "What kinds of weather do you know?",
-    "你知道哪些天气？"
+    "What kinds of weather do you know?"
    ],
    "clips": [
     {
      "src": "audio/readthink_0.mp3",
-     "text": "这是从太空看到的云。书上问我们：",
-     "lang": "zh-CN"
+     "text": "Look at the clouds from space. The book asks us:",
+     "lang": "en-GB"
     },
     {
      "src": "audio/readthink_1.mp3",
      "text": "What kinds of weather do you know?",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/readthink_2.mp3",
-     "text": "你知道哪些天气？听到嘀的一声，就大声说出来！",
-     "lang": "zh-CN"
+     "text": "When you hear the beep, say your answer out loud!",
+     "lang": "en-GB"
     }
    ],
    "q": {
-    "lang": "en-US",
+    "lang": "en-GB",
     "keys": [
      "sun",
      "rain",
@@ -62,11 +61,10 @@ window.LESSON = {
      "cold",
      "storm",
      "fog",
-     "晴",
-     "雨",
-     "雪",
-     "风",
-     "云"
+     "sunny",
+     "rainy",
+     "snowy",
+     "windy"
     ],
     "wrong": [],
     "answer": "sunny ☀️  rainy 🌧️  snowy ❄️  windy 🌬️",
@@ -74,7 +72,7 @@ window.LESSON = {
      {
       "src": "audio/readthink_ans0.mp3",
       "text": "Sunny, rainy, snowy, windy!",
-      "lang": "en-US"
+      "lang": "en-GB"
      }
     ]
    }
@@ -84,45 +82,44 @@ window.LESSON = {
    "img": "img/stretch_cat.jpg",
    "title": "stretch",
    "lines": [
-    "Stretch your neck!",
-    "伸长 · 伸一伸"
+    "Stretch your neck!"
    ],
    "clips": [
     {
      "src": "audio/stretch_0.mp3",
-     "text": "新单词时间！",
-     "lang": "zh-CN"
+     "text": "New word time!",
+     "lang": "en-GB"
     },
     {
      "src": "audio/stretch_1.mp3",
      "text": "Stretch. Stretch your neck.",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/stretch_2.mp3",
-     "text": "stretch 就是伸长。像长颈鹿一样，把脖子伸长！跟我说：",
-     "lang": "zh-CN"
+     "text": "Stretch means to make something longer. Stretch your neck like a giraffe! Say it with me:",
+     "lang": "en-GB"
     },
     {
      "src": "audio/stretch_3.mp3",
      "text": "stretch!",
-     "lang": "en-US"
+     "lang": "en-GB"
     }
    ],
    "q": {
-    "lang": "en-US",
+    "lang": "en-GB",
     "keys": [
      "stretch",
      "stress",
      "strech"
     ],
     "wrong": [],
-    "answer": "stretch = 伸长",
+    "answer": "stretch",
     "aclips": [
      {
       "src": "audio/stretch_ans0.mp3",
       "text": "Stretch!",
-      "lang": "en-US"
+      "lang": "en-GB"
      }
     ]
    }
@@ -132,24 +129,23 @@ window.LESSON = {
    "img": "img/smell_girl.jpg",
    "title": "smell",
    "lines": [
-    "Smell the air!",
-    "闻 · 闻一闻"
+    "Smell the air!"
    ],
    "clips": [
     {
      "src": "audio/smell_0.mp3",
-     "text": "再来一个新单词：",
-     "lang": "zh-CN"
+     "text": "Another new word:",
+     "lang": "en-GB"
     },
     {
      "src": "audio/smell_1.mp3",
      "text": "Smell. Smell the air.",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/smell_2.mp3",
-     "text": "smell 就是用鼻子闻。闻一闻，嗯，好香！",
-     "lang": "zh-CN"
+     "text": "Smell means to use your nose. Smell the air. Mmm!",
+     "lang": "en-GB"
     }
    ]
   },
@@ -165,18 +161,18 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/read1_0.mp3",
-     "text": "现在听故事，看着句子哦。",
-     "lang": "zh-CN"
+     "text": "Now listen to the story. Look at the sentences.",
+     "lang": "en-GB"
     },
     {
      "src": "audio/read1_1.mp3",
      "text": "Cows and horses know when it will rain. They stretch their necks. They smell the air.",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/read1_2.mp3",
-     "text": "奶牛和马知道什么时候要下雨。",
-     "lang": "zh-CN"
+     "text": "Cows and horses know when it will rain.",
+     "lang": "en-GB"
     }
    ]
   },
@@ -185,31 +181,28 @@ window.LESSON = {
    "img": "img/horse.jpg",
    "title": "Question",
    "lines": [
-    "How do cows and horses know it will rain?",
-    "奶牛和马怎么知道要下雨？"
+    "How do cows and horses know it will rain?"
    ],
    "clips": [
     {
      "src": "audio/q_rain_0.mp3",
      "text": "How do cows and horses know it will rain?",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/q_rain_1.mp3",
-     "text": "奶牛和马怎么知道要下雨？听到嘀声，用英文说！",
-     "lang": "zh-CN"
+     "text": "When you hear the beep, answer in English!",
+     "lang": "en-GB"
     }
    ],
    "q": {
-    "lang": "en-US",
+    "lang": "en-GB",
     "keys": [
      "smell",
      "air",
      "neck",
      "stretch",
-     "nose",
-     "闻",
-     "脖子"
+     "nose"
     ],
     "wrong": [],
     "answer": "They stretch their necks.<br>They smell the air.",
@@ -217,7 +210,7 @@ window.LESSON = {
      {
       "src": "audio/q_rain_ans0.mp3",
       "text": "They stretch their necks. They smell the air.",
-      "lang": "en-US"
+      "lang": "en-GB"
      }
     ]
    }
@@ -234,88 +227,65 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/read2_0.mp3",
-     "text": "继续听故事。",
-     "lang": "zh-CN"
+     "text": "Let's keep listening.",
+     "lang": "en-GB"
     },
     {
      "src": "audio/read2_1.mp3",
      "text": "Winter is coming. The rabbits are eating a lot. They are getting very fat.",
-     "lang": "en-US"
+     "lang": "en-GB"
     },
     {
      "src": "audio/read2_2.mp3",
-     "text": "兔子吃很多，变得很胖。冬天要来了。",
-     "lang": "zh-CN"
+     "text": "The rabbits eat a lot and get very fat. Winter is coming.",
+     "lang": "en-GB"
     }
    ]
   },
   {
-   "id": "game",
-   "img": "img/fat.jpg",
-   "title": "大还是小？",
+   "id": "write",
+   "img": "img/stretch_cat.jpg",
+   "title": "Vocabulary Writing",
    "lines": [
-    "The rabbits get very fat.",
-    "大 = main idea　小 = detail"
+    "Write the words in your English exercise book.",
+    "stretch · smell"
    ],
    "clips": [
     {
-     "src": "audio/game_0.mp3",
-     "text": "游戏时间：大还是小？大，是整个故事主要讲什么；小，是一个小细节。听这句：",
-     "lang": "zh-CN"
+     "src": "audio/write_0.mp3",
+     "text": "Now take out your English exercise book.",
+     "lang": "en-GB"
     },
     {
-     "src": "audio/game_1.mp3",
-     "text": "The rabbits get very fat.",
-     "lang": "en-US"
+     "src": "audio/write_1.mp3",
+     "text": "Please write these words carefully: stretch, and smell.",
+     "lang": "en-GB"
     },
     {
-     "src": "audio/game_2.mp3",
-     "text": "这句话是大，还是小？听到嘀声，说大，或者小！",
-     "lang": "zh-CN"
+     "src": "audio/write_2.mp3",
+     "text": "Stretch. Smell. Write them in your English exercise book.",
+     "lang": "en-GB"
     }
-   ],
-   "q": {
-    "lang": "zh-CN",
-    "keys": [
-     "小",
-     "晓",
-     "small",
-     "detail",
-     "细节",
-     "笑"
-    ],
-    "wrong": [
-     "大",
-     "big"
-    ],
-    "answer": "小 · detail 🐰<br>大 · main idea：Animals can help farmers.",
-    "aclips": [
-     {
-      "src": "audio/game_ans0.mp3",
-      "text": "是小！兔子变胖，只是一个小细节。动物帮农民知道天气，才是大意。",
-      "lang": "zh-CN"
-     }
-    ]
-   }
+   ]
   },
   {
    "id": "bye",
    "img": "img/title.jpg",
-   "title": "Bye bye! 👋",
+   "title": "Bye bye!",
    "lines": [
-    "stretch · smell · 大还是小",
-    "想想真棒！"
+    "stretch · smell",
+    "Great job!"
    ],
    "clips": [
     {
      "src": "audio/bye_0.mp3",
-     "text": "今天你学会了 stretch 和 smell，还玩了大还是小。想想真棒！",
-     "lang": "zh-CN"
+     "text": "Today you learnt stretch and smell. Well done!",
+     "lang": "en-GB"
     },
     {
      "src": "audio/bye_1.mp3",
      "text": "Bye bye!",
-     "lang": "en-US"
+     "lang": "en-GB"
     }
    ]
   }
@@ -323,23 +293,23 @@ window.LESSON = {
  "common": {
   "correct": {
    "src": "audio/fb_correct.mp3",
-   "text": "太棒了，答对了！",
-   "lang": "zh-CN"
+   "text": "Well done! That's right!",
+   "lang": "en-GB"
   },
   "wrongfb": {
    "src": "audio/fb_wrongfb.mp3",
-   "text": "嗯，再想一想。",
-   "lang": "zh-CN"
+   "text": "Hmm, think again.",
+   "lang": "en-GB"
   },
   "heard": {
    "src": "audio/fb_heard.mp3",
-   "text": "说得好！我们看看答案。",
-   "lang": "zh-CN"
+   "text": "Nice speaking! Let's see the answer.",
+   "lang": "en-GB"
   },
   "silent": {
    "src": "audio/fb_silent.mp3",
-   "text": "没关系，我们一起看答案。",
-   "lang": "zh-CN"
+   "text": "That's okay. Let's look at the answer together.",
+   "lang": "en-GB"
   }
  }
 };
