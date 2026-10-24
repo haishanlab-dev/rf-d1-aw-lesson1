@@ -43,7 +43,13 @@
   #startBtn{font-size:calc(var(--title)*1.1);font-weight:900;padding:3vh 7vw;border-radius:999px;border:0;background:var(--leaf);color:#fff;box-shadow:0 12px 0 #3a9a57;cursor:pointer}
   #startBtn:active{transform:translateY(8px);box-shadow:0 4px 0 #3a9a57}
   #warn{font-size:clamp(20px,1.5vw,30px)!important;color:#a55;max-width:70ch}
-  @media (orientation:portrait){ main{flex-direction:column;padding:2vh 4vw} .pic{flex:0 0 38%} .txt{justify-content:flex-start} }
+  @media (orientation:portrait), (max-width:700px){
+    main{flex-direction:column;padding:1.5vh 3vw;gap:1.5vh}
+    .pic{flex:0 0 34%;max-height:36vh}
+    .txt{justify-content:flex-start}
+    footer{height:clamp(100px,16vh,160px)}
+    #pauseBtn{min-width:min(70vw,280px);min-height:96px;font-size:clamp(36px,8vw,56px)}
+  }
 </style>
 </head>
 <body>
@@ -204,7 +210,7 @@
       navigator.mediaDevices.getUserMedia({ audio: true }).then(st => { st.getTracks().forEach(t => t.stop()); log('mic permission ok'); })
         .catch(e => log('mic permission failed', e.name));
     }
-    try{const el=document.getElementById('app')||document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);}catch(e){}
+    try{const el=document.getElementById('app')||document.documentElement;const req=el.requestFullscreen||el.webkitRequestFullscreen;if(req){const pr=req.call(el);if(pr&&pr.catch)pr.catch(function(){});}}catch(e){}
     run(+(P.get('from') || 0));
   };
   $('pauseBtn').onclick = () => { paused = !paused; $('pauseBtn').textContent = paused ? '▶ Resume' : '⏸ Pause';
