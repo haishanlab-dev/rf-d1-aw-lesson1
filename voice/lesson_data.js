@@ -10,7 +10,7 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/title_0.mp3",
-     "text": "Hello! I'm Eva, your English teacher. Today we start Reading Future, Lesson 1.",
+     "text": "Hello, Miles! I'm Eva, your English teacher. Today we start Reading Future, Lesson 1.",
      "lang": "en-GB"
     },
     {
@@ -20,7 +20,7 @@ window.LESSON = {
     },
     {
      "src": "audio/title_2.mp3",
-     "text": "Are you ready? Let's go!",
+     "text": "Are you ready, Miles? Let's go!",
      "lang": "en-GB"
     }
    ]
@@ -45,7 +45,7 @@ window.LESSON = {
     },
     {
      "src": "audio/readthink_2.mp3",
-     "text": "When you hear the beep, say your answer out loud!",
+     "text": "Miles, when you hear the beep, say your answer out loud!",
      "lang": "en-GB"
     }
    ],
@@ -71,7 +71,7 @@ window.LESSON = {
     "aclips": [
      {
       "src": "audio/readthink_ans0.mp3",
-      "text": "Sunny, rainy, snowy, windy!",
+      "text": "Sunny, rainy, snowy, windy! Well done, Miles!",
       "lang": "en-GB"
      }
     ]
@@ -87,7 +87,7 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/stretch_0.mp3",
-     "text": "New word time!",
+     "text": "New word time, Miles!",
      "lang": "en-GB"
     },
     {
@@ -97,7 +97,7 @@ window.LESSON = {
     },
     {
      "src": "audio/stretch_2.mp3",
-     "text": "Stretch means to make something longer. Stretch your neck like a giraffe! Say it with me:",
+     "text": "Stretch means to make something longer. Miles, stretch your neck like a giraffe! Say it with me:",
      "lang": "en-GB"
     },
     {
@@ -118,7 +118,7 @@ window.LESSON = {
     "aclips": [
      {
       "src": "audio/stretch_ans0.mp3",
-      "text": "Stretch!",
+      "text": "Stretch! Great job, Miles!",
       "lang": "en-GB"
      }
     ]
@@ -134,7 +134,7 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/smell_0.mp3",
-     "text": "Another new word:",
+     "text": "Another new word, Miles:",
      "lang": "en-GB"
     },
     {
@@ -144,7 +144,7 @@ window.LESSON = {
     },
     {
      "src": "audio/smell_2.mp3",
-     "text": "Smell means to use your nose. Smell the air. Mmm!",
+     "text": "Smell means to use your nose. Miles, smell the air. Mmm!",
      "lang": "en-GB"
     }
    ]
@@ -161,7 +161,7 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/read1_0.mp3",
-     "text": "Now listen to the story. Look at the sentences.",
+     "text": "Miles, now listen to the story. Look at the sentences.",
      "lang": "en-GB"
     },
     {
@@ -191,7 +191,7 @@ window.LESSON = {
     },
     {
      "src": "audio/q_rain_1.mp3",
-     "text": "When you hear the beep, answer in English!",
+     "text": "Miles, when you hear the beep, answer in English!",
      "lang": "en-GB"
     }
    ],
@@ -253,7 +253,7 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/write_0.mp3",
-     "text": "Now take out your English exercise book.",
+     "text": "Miles, now take out your English exercise book.",
      "lang": "en-GB"
     },
     {
@@ -263,7 +263,7 @@ window.LESSON = {
     },
     {
      "src": "audio/write_2.mp3",
-     "text": "Stretch. Smell. Write them in your English exercise book.",
+     "text": "Stretch. Smell. Write them in your English exercise book, Miles.",
      "lang": "en-GB"
     }
    ]
@@ -279,12 +279,12 @@ window.LESSON = {
    "clips": [
     {
      "src": "audio/bye_0.mp3",
-     "text": "Today you learnt stretch and smell. Well done!",
+     "text": "Today you learnt stretch and smell. Well done, Miles!",
      "lang": "en-GB"
     },
     {
      "src": "audio/bye_1.mp3",
-     "text": "Bye bye!",
+     "text": "Bye bye, Miles!",
      "lang": "en-GB"
     }
    ]
@@ -293,7 +293,7 @@ window.LESSON = {
  "common": {
   "correct": {
    "src": "audio/fb_correct.mp3",
-   "text": "Well done! That's right!",
+   "text": "Well done, Miles! That's right!",
    "lang": "en-GB"
   },
   "wrongfb": {
@@ -303,12 +303,12 @@ window.LESSON = {
   },
   "heard": {
    "src": "audio/fb_heard.mp3",
-   "text": "Nice speaking! Let's see the answer.",
+   "text": "Nice speaking, Miles! Let's see the answer.",
    "lang": "en-GB"
   },
   "silent": {
    "src": "audio/fb_silent.mp3",
-   "text": "That's okay. Let's look at the answer together.",
+   "text": "That's okay, Miles. Let's look at the answer together.",
    "lang": "en-GB"
   }
  }
