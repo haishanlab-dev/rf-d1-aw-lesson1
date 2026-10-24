@@ -19,18 +19,18 @@ Parent note
 -->
 <style>
 :root{
-  --blue:#4AA8E8;--yellow:#FFD84D;--green:#6CC08B;--text:#3C3C3C;--bg:#F7FBFF;
+  --blue:#3D7AB5;--yellow:#E8C04A;--green:#4F9A6B;--text:#1F2A44;--bg:#FBF6E9;
   --title: clamp(36px, 5.5vw, 84px);
   --sub: clamp(28px, 4vw, 62px);
   --body: clamp(28px, 3.6vw, 58px);
   --body-big: clamp(32px, 4.5vw, 72px);
   --pad: clamp(12px, 2.5vw, 56px);
   --gap: clamp(12px, 2vw, 40px);
-  --pause: clamp(96px, 22vw, 200px);
+  --pause: clamp(96px, 14vw, 112px);
 }
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;height:100%;width:100%;background:var(--bg);overflow:hidden;
-  font-family:"PingFang SC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;color:var(--text);}
+  font-family:var(--font-harmony),system-ui,sans-serif;color:var(--text);}
 #wrap{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);
   display:flex;flex-direction:column;}
 #wrap:fullscreen,#wrap:-webkit-full-screen,
@@ -150,15 +150,31 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
 }
 </style>
+<link rel="stylesheet" href="assets/calm-shell.css">
+<!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
-  <button id="tocbtn" aria-label="Units menu" title="Units">☰</button>
-  <button id="pausebtn" aria-label="pause">⏸</button>
+  <header class="shell-stats" id="shellstats" aria-label="Top bar">
+    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <button type="button" class="course-chip" id="coursechip" aria-label="Open course list" aria-expanded="false">
+      <span class="ms">science</span>
+      Science · Weather
+      <span class="ms">expand_more</span>
+    </button>
+    <div class="stat last"><span class="ms">schedule</span> Animals' Weather</div>
+  </header>
+  <div class="shell-main">
+  <button id="tocbtn" aria-label="Units menu" title="Units" hidden>☰</button>
+  <button id="pausebtn" aria-label="pause" type="button"><span class="ms">pause</span></button>
   <div id="tocmask"></div>
   <nav id="toc" aria-label="Unit directory">
-    <button class="x" id="tocx" aria-label="Close">×</button>
-    <h3>Units</h3>
+    <div class="course-panel-head">
+      <div class="book-icon"><span class="ms">auto_stories</span></div>
+      <div><h2>Courses</h2><p>Reading Future · Discover 1</p></div>
+      <button class="x" id="tocx" aria-label="Close"><span class="ms">close</span></button>
+    </div>
+    <div class="course-scroll">
     <div class="sec">Science · Weather</div>
     <a class="here" href="./">1 · Animals' Weather</a>
     <a href="./unit2/">2 · A Rainy Day</a>
@@ -167,29 +183,44 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
     <a href="./science-review/">Weather review</a>
     <div class="sec">Extras</div>
     <a href="./voice/">Voice practice demo</a>
+  </div>
   </nav>
-<div id="stage">
+  <div id="stage">
   <div id="view"></div>
   <div id="start">
-    <h1>Animals' Weather</h1>
-    <h2>Reading Future · Discover 1 · Lesson 1 · for Miles</h2>
-    <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
-    <p class="hint">Session 2 includes 21st Century Skills (Critical Thinking + Communication). Tap map parts 1–4 anytime to jump.</p>
-    <button id="go">▶ Start</button>
-    <button id="plink">Parent note</button>
+    <div class="start-card">
+      <div class="start-hero">
+        <div>
+          <div class="unit-pill">Unit 1 · Science</div>
+          <h1>Animals' Weather</h1>
+          <p>Reading Future · Discover 1 · Lesson 1 · for Miles</p>
+        </div>
+        <div class="hero-illu" aria-hidden="true"><span class="ms">cloud</span></div>
+      </div>
+      <div class="start-body">
+        <h2>Ready to start?</h2>
+        <p class="meta">for Miles · British English Sonia</p>
+        <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
+        <p class="hint">Session 2 includes 21st Century Skills (Critical Thinking + Communication). Tap map parts 1–4 anytime to jump.</p>
+        <button id="go" type="button" aria-label="Start"><span class="ms">play_arrow</span> Start</button>
+        <button id="plink">Parent note</button>
+      </div>
+    </div>
   </div>
   <div id="pnote">
-    <button class="x" id="px">×</button>
+    <button class="x" id="px"><span class="ms">close</span></button>
     <h3>Parent note</h3>
     <div>· Learner English name: <b>Miles</b>. Eva speaks to Miles throughout.</div>
-    <div>· Open: download this file from Google Drive and double-click it in a browser (on iPad use Files or Safari). Works offline, no login.</div>
-    <div>· Two sessions (about 6–8 minutes each, not counting thinking time). Session 2 includes 21st Century Skills. Tap progress dots 1–4 (or Lesson Map buttons) to jump to a part.</div>
-    <div>· Book: Discover 1 Student Book pp.8–13. Small pause button at the bottom right.</div>
-    <div>· Answers derived from the text (not the official key): Read and Think has no fixed answers; RC: b / b / c; chart: know / stretch / fat; vocab review: when / necks / smell; project: rain = b, d; long winter = a, c.</div>
-    <div>· Free official MP3: <span class="u">https://contents.compasspub.com/mp3/Reading%20Future%20Discover%201.zip</span></div>
-    <div>· Free e-book preview: <span class="u">https://eb.compasspub.com/v2/?uri=books/RF_Discover_1/work/&amp;prev=13</span></div>
+    
   </div>
-</div></div>
+  </div>
+  <nav class="shell-tabs" id="shelltabs" aria-label="Bottom tabs">
+    <a class="tab on" href="./"><span class="ms">home</span> Learn</a>
+    <a class="tab" href="./science-review/"><span class="ms">replay</span> Review</a>
+    <a class="tab" href="./book/"><span class="ms">auto_stories</span> Book</a>
+    <a class="tab" href="./progress/"><span class="ms">insights</span> Progress</a>
+  </nav>
+</div>
 <audio id="au" preload="auto" playsinline></audio>
 <script>
 const SCREENS=[{"i": 0, "s": "A", "part": 1, "zh": "Animals' Weather", "en": "Lesson 1", "img": "unit1_title_p10.jpg", "rimg": null, "type": "normal", "body": ["Session 1 for Miles", "Reading Future · Discover 1"], "q": [], "reveal": [], "page": null, "map": false, "dn": 20.184, "dr": 0}, {"i": 1, "s": "A", "part": 1, "zh": "Lesson Map", "en": "Four parts — tap to jump", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Use it & 21st skills"], "q": [], "reveal": [], "page": null, "map": true, "dn": 20.136, "dr": 0}, {"i": 2, "s": "A", "part": 1, "zh": "Academic Objectives", "en": "What we will learn", "img": "ao_rt_p9.jpg", "rimg": null, "type": "normal", "body": ["Common kinds of weather", "Unusual kinds of weather", "How weather affects", "the places we live"], "q": [], "reveal": [], "page": null, "map": false, "dn": 16.008, "dr": 0}, {"i": 3, "s": "A", "part": 1, "zh": "Read and Think", "en": "Question 1", "img": "opener_p8-9.jpg", "rimg": null, "type": "pause", "body": [], "q": ["What kinds of weather", "do you know?"], "reveal": ["sunny", "rainy", "snowy", "windy"], "page": 9, "map": false, "dn": 9.096, "dr": 10.896}, {"i": 4, "s": "A", "part": 1, "zh": "Read and Think", "en": "Question 2", "img": "ao_rt_p9.jpg", "rimg": null, "type": "pause", "body": [], "q": ["What causes different", "kinds of weather?"], "reveal": ["No single right answer!", "We will find out", "in later lessons"], "page": 9, "map": false, "dn": 8.976, "dr": 11.928}, {"i": 5, "s": "A", "part": 1, "zh": "Warm-Up", "en": "Page 10", "img": "warmup_p10.jpg", "rimg": null, "type": "normal", "body": ["The weather changes often.", "People use technology", "to guess the weather.", "Animals can guess it too!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 17.136, "dr": 0}, {"i": 6, "s": "A", "part": 1, "zh": "Big Question", "en": "Today's question", "img": "unit1_title_p10.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How can animals", "guess the weather?"], "reveal": ["The answer is in", "today's story!"], "page": 10, "map": false, "dn": 9.192, "dr": 11.64}, {"i": 7, "s": "A", "part": 2, "zh": "New Words", "en": "Page 10", "img": "newwords_p10.jpg", "rimg": null, "type": "normal", "body": ["neck · air", "rabbit · fat", "know · when"], "q": [], "reveal": [], "page": null, "map": false, "dn": 36.48, "dr": 0}, {"i": 8, "s": "A", "part": 2, "zh": "stretch", "en": "New word", "img": "stretch_big.jpg", "rimg": null, "type": "normal", "body": ["stretch", "Stand up and stretch!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.16, "dr": 0}, {"i": 9, "s": "A", "part": 2, "zh": "smell", "en": "New word", "img": "smell_big.jpg", "rimg": null, "type": "normal", "body": ["smell", "Smell the air!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 11.016, "dr": 0}, {"i": 10, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 1", "img": "reading_p11.jpg", "rimg": null, "type": "normal", "body": ["Farmers need to know", "about the weather.", "Animals can help."], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.136, "dr": 0}, {"i": 11, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 2", "img": "horse_p11.jpg", "rimg": null, "type": "normal", "body": ["Cows and horses know", "when it will rain.", "They stretch their necks.", "They smell the air."], "q": [], "reveal": [], "page": null, "map": false, "dn": 10.392, "dr": 0}, {"i": 12, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 3", "img": "rabbit_big.jpg", "rimg": null, "type": "normal", "body": ["Winter is coming.", "The rabbits are eating a lot.", "They are getting very fat."], "q": [], "reveal": [], "page": null, "map": false, "dn": 13.824, "dr": 0}, {"i": 13, "s": "A", "part": 2, "zh": "Close Reading", "en": "Cows and Horses", "img": "horse_p11.jpg", "rimg": null, "type": "normal", "body": ["stretch their necks", "smell the air", "→ it will rain"], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.384, "dr": 0}, {"i": 14, "s": "A", "part": 2, "zh": "Close Reading", "en": "Rabbits", "img": "rabbit_big.jpg", "rimg": null, "type": "normal", "body": ["eat a lot", "get very fat", "→ a long, cold winter"], "q": [], "reveal": [], "page": null, "map": false, "dn": 10.752, "dr": 0}, {"i": 15, "s": "A", "part": 2, "zh": "Think", "en": "How do the animals know?", "img": "reading_p11.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How do the", "animals know?"], "reveal": ["The book does not say.", "Some animals' noses and ears", "sense changes earlier!"], "page": 11, "map": false, "dn": 8.424, "dr": 12.936}, {"i": 16, "s": "A", "part": 2, "zh": "Retell", "en": "In your own words", "img": "reading_p11.jpg", "rimg": null, "type": "retell", "body": [], "q": ["Miles, tell me:", "What is this story about?"], "reveal": ["Animals help farmers.", "Cows and horses know rain.", "Fat rabbits mean a long, cold winter."], "page": 11, "map": false, "dn": 12.864, "dr": 15.024}, {"i": 17, "s": "A", "part": 2, "zh": "Session 1 done", "en": "Great job, Miles!", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic ✓", "2 Read the story ✓", "Next: 3 & 4", "(with 21st Century Skills)"], "q": [], "reveal": [], "page": null, "map": true, "dn": 18.528, "dr": 0}, {"i": 18, "s": "B", "part": 3, "zh": "Lesson Map", "en": "Session 2 — tap a part", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Use it & 21st skills"], "q": [], "reveal": [], "page": null, "map": true, "dn": 18.48, "dr": 0}, {"i": 19, "s": "B", "part": 3, "zh": "Story Recap", "en": "Remember page 11", "img": "reading_p11.jpg", "rimg": null, "type": "normal", "body": ["Cows and horses → rain", "Rabbits get fat → long winter"], "q": [], "reveal": [], "page": null, "map": false, "dn": 13.944, "dr": 0}, {"i": 20, "s": "B", "part": 3, "zh": "Main Idea", "en": "What is a main idea?", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Main idea = what the WHOLE story is about", "One big idea for the whole page"], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.816, "dr": 0}, {"i": 21, "s": "B", "part": 3, "zh": "Details", "en": "What is a detail?", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Detail = one little fact", "It helps the main idea"], "q": [], "reveal": [], "page": null, "map": false, "dn": 11.976, "dr": 0}, {"i": 22, "s": "B", "part": 3, "zh": "Try it", "en": "Main idea or detail?", "img": "rabbit_big.jpg", "rimg": null, "type": "pause", "body": [], "q": ["The rabbits get very fat.", "Main idea, or detail?"], "reveal": ["Detail!", "One little fact"], "page": 12, "map": false, "dn": 15.552, "dr": 9.864}, {"i": 23, "s": "B", "part": 3, "zh": "Try it", "en": "Main idea or detail?", "img": "rc_p12.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Animals can help farmers", "know about the weather.", "Main idea, or detail?"], "reveal": ["Main idea!", "What the whole story is about"], "page": 12, "map": false, "dn": 9.744, "dr": 12.12}, {"i": 24, "s": "B", "part": 3, "zh": "Table Top & Legs", "en": "A picture for your brain", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Table top = main idea", "Legs = details", "Legs hold up the top!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 18.744, "dr": 0}, {"i": 25, "s": "B", "part": 3, "zh": "Find the Legs", "en": "Which details?", "img": "table_blank.png", "rimg": "table_filled.png", "type": "pause", "body": [], "q": ["What are the legs?", "Which details", "hold up the table?"], "reveal": ["stretch their necks", "smell the air", "eat a lot · get very fat"], "page": 12, "map": false, "dn": 8.352, "dr": 12.96}, {"i": 26, "s": "B", "part": 4, "zh": "Vocabulary Review", "en": "Page 13", "img": "vocabreview_p13.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Choose the word", "how / when?", "necks / fat?", "know / smell?"], "reveal": ["when", "necks", "smell"], "page": 13, "map": false, "dn": 26.136, "dr": 8.976}, {"i": 27, "s": "B", "part": 4, "zh": "21st Century Skills", "en": "Two big skills", "img": "two_skills.jpg", "rimg": null, "type": "normal", "body": ["Critical Thinking = ask and check", "Communication = share and listen"], "q": [], "reveal": [], "page": null, "map": false, "dn": 23.016, "dr": 0}, {"i": 28, "s": "B", "part": 4, "zh": "Critical Thinking", "en": "Ask: is it always true?", "img": "always.jpg", "rimg": null, "type": "normal", "body": ["Do not just believe.", "Ask questions.", "Check the facts."], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.12, "dr": 0}, {"i": 29, "s": "B", "part": 4, "zh": "Weather & Animals", "en": "Sort the sentences", "img": "project_p13.jpg", "rimg": null, "type": "normal", "body": ["Book page 13 project", "Rain, or long cold winter?"], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.072, "dr": 0}, {"i": 30, "s": "B", "part": 4, "zh": "Ready to sort?", "en": "Four sentences", "img": "bins_empty.jpg", "rimg": null, "type": "normal", "body": ["a. Rabbits get very fat.", "b. Smell the air.", "c. Rabbits eat a lot.", "d. Stretch their necks."], "q": [], "reveal": [], "page": null, "map": false, "dn": 20.88, "dr": 0}, {"i": 31, "s": "B", "part": 4, "zh": "Your turn", "en": "Where does it go?", "img": "bins_empty.jpg", "rimg": "bins_filled.jpg", "type": "pause", "body": [], "q": ["Sort the sentences.", "Rain, or long cold winter?"], "reveal": ["Rain: smell the air,", "stretch their necks", "Winter: get very fat,", "eat a lot"], "page": 13, "map": false, "dn": 11.424, "dr": 17.208}, {"i": 32, "s": "B", "part": 4, "zh": "Is it always true?", "en": "Critical Thinking", "img": "always.jpg", "rimg": null, "type": "pause", "body": [], "q": ["If rabbits eat a lot,", "must winter be coming?", "Is it always true?"], "reveal": ["Not always!", "Maybe they are just hungry.", "Asking \"always?\" is smart!"], "page": 13, "map": false, "dn": 9.816, "dr": 12.912}, {"i": 33, "s": "B", "part": 4, "zh": "Tell a friend", "en": "Communication", "img": "two_skills.jpg", "rimg": null, "type": "normal", "body": ["Tell a friend one rain sentence", "and one winter sentence.", "Speak clearly. Listen."], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.096, "dr": 0}, {"i": 34, "s": "B", "part": 4, "zh": "Great job!", "en": "Well done, Miles!", "img": "bins_filled.jpg", "rimg": null, "type": "normal", "body": ["Main idea & details ✓", "Critical Thinking ✓", "Communication ✓", "Bye bye, Miles!"], "q": [], "reveal": [], "page": null, "map": true, "dn": 16.464, "dr": 0}];
@@ -206,6 +237,20 @@ addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEvent
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 let session='A', paused=false, actx=null, runId=0;
 const $=id=>document.getElementById(id);
+
+function setPauseIcon(isPaused){
+  const b=$('pausebtn'); if(!b) return;
+  let ico=b.querySelector('.ms');
+  if(!ico){ ico=document.createElement('span'); ico.className='ms'; b.textContent=''; b.appendChild(ico); }
+  ico.textContent=isPaused?'play_arrow':'pause';
+  b.classList.toggle('is-paused', !!isPaused);
+  b.setAttribute('aria-label', isPaused?'play':'pause');
+}
+function setPlaying(on){
+  document.body.classList.toggle('playing', !!on);
+  if(on){ $('pausebtn').style.display='grid'; } else { $('pausebtn').style.display='none'; }
+}
+
 $('sA').onclick=()=>{session='A';$('sA').classList.add('sel');$('sB').classList.remove('sel');};
 $('sB').onclick=()=>{session='B';$('sB').classList.add('sel');$('sA').classList.remove('sel');};
 $('plink').onclick=()=>{$('pnote').style.display='block';};
@@ -269,11 +314,11 @@ function waitForContinue(id){
   return new Promise(res=>{
     if(QA){ setTimeout(()=>{ if(id===runId) res(); }, 80); return; }
     holdResolve=()=>{ holdResolve=null; res(); };
-    paused=true; $('pausebtn').textContent='▶';
+    paused=true; setPauseIcon(true);
     const panel=$('panel');
     if(panel && !panel.querySelector('.contbtn')){
-      const b=document.createElement('button'); b.className='contbtn'; b.textContent='▶ Continue';
-      b.onclick=()=>{ if(holdResolve){ paused=false; $('pausebtn').textContent='⏸'; holdResolve(); } };
+      const b=document.createElement('button'); b.className='contbtn'; b.innerHTML='<span class="ms" style="font-size:22px">play_arrow</span> Continue';
+      b.onclick=()=>{ if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); } };
       panel.appendChild(b);
     }
     log({ev:'hold'});
@@ -283,7 +328,7 @@ function ensureAudio(){try{if(!actx)actx=new (window.AudioContext||window.webkit
 function unlockAudioFor(sc){const k=String(sc.i).padStart(2,'0')+'_n';if(AUD[k]){au.src=AUD[k];const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});au.pause();}}
 function tryFullscreen(){try{const fsEl=document.getElementById('wrap')||document.documentElement;const req=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen;if(req){const p=req.call(fsEl);if(p&&p.catch)p.catch(function(){});}}catch(e){}}
 async function runFromIndex(startIdx){
-  const id=++runId; paused=false; $('pausebtn').textContent='⏸'; holdResolve=null;
+  const id=++runId; paused=false; setPauseIcon(false); holdResolve=null;
   const start=SCREENS[startIdx]; if(!start)return;
   session=start.s;
   for(let i=startIdx;i<SCREENS.length;i++){
@@ -306,12 +351,12 @@ async function runFromIndex(startIdx){
   }
   if(id!==runId)return;
   log({ev:'sessionend',sess:start.s});
-  const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.textContent='↺ Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;$('pausebtn').style.display='none';$('start').style.display='flex';};p.appendChild(b);}
+  const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};p.appendChild(b);}
 }
 function jumpToPart(part){
   const sc=partFirst(part); if(!sc) return;
   ensureAudio(); unlockAudioFor(sc); tryFullscreen();
-  $('start').style.display='none'; $('pausebtn').style.display='block';
+  $('start').style.display='none'; setPlaying(true); setPauseIcon(false);
   log({ev:'jump',part});
   runFromIndex(sc.i);
 }
@@ -322,18 +367,24 @@ async function runSession(sess){
 $('go').onclick=()=>{
   ensureAudio();
   const first=SCREENS.find(s=>s.s===session); unlockAudioFor(first); tryFullscreen();
-  $('start').style.display='none';$('pausebtn').style.display='block';paused=false;
+  $('start').style.display='none'; setPlaying(true); setPauseIcon(false); paused=false;
   runSession(session);
 };
 $('pausebtn').onclick=()=>{
-  if(holdResolve){ paused=false; $('pausebtn').textContent='⏸'; holdResolve(); return; }
-  paused=!paused;$('pausebtn').textContent=paused?'▶':'⏸';
+  if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); return; }
+  paused=!paused;setPauseIcon(paused);
   if(paused)au.pause();else if(au.src&&!au.ended){const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});}
 };
 
 function openToc(){$('toc').classList.add('open');$('tocmask').classList.add('open');}
 function closeToc(){$('toc').classList.remove('open');$('tocmask').classList.remove('open');}
 $('tocbtn').onclick=(e)=>{e.stopPropagation(); openToc();};
+const chip=$('coursechip');
+if(chip){ chip.onclick=(e)=>{e.stopPropagation(); openToc(); chip.setAttribute('aria-expanded','true');}; }
+const _openToc=openToc, _closeToc=closeToc;
+openToc=function(){ _openToc(); if(chip) chip.setAttribute('aria-expanded','true'); };
+closeToc=function(){ _closeToc(); if(chip) chip.setAttribute('aria-expanded','false'); };
+
 $('tocx').onclick=(e)=>{e.stopPropagation(); closeToc();};
 $('tocmask').onclick=()=>closeToc();
 // URL: ?s=B selects Session 2; ?part=3 jumps after start gesture still needed — part on start selects session
@@ -342,7 +393,8 @@ if(P.get('s')==='A'||P.get('session')==='A'){session='A';$('sA').classList.add('
 const wantPart=+P.get('part');
 if(wantPart>=1&&wantPart<=4){const sc=partFirst(wantPart); if(sc){session=sc.s; if(session==='B'){$('sB').classList.add('sel');$('sA').classList.remove('sel');} else {$('sA').classList.add('sel');$('sB').classList.remove('sel');}}}
 // static frame mode for export/QA: ?frame=N&state=show|ask|reveal
-if(P.has('frame')){$('start').style.display='none';const sc=SCREENS[+P.get('frame')];const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
+if(P.has('frame')){$('start').style.display='none';setPlaying(true);setPauseIcon(false);const sc=SCREENS[+P.get('frame')];const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
+setPauseIcon(false); // init
 </script>
 </body>
 </html>

@@ -19,18 +19,18 @@ Parent note
 -->
 <style>
 :root{
-  --blue:#4AA8E8;--yellow:#FFD84D;--green:#6CC08B;--text:#3C3C3C;--bg:#F7FBFF;
+  --blue:#3D7AB5;--yellow:#E8C04A;--green:#4F9A6B;--text:#1F2A44;--bg:#FBF6E9;
   --title: clamp(36px, 5.5vw, 84px);
   --sub: clamp(28px, 4vw, 62px);
   --body: clamp(28px, 3.6vw, 58px);
   --body-big: clamp(32px, 4.5vw, 72px);
   --pad: clamp(12px, 2.5vw, 56px);
   --gap: clamp(12px, 2vw, 40px);
-  --pause: clamp(96px, 22vw, 200px);
+  --pause: clamp(96px, 14vw, 112px);
 }
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
 html,body{margin:0;height:100%;width:100%;background:var(--bg);overflow:hidden;
-  font-family:"PingFang SC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;color:var(--text);}
+  font-family:var(--font-harmony),system-ui,sans-serif;color:var(--text);}
 #wrap{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);
   display:flex;flex-direction:column;}
 #wrap:fullscreen,#wrap:-webkit-full-screen,
@@ -150,15 +150,31 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
 }
 </style>
+<link rel="stylesheet" href="../assets/calm-shell.css">
+<!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 </head>
 <body oncontextmenu="return false">
 <div id="wrap">
-  <button id="tocbtn" aria-label="Units menu" title="Units">☰</button>
-  <button id="pausebtn" aria-label="pause">⏸</button>
+  <header class="shell-stats" id="shellstats" aria-label="Top bar">
+    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <button type="button" class="course-chip" id="coursechip" aria-label="Open course list" aria-expanded="false">
+      <span class="ms">science</span>
+      Science · Weather
+      <span class="ms">expand_more</span>
+    </button>
+    <div class="stat last"><span class="ms">schedule</span> Rain, Snow, and Ice</div>
+  </header>
+  <div class="shell-main">
+  <button id="tocbtn" aria-label="Units menu" title="Units" hidden>☰</button>
+  <button id="pausebtn" aria-label="pause" type="button"><span class="ms">pause</span></button>
   <div id="tocmask"></div>
   <nav id="toc" aria-label="Unit directory">
-    <button class="x" id="tocx" aria-label="Close">×</button>
-    <h3>Units</h3>
+    <div class="course-panel-head">
+      <div class="book-icon"><span class="ms">auto_stories</span></div>
+      <div><h2>Courses</h2><p>Reading Future · Discover 1</p></div>
+      <button class="x" id="tocx" aria-label="Close"><span class="ms">close</span></button>
+    </div>
+    <div class="course-scroll">
     <div class="sec">Science · Weather</div>
     <a href="../">1 · Animals' Weather</a>
     <a href="../unit2/">2 · A Rainy Day</a>
@@ -167,29 +183,44 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
     <a href="../science-review/">Weather review</a>
     <div class="sec">Extras</div>
     <a href="../voice/">Voice practice demo</a>
+  </div>
   </nav>
-<div id="stage">
+  <div id="stage">
   <div id="view"></div>
   <div id="start">
-    <h1>Rain, Snow, and Ice</h1>
-    <h2>Reading Future · Discover 1 · Unit 3 · for Miles</h2>
-    <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
-    <p class="hint">Session 2 includes Europe weather map (21st Century Skills). Tap map parts 1–4 anytime to jump.</p>
-    <button id="go">▶ Start</button>
-    <button id="plink">Parent note</button>
+    <div class="start-card">
+      <div class="start-hero">
+        <div>
+          <div class="unit-pill">Unit 3 · Science</div>
+          <h1>Rain, Snow, and Ice</h1>
+          <p>Reading Future · Discover 1 · Unit 3 · for Miles</p>
+        </div>
+        <div class="hero-illu" aria-hidden="true"><span class="ms">ac_unit</span></div>
+      </div>
+      <div class="start-body">
+        <h2>Ready to start?</h2>
+        <p class="meta">for Miles · British English Sonia</p>
+        <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
+        <p class="hint">Session 2 includes Europe weather map (21st Century Skills). Tap map parts 1–4 anytime to jump.</p>
+        <button id="go" type="button" aria-label="Start"><span class="ms">play_arrow</span> Start</button>
+        <button id="plink">Parent note</button>
+      </div>
+    </div>
   </div>
   <div id="pnote">
-    <button class="x" id="px">×</button>
+    <button class="x" id="px"><span class="ms">close</span></button>
     <h3>Parent note</h3>
     <div>· Learner English name: <b>Miles</b>. Eva speaks to Miles throughout.</div>
-    <div>· Open: download this file from Google Drive and double-click it in a browser (on iPad use Files or Safari). Works offline, no login.</div>
-    <div>· Two sessions (about 6–8 minutes each, not counting thinking time). Session 2 includes 21st Century Skills. Tap progress dots 1–4 (or Lesson Map buttons) to jump to a part.</div>
-    <div>· Book: Discover 1 Student Book pp.18–21. Small pause button at the bottom right.</div>
-    <div>· Answers derived from the text (not the official key): Read and Think has no fixed answers; RC: b / b / c; chart: know / stretch / fat; RC: c / b / c; chart: happens / Snow / dangerous; vocab: flakes / happens / dangerous; project: Europe weather icons.</div>
-    <div>· Free official MP3: <span class="u">https://contents.compasspub.com/mp3/Reading%20Future%20Discover%201.zip</span></div>
-    <div>· Free e-book preview: <span class="u">https://eb.compasspub.com/v2/?uri=books/RF_Discover_1/work/&amp;prev=13</span></div>
+    
   </div>
-</div></div>
+  </div>
+  <nav class="shell-tabs" id="shelltabs" aria-label="Bottom tabs">
+    <a class="tab on" href="../"><span class="ms">home</span> Learn</a>
+    <a class="tab" href="../science-review/"><span class="ms">replay</span> Review</a>
+    <a class="tab" href="../book/"><span class="ms">auto_stories</span> Book</a>
+    <a class="tab" href="../progress/"><span class="ms">insights</span> Progress</a>
+  </nav>
+</div>
 <audio id="au" preload="auto" playsinline></audio>
 <script>
 const SCREENS=[{"i": 0, "s": "A", "part": 1, "zh": "Rain, Snow, and Ice", "en": "Unit 3", "img": "title_p18.jpg", "rimg": null, "type": "normal", "body": ["Session 1 for Miles", "Reading Future · Discover 1"], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.04, "dr": 0}, {"i": 1, "s": "A", "part": 1, "zh": "Lesson Map", "en": "Four parts — tap to jump", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Weather map & skills"], "q": [], "reveal": [], "page": null, "map": true, "dn": 12.408, "dr": 0}, {"i": 2, "s": "A", "part": 1, "zh": "Warm-Up", "en": "Page 18", "img": "warmup_p18.jpg", "rimg": null, "type": "normal", "body": ["Clouds give rain when warm.", "Snow when cold.", "Hail too — from water changing temperature."], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.36, "dr": 0}, {"i": 3, "s": "A", "part": 1, "zh": "Big Question", "en": "Today's question", "img": "title_p18.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How do you know if it will", "rain or if it will snow?"], "reveal": ["Think about hot or cold!", "We will learn more today."], "page": 18, "map": false, "dn": 9.408, "dr": 11.04}, {"i": 4, "s": "A", "part": 2, "zh": "New Words", "en": "Page 18", "img": "newwords_p18.jpg", "rimg": null, "type": "normal", "body": ["snow · become · fall", "warm · dangerous · happen"], "q": [], "reveal": [], "page": null, "map": false, "dn": 34.008, "dr": 0}, {"i": 5, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 1", "img": "reading_p19.jpg", "rimg": null, "type": "normal", "body": ["Clouds are made of water.", "This water falls to the earth", "as rain."], "q": [], "reveal": [], "page": null, "map": false, "dn": 11.424, "dr": 0}, {"i": 6, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 2", "img": "reading_p19.jpg", "rimg": null, "type": "normal", "body": ["Rain when warm or hot.", "Snow when cold.", "Drops of water · flakes of ice"], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.504, "dr": 0}, {"i": 7, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 3", "img": "snow_photo.jpg", "rimg": null, "type": "normal", "body": ["Hail: water moves up and down", "becomes ice · balls of ice", "It can be dangerous."], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.832, "dr": 0}, {"i": 8, "s": "A", "part": 2, "zh": "Close Reading", "en": "Three kinds", "img": "reading_p19.jpg", "rimg": null, "type": "normal", "body": ["Rain → warm → drops", "Snow → cold → flakes", "Hail → ice balls → dangerous"], "q": [], "reveal": [], "page": null, "map": false, "dn": 11.928, "dr": 0}, {"i": 9, "s": "A", "part": 2, "zh": "Quick Check", "en": "Reading skills", "img": "readskills_p19.jpg", "rimg": null, "type": "pause", "body": [], "q": ["What are clouds made of?", "Rain, or water?"], "reveal": ["Water!"], "page": 19, "map": false, "dn": 7.416, "dr": 6.096}, {"i": 10, "s": "A", "part": 2, "zh": "Think", "en": "About hail", "img": "snow_photo.jpg", "rimg": null, "type": "pause", "body": [], "q": ["What is true about hail?"], "reveal": ["It can be dangerous."], "page": 19, "map": false, "dn": 7.56, "dr": 7.008}, {"i": 11, "s": "A", "part": 2, "zh": "Retell", "en": "In your own words", "img": "reading_p19.jpg", "rimg": null, "type": "retell", "body": [], "q": ["Miles, tell me:", "What is this reading about?"], "reveal": ["Clouds make rain, snow, and hail.", "Rain is drops. Snow is flakes.", "Hail is ice balls. It can be dangerous."], "page": 19, "map": false, "dn": 9.672, "dr": 17.256}, {"i": 12, "s": "A", "part": 2, "zh": "Session 1 done", "en": "Great job, Miles!", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic ✓", "2 Read the story ✓", "Next: 3 & 4"], "q": [], "reveal": [], "page": null, "map": true, "dn": 10.152, "dr": 0}, {"i": 13, "s": "B", "part": 3, "zh": "Lesson Map", "en": "Session 2 — tap a part", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Weather map & skills"], "q": [], "reveal": [], "page": null, "map": true, "dn": 11.616, "dr": 0}, {"i": 14, "s": "B", "part": 3, "zh": "Story Recap", "en": "Remember page 19", "img": "reading_p19.jpg", "rimg": null, "type": "normal", "body": ["Rain · snow · hail", "All from cloud water"], "q": [], "reveal": [], "page": null, "map": false, "dn": 7.704, "dr": 0}, {"i": 15, "s": "B", "part": 3, "zh": "Main Idea", "en": "What is a main idea?", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Main idea = whole reading", "One big idea"], "q": [], "reveal": [], "page": null, "map": false, "dn": 4.56, "dr": 0}, {"i": 16, "s": "B", "part": 3, "zh": "Main Idea", "en": "Reading comprehension", "img": "rc_p20.jpg", "rimg": null, "type": "pause", "body": [], "q": ["What is the reading", "mainly about?"], "reveal": ["Weather!", "Rain, snow, and hail."], "page": 20, "map": false, "dn": 7.584, "dr": 9.336}, {"i": 17, "s": "B", "part": 3, "zh": "Detail", "en": "Falls down", "img": "rc_p20.jpg", "rimg": null, "type": "pause", "body": [], "q": ["The water in clouds", "_____ down to the earth."], "reveal": ["falls"], "page": 20, "map": false, "dn": 7.488, "dr": 3.6}, {"i": 18, "s": "B", "part": 3, "zh": "Inference", "en": "Up and down", "img": "snow_photo.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Water moves up and down", "in storm clouds. What happens?"], "reveal": ["It becomes hail."], "page": 20, "map": false, "dn": 8.448, "dr": 6.6}, {"i": 19, "s": "B", "part": 3, "zh": "Chart", "en": "What I learned", "img": "chart_p20.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Rain ___ when warm.", "___ happens when cold.", "Hail can be ___."], "reveal": ["happens", "Snow", "dangerous"], "page": 20, "map": false, "dn": 16.608, "dr": 12.72}, {"i": 20, "s": "B", "part": 4, "zh": "Vocabulary Review", "en": "Page 21", "img": "vocabreview_p21.jpg", "rimg": null, "type": "pause", "body": [], "q": ["flakes / balls?", "becomes / happens?", "snow / dangerous?"], "reveal": ["flakes", "happens", "dangerous"], "page": 21, "map": false, "dn": 16.608, "dr": 6.984}, {"i": 21, "s": "B", "part": 4, "zh": "21st Century Skills", "en": "Two big skills", "img": "two_skills.jpg", "rimg": null, "type": "normal", "body": ["Critical Thinking = ask and check", "Communication = share and listen"], "q": [], "reveal": [], "page": null, "map": false, "dn": 5.784, "dr": 0}, {"i": 22, "s": "B", "part": 4, "zh": "Europe Weather", "en": "Project page 21", "img": "project_p21.jpg", "rimg": null, "type": "normal", "body": ["How's the weather in Europe today?", "Match icons to countries"], "q": [], "reveal": [], "page": null, "map": false, "dn": 13.464, "dr": 0}, {"i": 23, "s": "B", "part": 4, "zh": "Your turn", "en": "Match the icons", "img": "project_p21.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Germany? Spain?", "France? Italy?"], "reveal": ["Germany: rain + snow", "Spain: snow", "France: cloudy", "Italy: sunny"], "page": 21, "map": false, "dn": 12.936, "dr": 12.216}, {"i": 24, "s": "B", "part": 4, "zh": "Is it always true?", "en": "Critical Thinking", "img": "always.jpg", "rimg": null, "type": "pause", "body": [], "q": ["If it is cold,", "must it snow?", "Is it always true?"], "reveal": ["Not always!", "It could be hail, or just cold and dry."], "page": 21, "map": false, "dn": 6.84, "dr": 9.192}, {"i": 25, "s": "B", "part": 4, "zh": "Tell a friend", "en": "Communication", "img": "two_skills.jpg", "rimg": null, "type": "normal", "body": ["Tell a friend one weather fact", "Speak clearly. Listen."], "q": [], "reveal": [], "page": null, "map": false, "dn": 9.432, "dr": 0}, {"i": 26, "s": "B", "part": 4, "zh": "Great job!", "en": "Well done, Miles!", "img": "snow_photo.jpg", "rimg": null, "type": "normal", "body": ["Rain, snow, hail ✓", "Main idea ✓", "Europe weather ✓"], "q": [], "reveal": [], "page": null, "map": true, "dn": 11.784, "dr": 0}];
@@ -206,6 +237,20 @@ addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEvent
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 let session='A', paused=false, actx=null, runId=0;
 const $=id=>document.getElementById(id);
+
+function setPauseIcon(isPaused){
+  const b=$('pausebtn'); if(!b) return;
+  let ico=b.querySelector('.ms');
+  if(!ico){ ico=document.createElement('span'); ico.className='ms'; b.textContent=''; b.appendChild(ico); }
+  ico.textContent=isPaused?'play_arrow':'pause';
+  b.classList.toggle('is-paused', !!isPaused);
+  b.setAttribute('aria-label', isPaused?'play':'pause');
+}
+function setPlaying(on){
+  document.body.classList.toggle('playing', !!on);
+  if(on){ $('pausebtn').style.display='grid'; } else { $('pausebtn').style.display='none'; }
+}
+
 $('sA').onclick=()=>{session='A';$('sA').classList.add('sel');$('sB').classList.remove('sel');};
 $('sB').onclick=()=>{session='B';$('sB').classList.add('sel');$('sA').classList.remove('sel');};
 $('plink').onclick=()=>{$('pnote').style.display='block';};
@@ -269,11 +314,11 @@ function waitForContinue(id){
   return new Promise(res=>{
     if(QA){ setTimeout(()=>{ if(id===runId) res(); }, 80); return; }
     holdResolve=()=>{ holdResolve=null; res(); };
-    paused=true; $('pausebtn').textContent='▶';
+    paused=true; setPauseIcon(true);
     const panel=$('panel');
     if(panel && !panel.querySelector('.contbtn')){
-      const b=document.createElement('button'); b.className='contbtn'; b.textContent='▶ Continue';
-      b.onclick=()=>{ if(holdResolve){ paused=false; $('pausebtn').textContent='⏸'; holdResolve(); } };
+      const b=document.createElement('button'); b.className='contbtn'; b.innerHTML='<span class="ms" style="font-size:22px">play_arrow</span> Continue';
+      b.onclick=()=>{ if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); } };
       panel.appendChild(b);
     }
     log({ev:'hold'});
@@ -283,7 +328,7 @@ function ensureAudio(){try{if(!actx)actx=new (window.AudioContext||window.webkit
 function unlockAudioFor(sc){const k=String(sc.i).padStart(2,'0')+'_n';if(AUD[k]){au.src=AUD[k];const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});au.pause();}}
 function tryFullscreen(){try{const fsEl=document.getElementById('wrap')||document.documentElement;const req=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen;if(req){const p=req.call(fsEl);if(p&&p.catch)p.catch(function(){});}}catch(e){}}
 async function runFromIndex(startIdx){
-  const id=++runId; paused=false; $('pausebtn').textContent='⏸'; holdResolve=null;
+  const id=++runId; paused=false; setPauseIcon(false); holdResolve=null;
   const start=SCREENS[startIdx]; if(!start)return;
   session=start.s;
   for(let i=startIdx;i<SCREENS.length;i++){
@@ -306,12 +351,12 @@ async function runFromIndex(startIdx){
   }
   if(id!==runId)return;
   log({ev:'sessionend',sess:start.s});
-  const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.textContent='↺ Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;$('pausebtn').style.display='none';$('start').style.display='flex';};p.appendChild(b);}
+  const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};p.appendChild(b);}
 }
 function jumpToPart(part){
   const sc=partFirst(part); if(!sc) return;
   ensureAudio(); unlockAudioFor(sc); tryFullscreen();
-  $('start').style.display='none'; $('pausebtn').style.display='block';
+  $('start').style.display='none'; setPlaying(true); setPauseIcon(false);
   log({ev:'jump',part});
   runFromIndex(sc.i);
 }
@@ -322,18 +367,24 @@ async function runSession(sess){
 $('go').onclick=()=>{
   ensureAudio();
   const first=SCREENS.find(s=>s.s===session); unlockAudioFor(first); tryFullscreen();
-  $('start').style.display='none';$('pausebtn').style.display='block';paused=false;
+  $('start').style.display='none'; setPlaying(true); setPauseIcon(false); paused=false;
   runSession(session);
 };
 $('pausebtn').onclick=()=>{
-  if(holdResolve){ paused=false; $('pausebtn').textContent='⏸'; holdResolve(); return; }
-  paused=!paused;$('pausebtn').textContent=paused?'▶':'⏸';
+  if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); return; }
+  paused=!paused;setPauseIcon(paused);
   if(paused)au.pause();else if(au.src&&!au.ended){const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});}
 };
 
 function openToc(){$('toc').classList.add('open');$('tocmask').classList.add('open');}
 function closeToc(){$('toc').classList.remove('open');$('tocmask').classList.remove('open');}
 $('tocbtn').onclick=(e)=>{e.stopPropagation(); openToc();};
+const chip=$('coursechip');
+if(chip){ chip.onclick=(e)=>{e.stopPropagation(); openToc(); chip.setAttribute('aria-expanded','true');}; }
+const _openToc=openToc, _closeToc=closeToc;
+openToc=function(){ _openToc(); if(chip) chip.setAttribute('aria-expanded','true'); };
+closeToc=function(){ _closeToc(); if(chip) chip.setAttribute('aria-expanded','false'); };
+
 $('tocx').onclick=(e)=>{e.stopPropagation(); closeToc();};
 $('tocmask').onclick=()=>closeToc();
 // URL: ?s=B selects Session 2; ?part=3 jumps after start gesture still needed — part on start selects session
@@ -342,7 +393,8 @@ if(P.get('s')==='A'||P.get('session')==='A'){session='A';$('sA').classList.add('
 const wantPart=+P.get('part');
 if(wantPart>=1&&wantPart<=4){const sc=partFirst(wantPart); if(sc){session=sc.s; if(session==='B'){$('sB').classList.add('sel');$('sA').classList.remove('sel');} else {$('sA').classList.add('sel');$('sB').classList.remove('sel');}}}
 // static frame mode for export/QA: ?frame=N&state=show|ask|reveal
-if(P.has('frame')){$('start').style.display='none';const sc=SCREENS[+P.get('frame')];const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
+if(P.has('frame')){$('start').style.display='none';setPlaying(true);setPauseIcon(false);const sc=SCREENS[+P.get('frame')];const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
+setPauseIcon(false); // init
 </script>
 </body>
 </html>

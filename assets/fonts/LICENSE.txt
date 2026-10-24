@@ -1,0 +1,32 @@
+HarmonyOS Sans Fonts — License Notice
+Copyright 2021 Huawei Device Co., Ltd.
+
+Source: official package HarmonyOS-Sans-v2.zip
+https://developer.huawei.com/images/download/next/HarmonyOS-Sans-v2.zip
+(also linked from Huawei HarmonyOS Design Resources / font design guides)
+
+These TTF files are bundled unmodified with this offline visual-sample HTML
+(not redistributed as a standalone font package).
+
+HarmonyOS Sans Fonts Software is licensed under the HarmonyOS Sans Fonts
+License Agreement. Summary of grant (see full text from Huawei / OpenHarmony
+LICENSE_Fonts for authoritative terms):
+- Use, copy, merge, embed, bundle, redistribute and/or sell unmodified copies
+  with any software except for fonts software, royalty-free.
+- You must make a prominent notice that HarmonyOS Sans Fonts are used.
+- You may not modify the fonts.
+- Fonts may not be redistributed or sold on a stand-alone basis.
+- Retain the copyright notice and this Agreement in any copies.
+
+Files included here (unmodified):
+- HarmonyOS_Sans_Regular.ttf / Medium.ttf / Bold.ttf (Latin)
+- HarmonyOS_SansSC_Regular.ttf / Medium.ttf / Bold.ttf (Simplified Chinese)
+
+This samples folder prominently states that HarmonyOS Sans is used.
+
+--------------------------------------------------------------------------------
+Material Symbols Rounded (MaterialSymbolsRounded.woff2)
+Copyright Google Inc.
+Licensed under the Apache License, Version 2.0
+https://github.com/google/material-design-icons
+Style used in samples: Rounded · opsz 24 (40 on large FAB/CTA) · wght 500 · FILL 0 (FILL 1 on play CTA)
