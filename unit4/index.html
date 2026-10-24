@@ -214,6 +214,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
     
   </div>
   </div>
+  </div>
   <nav class="shell-tabs" id="shelltabs" aria-label="Bottom tabs">
     <a class="tab on" href="../"><span class="ms">home</span> Learn</a>
     <a class="tab" href="../science-review/"><span class="ms">replay</span> Review</a>
@@ -326,7 +327,10 @@ function waitForContinue(id){
 }
 function ensureAudio(){try{if(!actx)actx=new (window.AudioContext||window.webkitAudioContext)();actx.resume();}catch(e){}}
 function unlockAudioFor(sc){const k=String(sc.i).padStart(2,'0')+'_n';if(AUD[k]){au.src=AUD[k];const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});au.pause();}}
-function tryFullscreen(){try{const fsEl=document.getElementById('wrap')||document.documentElement;const req=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen;if(req){const p=req.call(fsEl);if(p&&p.catch)p.catch(function(){});}}catch(e){}}
+function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
+function syncFsChrome(){document.body.classList.toggle('fs', isFs());}
+function tryFullscreen(){try{const fsEl=document.getElementById('wrap')||document.documentElement;const req=fsEl.requestFullscreen||fsEl.webkitRequestFullscreen;if(req){const p=req.call(fsEl);if(p&&p.catch)p.catch(function(){});}}catch(e){} syncFsChrome();}
+addEventListener('fullscreenchange',syncFsChrome);addEventListener('webkitfullscreenchange',syncFsChrome);syncFsChrome();
 async function runFromIndex(startIdx){
   const id=++runId; paused=false; setPauseIcon(false); holdResolve=null;
   const start=SCREENS[startIdx]; if(!start)return;
@@ -371,9 +375,13 @@ $('go').onclick=()=>{
   runSession(session);
 };
 $('pausebtn').onclick=()=>{
-  if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); return; }
+  if(holdResolve){ tryFullscreen(); paused=false; setPauseIcon(false); holdResolve(); return; }
   paused=!paused;setPauseIcon(paused);
-  if(paused)au.pause();else if(au.src&&!au.ended){const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});}
+  if(paused){ au.pause(); }
+  else {
+    tryFullscreen();
+    if(au.src&&!au.ended){const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});}
+  }
 };
 
 function openToc(){$('toc').classList.add('open');$('tocmask').classList.add('open');}
