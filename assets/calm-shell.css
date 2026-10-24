@@ -83,6 +83,12 @@ body:fullscreen { background: var(--bg); width: 100%; height: 100%; }
 .shell-stats .stat .ms { font-size: 24px; color: var(--blue); }
 .shell-stats .stat.streak .ms { color: #C98A3A; }
 .shell-stats .stat.miles { color: var(--ink); }
+a.stat.miles {
+  text-decoration: none; color: var(--ink); cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+a.stat.miles:active { opacity: 0.75; }
+
 .course-chip {
   display: inline-flex; align-items: center; gap: 6px;
   height: 40px; padding: 0 14px;

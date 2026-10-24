@@ -158,7 +158,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <body oncontextmenu="return false">
 <div id="wrap">
   <header class="shell-stats" id="shellstats" aria-label="Top bar">
-    <div class="stat miles"><span class="ms">face</span> Miles</div>
+    <a class="stat miles" href="../" aria-label="Home"><span class="ms">face</span> Miles</a>
     <button type="button" class="course-chip" id="coursechip" aria-label="Open course list" aria-expanded="false">
       <span class="ms">science</span>
       Science · Weather
@@ -205,15 +205,10 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
         <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
         <p class="hint">Session 2 includes Europe weather map (21st Century Skills). Tap map parts 1–4 anytime to jump.</p>
         <button id="go" type="button" aria-label="Start"><span class="ms">play_arrow</span> Start</button>
-        <button id="plink">Parent note</button>
-      </div>
+</div>
     </div>
   </div>
-  <div id="pnote">
-    <button class="x" id="px"><span class="ms">close</span></button>
-    <h3>Parent note</h3>
-    <div>· Learner English name: <b>Miles</b>. Eva speaks to Miles throughout.</div>
-    <div>· Progress tab is Miles’s showcase. Family key / sync: <a href="../progress/parent/">Parent settings</a>.</div>
+<div>· Progress tab is Miles’s showcase. Family key / sync: <a href="../progress/parent/">Parent settings</a>.</div>
   </div>
   </div>
   </div>
@@ -266,8 +261,8 @@ function setPlaying(on){
 
 $('sA').onclick=()=>{session='A';$('sA').classList.add('sel');$('sB').classList.remove('sel');};
 $('sB').onclick=()=>{session='B';$('sB').classList.add('sel');$('sA').classList.remove('sel');};
-$('plink').onclick=()=>{$('pnote').style.display='block';};
-$('px').onclick=()=>{$('pnote').style.display='none';};
+
+
 function esc(t){return String(t??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function partFirst(part){return SCREENS.find(s=>s.part===part);}
 function partLabel(p){return ({1:'Open the topic',2:'Read the story',3:'Main idea & details',4:'Weather map & skills'})[p]||('Part '+p);}
