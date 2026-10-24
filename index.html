@@ -19,9 +19,9 @@ Parent note
 <style>
 :root{--blue:#4AA8E8;--yellow:#FFD84D;--green:#6CC08B;--text:#3C3C3C;--bg:#F7FBFF;}
 *{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
-html,body{margin:0;height:100%;background:#dfeefa;overflow:hidden;font-family:"PingFang SC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;color:var(--text);}
-#wrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;}
-#stage{width:1920px;height:1080px;background:var(--bg);position:relative;transform-origin:center center;flex:none;overflow:hidden;border-radius:0;}
+html,body{margin:0;height:100%;background:var(--bg);overflow:hidden;font-family:"PingFang SC","Noto Sans SC","Noto Sans CJK SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;color:var(--text);}
+#wrap{position:fixed;inset:0;overflow:hidden;background:var(--bg);}
+#stage{width:1920px;height:1080px;background:var(--bg);position:absolute;left:50%;top:50%;transform-origin:center center;overflow:hidden;border-radius:0;}
 img{-webkit-user-drag:none;user-drag:none;pointer-events:none;}
 .screen{position:absolute;inset:0;padding:56px 72px 40px;display:flex;flex-direction:column;}
 .titles{display:flex;align-items:baseline;gap:36px;flex-wrap:wrap;min-height:120px;padding-right:420px;}
@@ -45,8 +45,8 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;}
 .prog div.on{background:var(--blue);color:#fff;}
 .prog div.done{background:var(--green);color:#fff;}
 .pagehint{font-size:40px;color:#6b7785;font-weight:700;}
-#pausebtn{position:absolute;right:40px;bottom:30px;width:110px;height:110px;border-radius:50%;border:none;background:rgba(60,60,60,.12);font-size:52px;color:#3C3C3C;cursor:pointer;z-index:20;display:none;}
-#paused{position:absolute;inset:0;background:rgba(247,251,255,.85);display:none;align-items:center;justify-content:center;font-size:120px;font-weight:800;color:var(--blue);z-index:15;}
+#pausebtn{position:fixed;right:36px;bottom:36px;width:200px;height:200px;border-radius:50%;border:8px solid rgba(60,60,60,.18);background:rgba(255,216,77,.95);font-size:96px;color:#3C3C3C;cursor:pointer;z-index:20;display:none;box-shadow:0 10px 0 rgba(0,0,0,.12);line-height:1;}
+#paused{position:fixed;inset:0;background:rgba(247,251,255,.85);display:none;align-items:center;justify-content:center;font-size:120px;font-weight:800;color:var(--blue);z-index:15;}
 /* start */
 #start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:40px;background:var(--bg);z-index:10;}
 #start h1{font-size:96px;margin:0;font-weight:800;text-align:center;line-height:1.15;}
@@ -64,10 +64,11 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;}
 </style>
 </head>
 <body oncontextmenu="return false">
-<div id="wrap"><div id="stage">
-  <div id="view"></div>
+<div id="wrap">
   <div id="paused">⏸ Paused</div>
   <button id="pausebtn" aria-label="pause">⏸</button>
+<div id="stage">
+  <div id="view"></div>
   <div id="start">
     <h1>Animals' Weather</h1>
     <h2>Reading Future · Discover 1 · Lesson 1</h2>
@@ -97,8 +98,8 @@ const RATE=QA?8:1, GAP=QA?120:1200, CDSTEP=QA?150:1000;
 window.__log=[];
 function log(e){window.__log.push(e);}
 const stage=document.getElementById('stage'), view=document.getElementById('view'), au=document.getElementById('au');
-function fit(){const s=Math.min(innerWidth/1920,innerHeight/1080);stage.style.transform='scale('+s+')';}
-addEventListener('resize',fit);fit();
+function fit(){const w=innerWidth,h=innerHeight;const s=Math.max(w/1920,h/1080);stage.style.transform='translate(-50%,-50%) scale('+s+')';}
+addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEventListener('webkitfullscreenchange',fit);fit();
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
 let session='A', paused=false, actx=null, runId=0;
 const $=id=>document.getElementById(id);
@@ -159,7 +160,7 @@ $('go').onclick=()=>{
   try{actx=new (window.AudioContext||window.webkitAudioContext)();actx.resume();}catch(e){}
   // unlock the single audio element inside the user gesture (iOS)
   const first=SCREENS.find(s=>s.s===session);au.src=AUD[String(first.i).padStart(2,'0')+'_n'];const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});au.pause();
-  const de=document.documentElement;try{(de.requestFullscreen||de.webkitRequestFullscreen||function(){}).call(de);}catch(e){}
+  const fsEl=document.getElementById('wrap')||document.documentElement;try{(fsEl.requestFullscreen||fsEl.webkitRequestFullscreen||document.documentElement.requestFullscreen||function(){}).call(fsEl||document.documentElement);}catch(e){}
   $('start').style.display='none';$('pausebtn').style.display='block';paused=false;
   runSession(session);
 };

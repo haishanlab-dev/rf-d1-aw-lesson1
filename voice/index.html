@@ -13,7 +13,7 @@
   *{box-sizing:border-box;margin:0;padding:0}
   html,body{height:100%;background:var(--bg);color:var(--ink);
     font-family:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC","Noto Sans SC",system-ui,sans-serif;overflow:hidden}
-  #app{height:100vh;height:100dvh;display:flex;flex-direction:column}
+  #app{height:100vh;height:100dvh;width:100vw;display:flex;flex-direction:column;background:var(--bg);}
   header{height:clamp(48px,6vh,80px);display:flex;align-items:center;gap:16px;padding:0 2vw;background:var(--sky);color:#fff;font-size:clamp(22px,1.6vw,34px);font-weight:700}
   header .dots{margin-left:auto;display:flex;gap:10px}
   header .dot{width:clamp(14px,1vw,22px);height:clamp(14px,1vw,22px);border-radius:50%;background:rgba(255,255,255,.4)}
@@ -32,8 +32,9 @@
   #heard{color:#2a6;font-weight:700}
   #answer{background:#fff7d6;border:6px solid var(--sun)}
   #feedback{font-size:var(--title);line-height:1.1}
-  footer{height:clamp(44px,5vh,70px);display:flex;align-items:center;justify-content:flex-end;padding:0 2vw;gap:1vw}
-  footer button{font-size:clamp(18px,1.2vw,26px);padding:6px 16px;border-radius:12px;border:2px solid #9bc;background:#fff;color:#567}
+  footer{height:clamp(120px,14vh,200px);display:flex;align-items:center;justify-content:flex-end;padding:0 2vw 2vh;gap:2vw;background:transparent}
+  footer button{font-size:clamp(36px,3.2vw,64px);padding:18px 36px;border-radius:999px;border:6px solid #9bc;background:#fff;color:#567;font-weight:800;min-height:100px}
+  #pauseBtn{background:#ffc93c;border-color:#e0a21b;min-width:240px;min-height:120px;font-size:clamp(44px,4vw,72px);box-shadow:0 8px 0 rgba(0,0,0,.12)}
   #start{position:fixed;inset:0;background:linear-gradient(160deg,#bfe6ff,#fff3c4);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4vh;z-index:10;text-align:center;padding:4vw}
   #start h2{font-size:var(--title);color:var(--sky)}
   #start p{font-size:var(--body)}
@@ -200,6 +201,7 @@
       navigator.mediaDevices.getUserMedia({ audio: true }).then(st => { st.getTracks().forEach(t => t.stop()); log('mic permission ok'); })
         .catch(e => log('mic permission failed', e.name));
     }
+    try{const el=document.getElementById('app')||document.documentElement;(el.requestFullscreen||el.webkitRequestFullscreen||function(){}).call(el);}catch(e){}
     run(+(P.get('from') || 0));
   };
   $('pauseBtn').onclick = () => { paused = !paused; $('pauseBtn').textContent = paused ? '▶ Resume' : '⏸ Pause';
