@@ -38,7 +38,7 @@ html:fullscreen,html:-webkit-full-screen,body:fullscreen{background:var(--bg);wi
 #stage{flex:1;min-height:0;width:100%;height:100%;background:var(--bg);position:relative;overflow:hidden;}
 #view{position:absolute;inset:0;width:100%;height:100%;}
 img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max-height:100%;}
-.screen{position:absolute;inset:0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--pause) * 0.55);
+.screen{position:absolute;inset:0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--pause) * 0.65);
   display:flex;flex-direction:column;gap:var(--gap);overflow:hidden;}
 .titles{display:flex;align-items:baseline;gap:clamp(10px,2vw,28px);flex-wrap:wrap;
   min-height:0;padding-left:clamp(52px,12vw,88px);padding-right:clamp(100px,22vw,280px);}
@@ -57,11 +57,16 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 .q .line{font-size:var(--body);}
 .rev{background:var(--green);color:#fff;border-radius:clamp(16px,2vw,36px);padding:clamp(12px,1.5vw,26px);}
 .rev .line{font-size:var(--body);}
-.cd{width:clamp(120px,28vw,280px);height:clamp(120px,28vw,280px);border-radius:50%;background:var(--yellow);
-  display:flex;align-items:center;justify-content:center;font-size:clamp(72px,18vw,180px);font-weight:900;
-  align-self:center;box-shadow:0 8px 0 rgba(0,0,0,.08);flex-shrink:0;}
-.cd.pop{animation:pop .9s ease-out;}
-@keyframes pop{0%{transform:scale(1.25)}100%{transform:scale(1)}}
+.cd{width:clamp(80px,min(22vw,18vh),180px);height:clamp(80px,min(22vw,18vh),180px);border-radius:50%;background:var(--yellow);
+  display:flex;align-items:center;justify-content:center;font-size:clamp(48px,min(12vw,12vh),120px);font-weight:900;
+  align-self:center;box-shadow:0 8px 0 rgba(0,0,0,.08);flex-shrink:0;
+  margin:clamp(6px,1.5vh,16px) auto;transform-origin:center center;}
+.cd.pop{animation:pop .85s ease-out;}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+/* Keep countdown fully visible: don't clip circle or soft pop */
+.panel:has(.cd){overflow:visible;padding-bottom:clamp(8px,2vh,20px);}
+.content:has(.cd){overflow:visible;}
+.content:has(.cd) .imgbox{flex:0 1 36%;max-height:40%;}
 .prog{position:absolute;top:clamp(8px,1.5vh,44px);right:clamp(8px,2vw,60px);display:flex;gap:clamp(6px,1vw,16px);z-index:5;}
 .prog button{width:clamp(36px,6vw,76px);height:clamp(36px,6vw,76px);border-radius:50%;background:#E4E8EC;color:#9AA3AD;
   font-size:clamp(20px,3.5vw,44px);font-weight:800;display:flex;align-items:center;justify-content:center;
@@ -132,7 +137,8 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .imgbox{flex:0 1 38%;max-height:42%;}
   .panel{flex:1 1 auto;justify-content:flex-start;}
   .titles{padding-left:clamp(48px,14vw,72px);padding-right:clamp(80px,20vw,160px);}
-  .cd{width:clamp(100px,34vw,200px);height:clamp(100px,34vw,200px);font-size:clamp(64px,22vw,120px);}
+  .cd{width:clamp(72px,min(28vw,16vh),140px);height:clamp(72px,min(28vw,16vh),140px);font-size:clamp(44px,min(18vw,11vh),96px);}
+  .content:has(.cd) .imgbox{flex:0 1 28%;max-height:30%;}
 }
 @media (max-height:500px) and (orientation:landscape){
   .imgbox{flex:0 1 40%;}
@@ -140,6 +146,8 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .line{font-size:clamp(22px,4.2vh,40px);}
   .zh{font-size:clamp(28px,5.5vh,48px);}
   .en{font-size:clamp(22px,4.5vh,36px);}
+  .cd{width:clamp(64px,min(16vw,22vh),96px);height:clamp(64px,min(16vw,22vh),96px);font-size:clamp(36px,min(10vw,14vh),64px);margin:4px auto;}
+  .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
 }
 </style>
 </head>
