@@ -384,10 +384,10 @@
       return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:opener', scene: true };
     }
     if (/^vocabreview_/i.test(img)) {
-      return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'] }), what: 'tx:vocab', scene: true };
+      return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'], hero: true }), what: 'tx:vocab', scene: true };
     }
     if (/^rc_p/i.test(img)) {
-      return { html: textScene([], { ills: ['thinking', 'check'] }), what: 'tx:rc', scene: true };
+      return { html: textScene([], { ills: ['thinking', 'check'], hero: true }), what: 'tx:rc', scene: true };
     }
 
     if (CHARTS[img]) {
@@ -1076,12 +1076,19 @@
     /* Photo-hero (title / Big Question): caption under centered photo is centered */
     '.tx-stage.is-photo-hero .tx-lines{text-align:center;align-items:center;}',
     '.tx-stage.is-photo-hero .tx-line{text-align:center;}',
-    /* Big Question / titlebg: panel caption under centered photo is centered (not flush-left to photo) */
-    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .content > .panel,#view .screen.stack:has(.tx-stage.is-photo-hero) .content > .panel{align-items:center;justify-content:flex-start;text-align:center;padding-left:clamp(12px,3.6vw,48px);padding-right:clamp(12px,3.6vw,48px);}',
-    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .rev,#view .screen.stack:has(.tx-stage.is-photo-hero) .panel .q,#view .screen.stack:has(.tx-stage.is-photo-hero) .panel .rev{text-align:center;align-self:center;}',
-    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q .line,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .rev .line{text-align:center;}',
-    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .pagehint{text-align:center;align-self:center;}',
-    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .sx-qline,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q.qecho .sx-qline{text-align:center;}',
+    /* Hero art (photo or Noto): panel Q + choices centered under the art. Warm-Up has no is-hero. */
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .content > .panel,#view .screen.stack:has(.tx-stage.is-hero) .content > .panel{align-items:center;justify-content:flex-start;text-align:center;padding-left:clamp(12px,3.6vw,48px);padding-right:clamp(12px,3.6vw,48px);}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .q,#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .rev,#view .screen.stack:has(.tx-stage.is-hero) .panel .q,#view .screen.stack:has(.tx-stage.is-hero) .panel .rev{text-align:center;align-self:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .q .line,#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .rev .line{text-align:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .pagehint{text-align:center;align-self:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .sx-qline,#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .q.qecho .sx-qline{text-align:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .ix-choices:not(.is-rows){align-self:center;width:min(100%,640px);}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .ix-choices:not(.is-rows) .ix-row{justify-content:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .ix-choices:not(.is-rows) .ix-opts{justify-content:center;flex:0 1 auto;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .ix-choices:not(.is-rows) .ix-opt{flex:0 1 auto;min-width:140px;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel.ix-has-rows{max-width:min(92%,760px);min-width:0;align-self:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-hero) .panel .ix-qrow{align-self:center;justify-content:center;width:min(100%,760px);}',
+    '.tx-hero .tx-lines:empty{display:none;}',
     /* Warm-Up tip: sits in right text column, same left edge as body */
     '.tx-tip{margin-top:clamp(10px,2.2cqh,22px);font-weight:800;font-size:clamp(16px,min(2.8cqw,4.6cqh),28px);line-height:1.35;color:#2F5F8C;text-align:left;align-self:stretch;}',
     '.tx-row.has-photo .tx-tip{text-align:left;}',
