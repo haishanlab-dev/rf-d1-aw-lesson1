@@ -203,12 +203,31 @@
       if (au && !au.paused) au.pause();
     } catch (e) {}
     var genWait = generation;
+    // iPad Safari cannot show the microphone permission pop-up while an element is fullscreen,
+    // so getUserMedia just hangs. Leave fullscreen first (tabs reappear; Play re-enters it).
+    var fsEl = document.fullscreenElement || document.webkitFullscreenElement;
+    var gumPromise = navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+    if (fsEl) {
+      try {
+        var ex = document.exitFullscreen || document.webkitExitFullscreen;
+        if (ex) { var px = ex.call(document); if (px && px.catch) px.catch(function () {}); }
+      } catch (e) {}
+    }
+    setStatus('Getting the microphone ready… If iPad asks, tap Allow.');
+    var slowTimer = setTimeout(function () {
+      if (genWait === generation && !rec) setStatus('Still waiting for the microphone. Tap Allow if you see it, or check Settings › Safari › Microphone.');
+    }, 6000);
     try {
-      stream = await navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } });
+      stream = await gumPromise;
     } catch (e) {
-      setStatus('Microphone is off. You can still continue.');
+      clearTimeout(slowTimer);
+      var name = e && e.name;
+      setStatus(name === 'NotAllowedError'
+        ? 'Microphone is not allowed. A grown-up can turn it on in Settings › Safari › Microphone. You can still continue.'
+        : 'Microphone is off. You can still continue.');
       return;
     }
+    clearTimeout(slowTimer);
     if (genWait !== generation) {
       stopTracks();
       return;

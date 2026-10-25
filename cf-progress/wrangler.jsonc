@@ -17,7 +17,7 @@
       "binding": "PROGRESS_KV",
       // Use the namespace the live worker already writes (miles:progress).
       // npx wrangler kv namespace list
-      "id": "REPLACE_WITH_EXISTING_PROGRESS_KV_ID"
+      "id": "b37e9e9dd6974e11a378b46fc20a3582"
     }
   ],
   "r2_buckets": [
