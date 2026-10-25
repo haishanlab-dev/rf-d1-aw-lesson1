@@ -365,8 +365,9 @@ body.playing #pausebtn { display: grid !important; }
 #pausebtn {
   position: fixed;
   right: clamp(14px, 2.6vw, 28px);
-  bottom: clamp(10px, 2.6vw, 28px);
+  bottom: calc(clamp(12px, 2.6vw, 28px) + env(safe-area-inset-bottom, 0px));
   width: var(--pause); height: var(--pause);
+  box-sizing: border-box;
   border-radius: 50%;
   border: 0;
   border-bottom: 6px solid var(--blue-deep);
