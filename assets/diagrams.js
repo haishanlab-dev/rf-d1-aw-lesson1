@@ -241,30 +241,30 @@
 
     // ---- Textbook crop → HTML text + Noto/photo (no page scans) ----
     if (zh === 'Warm-Up' || /^warmup_/i.test(img)) {
-      return { html: textScene(warmBody(unit), { ills: warmIlls(unit) }), what: 'tx:warm', hint: warmHint(unit), scene: true };
+      return { html: textScene(warmBody(unit), { ills: warmIlls(unit), hero: true }), what: 'tx:warm', hint: warmHint(unit), scene: true };
     }
     if (zh === 'Academic Objectives' || /^ao_/i.test(img)) {
       var ao = (sc.body && sc.body.length) ? sc.body : ['Common kinds of weather', 'Unusual kinds of weather', 'How weather affects the places we live'];
-      return { html: textScene(ao, { ills: ['sun', 'cloud_rain', 'storm', 'snowflake'] }), what: 'tx:ao', hint: '', scene: true };
+      return { html: textScene(ao, { ills: ['sun', 'cloud_rain', 'storm', 'snowflake'], hero: true }), what: 'tx:ao', hint: '', scene: true };
     }
     if (zh === 'New Words' || zh === 'Word Bank' || /^newwords_/i.test(img)) {
       return { html: textScene(null, { chips: wordsChips(unit) }), what: 'tx:words', hint: 'Look, say, and remember.', scene: true };
     }
     if (zh === 'Story Recap') {
       var rcIll = unit === 'unit3' ? ['cloud_rain', 'snowflake', 'storm'] : (unit === 'unit4' ? ['fish', 'tornado'] : ['cow', 'horse', 'rabbit']);
-      return { html: textScene(sc.body && sc.body.length ? sc.body : ['Remember the story'], { ills: rcIll }), what: 'tx:recap', hint: '', scene: true };
+      return { html: textScene(sc.body && sc.body.length ? sc.body : ['Remember the story'], { ills: rcIll, hero: true }), what: 'tx:recap', hint: '', scene: true };
     }
     if (zh === 'Weather & Animals' || zh === 'Cloud Spotting' || zh === 'Europe Weather' || zh === 'News Report' || (/^project_/i.test(img) && sc.type === 'normal')) {
       var pIll = unit === 'unit2' ? ['cloud', 'storm', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_rain', 'cloud_snow', 'sun'] : (unit === 'unit4' ? ['fish', 'tornado', 'speaking'] : ['cow', 'horse', 'rabbit']));
       var pBody = (sc.body && sc.body.length) ? sc.body : ['Project time!'];
-      return { html: textScene(pBody, { ills: pIll }), what: 'tx:project', hint: 'Get ready to try it.', scene: true };
+      return { html: textScene(pBody, { ills: pIll, hero: true }), what: 'tx:project', hint: 'Get ready to try it.', scene: true };
     }
     if (/^project_/i.test(img)) {
       var pIllB = unit === 'unit2' ? ['cloud', 'speaking'] : (unit === 'unit3' ? ['cloud_rain', 'speaking'] : (unit === 'unit4' ? ['fish', 'speaking'] : ['cow', 'rabbit', 'speaking']));
-      return { html: textScene([], { ills: pIllB }), what: 'tx:projectbg', scene: true };
+      return { html: textScene([], { ills: pIllB, hero: true }), what: 'tx:projectbg', scene: true };
     }
     if (zh === 'Retell Skill') {
-      return { html: textScene(sc.body && sc.body.length ? sc.body : ['First → Next → Then → Last'], { ills: ['speaking', 'thinking', 'child'] }), what: 'tx:retellskill', hint: '', scene: true };
+      return { html: textScene(sc.body && sc.body.length ? sc.body : ['First → Next → Then → Last'], { ills: ['speaking', 'thinking', 'child'], hero: true }), what: 'tx:retellskill', hint: '', scene: true };
     }
     // Lesson / unit title openers (and SR unit review cards that used title crops)
     if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img)) {
@@ -272,14 +272,14 @@
         var tIll = unit === 'unit2' ? ['cloud', 'cloud_rain'] : (unit === 'unit3' ? ['cloud_snow', 'snowflake'] : (unit === 'unit4' ? ['fish', 'tornado'] : (unit === 'scienceReview' ? ['sun_cloud', 'storm'] : ['sun', 'cow', 'rabbit'])));
         // SR unit cards keep their body as the fact summary
         var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
-        return { html: textScene(tBody, { ills: tIll }), what: 'tx:title', hint: '', scene: true };
+        return { html: textScene(tBody, { ills: tIll, hero: true }), what: 'tx:title', hint: '', scene: true };
       }
       // pause screens that used a title crop as decoration → soft Noto backdrop, keep Q in panel
       var pIll2 = unit === 'unit2' ? ['cloud', 'question'] : (unit === 'unit3' ? ['snowflake', 'question'] : (unit === 'unit4' ? ['fish', 'question'] : ['sun_cloud', 'question']));
-      return { html: textScene([], { ills: pIll2 }), what: 'tx:titlebg', hint: undefined, scene: true };
+      return { html: textScene([], { ills: pIll2, hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
     }
     if (/^opener_/i.test(img) && sc.type !== 'normal') {
-      return { html: textScene([], { ills: ['sun', 'cloud_rain', 'question'] }), what: 'tx:opener', scene: true };
+      return { html: textScene([], { ills: ['sun', 'cloud_rain', 'question'], hero: true }), what: 'tx:opener', scene: true };
     }
     if (/^vocabreview_/i.test(img)) {
       return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'] }), what: 'tx:vocab', scene: true };
@@ -404,6 +404,7 @@
     var ills = opts.ills || [];
     var photo = opts.photo || null;
     var chips = opts.chips || null; // [{w,ill}] for New Words
+    var hero = !!opts.hero; // image-led: big centered glyphs, text secondary below
     var body;
     if (chips && chips.length) {
       body = '<div class="tx-chips">' + chips.map(function (c, i) {
@@ -420,8 +421,13 @@
       side = '<img class="tx-photo" src="' + imgSrc(photo) + '" alt="">';
     } else if (ills.length) {
       side = '<div class="tx-ills" aria-hidden="true">' + ills.map(function (n, i) {
-        return ill(n, 'ill-tx', i);
+        return ill(n, hero ? 'ill-tx ill-hero' : 'ill-tx', i);
       }).join('') + '</div>';
+    }
+    // Hero / title: stack art above text, centered full-bleed. Photo screens keep left|right.
+    if (hero && !photo && !chips) {
+      return '<div class="dg sx tx-stage is-hero"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+        '<div class="tx-hero">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
     }
     return '<div class="dg sx tx-stage"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
       '<div class="tx-row">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
@@ -894,6 +900,15 @@
     '#view .screen.is-end .dg-card .ill-map{--s:clamp(28px,min(10cqh,6cqw),64px);}',
     '@container (max-aspect-ratio:1/1){.dg-card .ill-map{--s:clamp(32px,min(10cqh,14cqw),72px);}.dg-arrow-mid{margin-bottom:0;}}',
     '.tx-stage{justify-content:center;padding:clamp(4px,1cqh,10px) clamp(2px,.6cqw,8px);width:100%;}',
+    '.tx-stage.is-hero{justify-content:center;align-items:center;}',
+    '.tx-hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3.2cqh,36px);width:100%;height:100%;max-height:100%;padding:clamp(4px,1cqh,12px) clamp(8px,2cqw,24px);box-sizing:border-box;}',
+    '.tx-hero .tx-side{flex:0 0 auto;width:100%;display:flex;justify-content:center;}',
+    '.tx-hero .tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(12px,3cqmin,36px);max-width:min(96cqw,1100px);}',
+    '.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(96px,min(28cqh,22cqw),220px);}',
+    '.tx-hero .tx-lines{flex:0 0 auto;width:min(92cqw,820px);text-align:center;align-items:center;gap:clamp(4px,1cqh,10px);}',
+    '.tx-hero .tx-line{font-size:clamp(18px,min(3cqw,4.6cqh),34px);text-align:center;}',
+    '@container (max-aspect-ratio:5/4){.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(72px,min(22cqh,28cqw),160px);}.tx-hero{gap:clamp(10px,2.4cqh,24px);}}',
+
     '.tx-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4cqw,32px);width:100%;max-width:none;max-height:100%;padding:0 clamp(4px,1cqw,12px);}',
     '.tx-lines{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(6px,1.4cqh,14px);text-align:left;}',
     '.tx-line{font-weight:800;font-size:clamp(18px,min(3.2cqw,5.6cqh),36px);line-height:1.35;color:#1F2A44;}',
