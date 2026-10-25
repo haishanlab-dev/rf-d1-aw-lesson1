@@ -1234,6 +1234,34 @@
     '#view .content > .imgbox .tx-stage.is-photo-hero .tx-hero > .tx-side{flex:1 1 0;min-height:0;height:auto;align-items:center;}',
     '#view .content > .imgbox .tx-stage.is-photo-hero img.tx-photo-hero{width:auto;max-width:100%;height:100%;max-height:100%;aspect-ratio:3/2;object-fit:cover;}',
     '#view .content > .imgbox .tx-stage.is-photo-hero .tx-lines{flex:0 0 auto;}',
+    /* dg36 (t244): every tap-choice screen — question left-aligned, answers stacked in ONE column, each left-aligned.
+       Hero/stack screens keep the centred art; the question + answers sit in a centred block whose content reads left. */
+    '#view .screen.ix-on .content > .panel:not(.ix-has-rows):has(.ix-choices){text-align:left!important;}',
+    '#view .screen.stack.ix-on .content > .panel:not(.ix-has-rows):has(.ix-choices){flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-start!important;align-self:center!important;width:min(100%,780px)!important;max-width:100%!important;row-gap:clamp(8px,1.4vh,14px)!important;box-sizing:border-box;}',
+    '#view .screen.ix-on .panel:not(.ix-has-rows) .ix-qrow{align-self:stretch!important;justify-content:space-between!important;width:auto!important;}',
+    '#view .screen.ix-on .panel:not(.ix-has-rows) .ix-qrow .q,#view .screen.ix-on .panel:not(.ix-has-rows) .ix-qrow .q .line{text-align:left!important;align-self:auto!important;}',
+    '#view .screen.ix-on .panel:not(.ix-has-rows) .ix-qrow .cd{margin:0!important;}',
+    '#view .screen.ix-on .ix-choices:not(.is-rows){align-self:stretch!important;width:auto!important;}',
+    '#view .screen.ix-on .ix-choices:not(.is-rows) .ix-row{justify-content:flex-start!important;}',
+    '#view .screen.ix-on .ix-choices:not(.is-rows) .ix-opts{flex:1 1 100%!important;flex-direction:column!important;flex-wrap:nowrap!important;align-items:stretch!important;justify-content:flex-start!important;gap:clamp(8px,1.4vh,14px)!important;}',
+    '#view .screen.ix-on .ix-choices:not(.is-rows) .ix-opt{flex:0 0 auto!important;width:100%!important;min-width:0!important;min-height:clamp(50px,7.4vh,64px);text-align:left!important;padding:6px clamp(16px,1.8vw,24px)!important;line-height:1.2;}',
+    '#view .screen.ix-on .panel .ix-say{text-align:left!important;}',
+    /* rows (fill-the-blank charts): labels read left too */
+    '#view .screen.ix-on .ix-choices.is-rows .ix-lab{text-align:left!important;}',
+    '#view .screen.ix-on .panel.ix-has-rows .q,#view .screen.ix-on .panel.ix-has-rows .q .line{text-align:left!important;}',
+    '#view .screen.stack.ix-on .content > .panel.ix-has-rows{align-items:stretch!important;text-align:left!important;}',
+    '#view .screen.ix-on .panel.ix-has-rows .q .line:not(:first-child){display:none!important;}',
+    '#view .screen.stack.ix-on .panel.ix-has-rows .ix-qrow{align-self:stretch!important;justify-content:space-between!important;}',
+    /* dg36 (t246): table-top leg cards — equal-size rounded rectangles, icon + words fit inside */
+    '.sx-legs{align-items:flex-start;}',
+    /* table-split on a short-text (stack) screen: the art box must stretch, or its container height is 0 and the table collapses */
+    '#view .screen.dg-table-split.scene.stack .content > .imgbox{align-self:stretch!important;max-height:none!important;}',
+    '.sx-table .sx-legs{gap:calc(var(--u) * 1.2);}',
+    '.sx-table .sx-leg{flex:1 1 0;width:auto;}',
+    '.sx-leg-l{box-sizing:border-box;width:100%;max-width:100%;height:calc(var(--u) * 12.5);min-height:80px;border-radius:clamp(12px,calc(var(--u) * 1.4),18px)!important;padding:calc(var(--u) * .7) calc(var(--u) * .9)!important;justify-content:center;text-align:center;overflow:hidden;}',
+    '.sx-leg-l .sx-leg-tx{max-width:100%;overflow-wrap:normal;word-break:normal;hyphens:none;font-size:clamp(11px,calc(var(--u) * 2.15),26px);line-height:1.18;}',
+    '.sx-leg-l .ill-leg{--s:clamp(24px,calc(var(--u)*4.4),46px);}',
+    '@container (max-aspect-ratio:1/1){.sx-leg-l{height:calc(var(--u) * 13);min-height:70px;padding:.3em .3em!important;}.sx-leg-l .sx-leg-tx{font-size:clamp(11px,calc(var(--u) * 2.3),20px);}}',
   ].join('\n');
   function injectCss() {
     if (document.getElementById('rf-dg-css')) return;
