@@ -71,8 +71,11 @@
     } catch (e) { return 'Miles'; }
   }
 
+  var done = false;
   function mount() {
-    if (document.getElementById('milesSplash')) return;
+    /* Slow first load: the 2.5 s fallback may already have revealed the page before
+       DOMContentLoaded. Mounting the splash after that left it covering the lesson. */
+    if (done || document.getElementById('milesSplash')) return;
     ensureIconFont();
     var el = document.createElement('div');
     el.id = 'milesSplash';
@@ -97,7 +100,6 @@
   if (document.body) mount();
   else document.addEventListener('DOMContentLoaded', mount);
 
-  var done = false;
   function enter() {
     if (done) return;
     done = true;

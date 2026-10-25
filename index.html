@@ -152,6 +152,12 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
 }
 </style>
+<!-- perf: start icon + text fonts with the HTML (not after calm-shell.css @import) -->
+<link rel="preload" href="assets/fonts/MaterialSymbolsRounded-sub.woff2?v=ms1" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Nunito-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Nunito-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Nunito-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/fonts/Nunito-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="assets/calm-shell.css?v=fit12">
 <link rel="stylesheet" href="assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
