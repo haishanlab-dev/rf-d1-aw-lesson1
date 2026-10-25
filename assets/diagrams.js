@@ -197,6 +197,111 @@
       col('dg-bin-a', b.a, b.aItems, 0, bi && bi.a) + col('dg-bin-b', b.b, b.bItems, 2, bi && bi.b) + '</div></div>';
   }
 
+
+  /* ---------- Reading Skills pages (textbook scans → HTML) ----------
+     Charts: book word bank + chart (Main idea/Details · KWL · First→Last), blanks numbered 1–3
+     to match the tap rows in the panel; reveal fills the blanks. Quick Check: picture tiles in
+     the same order as the tap buttons (the panel already has the question + words). */
+  var CHARTS = {
+    'chart_p16.jpg': { kind: 'mi', bank: ['Cloudy', 'fluffy', 'Storm', 'all'], rows: [
+      { tag: 'Main Idea', main: true, p: ['Not ', { n: 1, a: 'all' }, ' clouds make rain.'] },
+      { tag: 'Detail 1', p: ['Some clouds are high. They are thin and long. They don\u2019t make rain.'] },
+      { tag: 'Detail 2', p: ['Other clouds are low. They are white and ', { n: 2, a: 'fluffy' }, '. They don\u2019t make rain.'] },
+      { tag: 'Detail 3', p: [{ n: 3, a: 'Storm' }, ' clouds are dark and gray. These clouds make rain!'] }] },
+    'chart_p20.jpg': { kind: 'kwl', bank: ['Drop', 'Snow', 'happens', 'dangerous'], rows: [
+      { tag: 'What I Know', p: ['Rain ', { n: 1, a: 'happens' }, ' when it\u2019s warm.'] },
+      { tag: 'What I Want to Know', p: ['When does other weather happen?'] },
+      { tag: 'What I Learned', p: [{ n: 2, a: 'Snow' }, ' happens when it\u2019s cold.', '\n', 'Hail happens when it\u2019s cold or warm. It can be ', { n: 3, a: 'dangerous' }, '.'] }] },
+    'chart_p24.jpg': { kind: 'seq', bank: ['fish', 'surprised', 'sky', 'tornado'], rows: [
+      { tag: 'First', p: ['A ', { n: 1, a: 'tornado' }, ' picked up fish.'] },
+      { tag: 'Next', p: ['It moved the fish into the ', { n: 2, a: 'sky' }, '.'] },
+      { tag: 'Then', p: ['The tornado carried the fish far.'] },
+      { tag: 'Last', p: ['People in Sri Lanka were ', { n: 3, a: 'surprised' }, ' when the fish fell on their homes.'] }] }
+  };
+  var QCHECK = {
+    // tiles follow the tap-button order in interact-data.js (answer read from there when present)
+    'readskills_p15.jpg': { skill: 'Main Idea & Details', answer: 1, tiles: [{ e: ['cloud', 'cloud'] }, { e: ['storm', 'cloud_rain'] }] },
+    'readskills_p19.jpg': { skill: 'Activating Prior Knowledge', answer: 1, tiles: [{ e: ['cloud_rain'] }, { drops: true }] },
+    'readskills_p23.jpg': { skill: 'Retelling', answer: 0, tiles: [{ e: ['fish', 'fish'], sky: true }, { e: ['cloud_snow', 'snowflake'] }] }
+  };
+  function chartDg(c, mode) {
+    var rev = mode === 'reveal', bi = 0, used = {};
+    c.rows.forEach(function (r) { r.p.forEach(function (x) { if (x && x.a) used[x.a] = 1; }); });
+    function para(parts) {
+      var out = '', glue = '';
+      parts.forEach(function (x) {
+        if (x === '\n') { out += '<br>'; return; }
+        if (typeof x === 'string') {
+          // keep a blank and the punctuation right after it on one line
+          var m = glue ? /^([.,!?\u2019]+)([\s\S]*)$/.exec(x) : null;
+          if (glue) { out += '<span class="ch-nw">' + glue + (m ? esc(m[1]) : '') + '</span>'; glue = ''; x = m ? m[2] : x; }
+          out += esc(x); return;
+        }
+        if (glue) { out += glue; }
+        var k = bi++;
+        glue = '<span class="ch-blank' + (rev ? ' is-filled' : '') + '" data-n="' + x.n + '" style="--k:' + k + '">' +
+          '<span class="ch-n">' + x.n + '</span><span class="ch-a">' + (rev ? esc(x.a) : '') + '</span></span>';
+      });
+      return out + glue;
+    }
+    var h = '<div class="dg ch ch-' + c.kind + ' m-' + (rev ? 'reveal' : 'ask') + '">';
+    h += '<div class="ch-bank">' + c.bank.map(function (w, k) {
+      return '<span class="ch-w' + (rev ? (used[w] ? ' is-used' : ' is-extra') : '') + '" style="--k:' + k + '">' + esc(w) + '</span>';
+    }).join('') + '</div>';
+    h += '<div class="ch-body">';
+    c.rows.forEach(function (r, i) {
+      h += (c.kind === 'seq' && i ? '<div class="ch-arrow" aria-hidden="true" style="--i:' + i + '"></div>' : '') +
+        '<div class="ch-row' + (r.main ? ' is-main' : '') + '" style="--i:' + i + '"><div class="ch-tag">' + esc(r.tag) + '</div>' +
+        '<div class="ch-t">' + para(r.p) + '</div></div>';
+    });
+    h += '</div><div class="ch-hint">One word is extra.</div></div>';
+    return h;
+  }
+  function qcDg(q, mode, answer) {
+    var rev = mode === 'reveal';
+    var h = '<div class="dg qc m-' + (rev ? 'reveal' : 'ask') + '"><div class="qc-skill">' + esc(q.skill) + '</div><div class="qc-row">';
+    q.tiles.forEach(function (t, k) {
+      var art = '';
+      if (t.drops) art = '<span class="qc-drops" aria-hidden="true"><i></i><i></i><i></i></span>';
+      else art = t.e.map(function (n, j) { return '<span class="qc-e' + (t.sky ? ' qc-fall qc-fall' + j : '') + '">' + ill(n, 'ill-qc' + (j ? ' ill-qc2' : ''), k * 2 + j) + '</span>'; }).join('');
+      h += '<div class="qc-tile qc-t' + k + (rev ? (k === answer ? ' is-right' : ' is-off') : '') + '" data-k="' + k + '" style="--k:' + k + '">' +
+        (t.sky ? '<span class="qc-cloud">' + ill('cloud', 'ill-qc ill-qcc', 9) + '</span>' : '') +
+        '<div class="qc-art">' + art + '</div>' +
+        '<span class="qc-tick" aria-hidden="true">\u2713</span></div>';
+    });
+    return h + '</div></div>';
+  }
+  function ixAnswer(unit, sc, dflt) {
+    try { var c = window.RF_IX.units[unit][sc.i]; if (c && c.kind === 'choice') return c.answer; } catch (e) {}
+    return dflt;
+  }
+  // Mirror the tap rows / buttons in the panel onto the drawing (fill a blank / tick a tile).
+  function linkIx(view, box, r) {
+    var pn = view.querySelector('#panel'); if (!pn || !window.MutationObserver) return;
+    var mo = new MutationObserver(function () {
+      if (!box.isConnected) { mo.disconnect(); return; }
+      if (r.chart) {
+        pn.querySelectorAll('.ix-row.is-done').forEach(function (row) {
+          var n = (+row.getAttribute('data-row')) + 1;
+          var b = box.querySelector('.ch-blank[data-n="' + n + '"]');
+          if (b && !b.classList.contains('is-filled')) {
+            var a = null; r.chart.rows.forEach(function (rr) { rr.p.forEach(function (x) { if (x && x.n === n) a = x.a; }); });
+            b.querySelector('.ch-a').textContent = a || ''; b.classList.add('is-filled', 'is-live');
+            box.querySelectorAll('.ch-w').forEach(function (w) { if (w.textContent === a) w.classList.add('is-used'); });
+          }
+        });
+      } else if (r.qc) {
+        var ok = pn.querySelector('.ix-opt.ix-ok,.ix-opt.ix-answer');
+        if (ok) {
+          var k = +ok.getAttribute('data-k');
+          box.querySelectorAll('.qc-tile').forEach(function (t) { var me = +t.getAttribute('data-k') === k; t.classList.toggle('is-right', me); t.classList.toggle('is-off', !me); });
+          box.querySelector('.qc').classList.add('is-live');
+        }
+      }
+    });
+    mo.observe(pn, { subtree: true, attributes: true, attributeFilter: ['class'], childList: true });
+  }
+
   /* ---------- per-screen choice ---------- */
   function isEnd(sc) {
     if (!sc || !sc.map) return false;
@@ -266,14 +371,14 @@
       return { html: textScene(sc.body && sc.body.length ? sc.body : ['First → Next → Then → Last'], { ills: ['speaking', 'thinking', 'child'], hero: true }), what: 'tx:retellskill', hint: '', scene: true };
     }
     // Lesson / unit title openers (and SR unit review cards that used title crops)
-    if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img)) {
+    if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img) || (unit === 'scienceReview' && /^Unit\s*\d$/i.test(zh) && sc.type === 'normal')) {
       if (sc.type === 'normal') {
         var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
         // Lesson openers: real hero photo (image-led). SR unit review cards keep short body under photo.
-        return { html: textScene(tBody, { photo: titlePhoto(unit), hero: true }), what: 'tx:title', hint: '', scene: true };
+        return { html: textScene(tBody, { photo: titlePhoto(unit, sc), hero: true }), what: 'tx:title', hint: '', scene: true };
       }
       // pause screens that used a title crop as decoration → soft Noto backdrop, keep Q in panel
-      return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
+      return { html: textScene([], { photo: titlePhoto(unit, sc), hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
     }
     if (/^opener_/i.test(img) && sc.type !== 'normal') {
       return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:opener', scene: true };
@@ -285,6 +390,14 @@
       return { html: textScene([], { ills: ['thinking', 'check'] }), what: 'tx:rc', scene: true };
     }
 
+    if (CHARTS[img]) {
+      var chm = state === 'reveal' ? 'reveal' : 'ask';
+      return { html: chartDg(CHARTS[img], chm), what: 'chart:' + chm, chart: CHARTS[img], wide: 'dg-chart', noStack: true };
+    }
+    if (QCHECK[img]) {
+      var qm = state === 'reveal' ? 'reveal' : 'ask';
+      return { html: qcDg(QCHECK[img], qm, ixAnswer(unit, sc, QCHECK[img].answer)), what: 'qc:' + qm, qc: QCHECK[img], wide: 'dg-qcheck', noStack: true };
+    }
     if (img === 'table_blank.png' || img === 'table_filled.png') {
       // Short definition tips → sticky prop; table drawing stays for Table Top & Legs / Find the Legs
       if (sc.type === 'normal' && /^Main Idea/.test(zh) && !/comprehension|chart|reading/i.test(zh+en)) {
@@ -450,7 +563,14 @@
     if (unit === 'unit4') return 'warm_u4.jpg';
     return 'warm_l1.jpg';
   }
-  function titlePhoto(unit) {
+  function titlePhoto(unit, sc) {
+    if (unit === 'scienceReview' && sc) {
+      // SR unit review cards: each card shows its own unit's title photo
+      var m = /\bUnit\s*(\d)\b/i.exec(sc.zh || '') || /^unit(\d)_title_/i.exec(sc.img || '');
+      var n = m ? +m[1] : ({ 'title_p14.jpg': 2, 'title_p18.jpg': 3, 'title_p22.jpg': 4 })[sc.img] || 0;
+      if (n === 1) return 'title_l1.jpg';
+      if (n >= 2 && n <= 4) return 'title_u' + n + '.jpg';
+    }
     if (unit === 'unit2') return 'title_u2.jpg';
     if (unit === 'unit3') return 'title_u3.jpg';
     if (unit === 'unit4') return 'title_u4.jpg';
@@ -515,7 +635,22 @@
           b.addEventListener('click', function (e) { e.stopPropagation(); try { if (window.jumpToPart) jumpToPart(+b.getAttribute('data-part')); } catch (_e) {} });
         });
         try { mapSessHighlight(box, sc, r.what, unit); } catch (_h) {}
-      } else if (scr && !sc.map && (isShort(sc) || r.hint !== undefined)) scr.classList.add('stack');
+      } else if (scr && !sc.map && !r.noStack && (isShort(sc) || r.hint !== undefined)) scr.classList.add('stack');
+      if (r.wide && scr) scr.classList.add(r.wide);
+      if (r.chart || r.qc) {
+        if (r.chart && state !== 'reveal') {
+          // the sentences live in the chart; the panel keeps the book instruction above the numbered tap rows
+          var qa = view.querySelector('#panel .q'); if (qa) qa.innerHTML = '<div class="line">Complete the chart.</div>';
+        }
+        if (r.chart && state === 'reveal') {
+          // chart now shows every sentence: keep just the instruction + numbered answers
+          var pc = view.querySelector('#panel');
+          var qe2 = pc && pc.querySelector('.q.qecho'); if (qe2) qe2.innerHTML = '<div class="line">Complete the chart.</div>';
+          var rv2 = pc && pc.querySelector('.rev');
+          if (rv2) rv2.innerHTML = (sc.reveal || []).map(function (a, k) { return '<div class="line ch-ansl"><span class="ch-n">' + (k + 1) + '</span>' + esc(a) + '</div>'; }).join('');
+        }
+        if (state !== 'reveal') try { linkIx(view, box, r); } catch (_l) {}
+      }
       if (r.scene && scr) scr.classList.add('stack', 'scene');
       if (r.sceneQ) {
         var pq = view.querySelector('#panel') || view.querySelector('.panel');
@@ -959,6 +1094,96 @@
     '.dg-map.lit-s1 .dg-card[data-part="2"],.dg-map.lit-s2 .dg-card[data-part="4"]{animation-delay:.15s;}',
     '@keyframes dgWiggle{0%,100%{transform:rotate(0) scale(1.03)}25%{transform:rotate(-2.5deg) scale(1.05)}75%{transform:rotate(2.5deg) scale(1.05)}}',
     '@media (prefers-reduced-motion:reduce){.dg-map.lit-s1 .dg-card[data-sess="1"],.dg-map.lit-s2 .dg-card[data-sess="2"]{animation:none;transform:none;box-shadow:0 0 0 .8cqmin #FFF4C2,0 0 0 2.2cqmin #E8C04A;}}',
+    /* ---------- Reading Skills charts + Quick Check (book scans → HTML) ---------- */
+    '.ch{gap:2.4cqh;justify-content:center;padding:.6cqh .6cqw;box-sizing:border-box;}',
+    '.ch-bank{display:flex;flex-wrap:wrap;justify-content:center;gap:1cqh 1.8cqw;flex:0 0 auto;}',
+    '.ch-w{font-weight:800;font-size:clamp(18px,min(3.8cqw,6.2cqh),38px);line-height:1.2;color:#2F5F8C;background:rgba(61,122,181,.13);border-radius:999px;padding:.24em .95em;transition:background .4s ease,color .4s ease,opacity .4s ease;}',
+    '.ch-w.is-used{background:#4F9A6B;color:#fff;}',
+    '.ch-w.is-extra{opacity:.45;text-decoration:line-through;text-decoration-thickness:2px;}',
+    '.ch-body{display:flex;flex-direction:column;gap:1.4cqh;width:100%;flex:0 1 auto;min-height:0;}',
+    '.ch-row{display:flex;align-items:stretch;border-radius:clamp(10px,2.2cqmin,20px);overflow:hidden;background:rgba(74,168,232,.12);}',
+    '.ch-tag{flex:0 0 22%;display:flex;align-items:center;justify-content:center;text-align:center;font-weight:900;font-size:clamp(16px,min(3.1cqw,5.4cqh),34px);line-height:1.15;padding:.4em .45em;background:#CFE6F7;color:#2F7FC0;}',
+    '.ch-row.is-main .ch-tag,.ch-seq .ch-tag,.ch-kwl .ch-tag{background:#4AA8E8;color:#fff;}',
+    '.ch-t{flex:1 1 0;min-width:0;padding:.45em .75em;font-weight:700;font-size:clamp(17px,min(3.5cqw,6.2cqh),38px);line-height:1.32;color:#1F2A44;text-align:left;}',
+    '.ch-blank{display:inline-flex;align-items:center;gap:.25em;min-width:4.4em;border-bottom:.14em solid #2F7FC0;padding:0 .15em .05em;margin:0 .08em;line-height:1.15;vertical-align:baseline;}',
+    '.ch-n{display:inline-grid;place-items:center;flex:0 0 auto;width:1.4em;height:1.4em;border-radius:50%;background:#2F7FC0;color:#fff;font-weight:900;font-size:.72em;line-height:1;}',
+    '.ch-a{font-weight:900;color:#2E7D4F;}',
+    '.ch-blank.is-filled{border-bottom-color:#4F9A6B;}',
+    '.ch-blank.is-filled .ch-n{background:#4F9A6B;}',
+    '.ch-hint{flex:0 0 auto;font-weight:800;color:#5B6675;font-size:clamp(15px,min(2.6cqw,4.4cqh),28px);}',
+    '.ch-kwl .ch-body{flex-direction:row;align-items:stretch;gap:1.4cqw;}',
+    '.ch-kwl .ch-row{flex-direction:column;flex:1 1 0;min-width:0;}',
+    '.ch-kwl .ch-row:nth-child(3){flex:1.45 1 0;}',
+    '.ch-kwl .ch-tag{flex:0 0 auto;min-height:3.2em;}',
+    '.ch-kwl .ch-t{display:flex;align-items:center;}',
+    '.ch-kwl .ch-t{font-size:clamp(16px,min(3.2cqw,5.8cqh),34px);}',
+    '.ch-kwl .ch-blank{min-width:3.4em;}',
+    '.ch-nw{white-space:nowrap;}',
+    '.ch-kwl .ch-t{display:block;align-self:stretch;padding-top:1em;}',
+    '.ch-seq .ch-body{gap:0;}',
+    '.ch-arrow{position:relative;width:22%;height:clamp(14px,3.4cqh,30px);flex:0 0 auto;}',
+    '.ch-arrow::before{content:"";position:absolute;left:50%;top:0;bottom:30%;width:clamp(5px,1cqw,9px);transform:translateX(-50%);background:#2F7FC0;}',
+    '.ch-arrow::after{content:"";position:absolute;left:50%;bottom:0;transform:translateX(-50%);border-left:clamp(8px,1.8cqw,15px) solid transparent;border-right:clamp(8px,1.8cqw,15px) solid transparent;border-top:clamp(7px,1.6cqh,13px) solid #2F7FC0;}',
+    '@keyframes chIn{0%{opacity:0;transform:translateY(10px)}100%{opacity:1;transform:none}}',
+    '@keyframes chLit{0%,100%{box-shadow:0 0 0 0 rgba(232,192,74,0)}45%{box-shadow:0 0 0 .5cqmin #FFF4C2,0 0 0 1.1cqmin rgba(232,192,74,.8)}}',
+    '@keyframes chPulse{0%,100%{transform:none}50%{transform:scale(1.22)}}',
+    '@media (prefers-reduced-motion:no-preference){',
+    ' .ch .ch-w{animation:chIn .6s ease-out calc(.3s + var(--k) * .22s) both;}',
+    ' .ch.m-ask .ch-row,.ch.m-ask .ch-arrow{animation:chIn .7s ease-out calc(1.3s + var(--i) * .75s) both,chLit 1.4s ease-in-out calc(1.6s + var(--i) * .75s) 1;}',
+    ' .ch.m-ask .ch-arrow{animation:chIn .7s ease-out calc(1.1s + var(--i) * .75s) both;}',
+    ' .ch.m-ask .ch-blank .ch-n{animation:chPulse 1.2s ease-in-out calc(4.6s + var(--k) * .6s) 2;}',
+    ' .ch.m-ask .ch-hint{animation:chIn .6s ease-out 4.4s both;}',
+    ' .ch.m-reveal .ch-row,.ch.m-reveal .ch-arrow{animation:chIn .5s ease-out calc(.1s + var(--i) * .15s) both;}',
+    ' .ch.m-reveal .ch-blank .ch-a,.ch-blank.is-live .ch-a{display:inline-block;animation:dgPop .6s ease-out calc(.8s + var(--k) * .9s) both;}',
+    ' .ch-blank.is-live .ch-a{animation-delay:0s;}',
+    '}',
+    /* chart screens: drawing gets the width; panel = instruction + numbered tap rows (no repeated sentences) */
+    '#view .screen.dg-chart .content > .panel{min-width:0;max-width:40%;}',
+    '#view .screen.dg-chart .content > .panel.ix-has-rows{min-width:0;max-width:40%;}',
+    '#view .screen.dg-chart .panel .q .line:not(:first-child){display:none;}',
+    '#view .screen.dg-chart .ix-choices{counter-reset:chr;}',
+    '#view .screen.dg-chart .ix-choices.is-rows .ix-row{counter-increment:chr;flex-wrap:nowrap;}',
+    '#view .screen.dg-chart .ix-choices.is-rows .ix-lab{flex:0 0 auto;font-size:0;line-height:0;}',
+    '#view .screen.dg-chart .ix-choices.is-rows .ix-lab::before{content:counter(chr);display:inline-grid;place-items:center;width:clamp(30px,2.6vw,40px);height:clamp(30px,2.6vw,40px);border-radius:50%;background:#2F7FC0;color:#fff;font-size:clamp(17px,1.8vw,24px);font-weight:900;line-height:1;}',
+    '#view .screen.dg-chart .ix-choices.is-rows .ix-row.is-done .ix-lab::before{background:#4F9A6B;}',
+    '#view .screen.dg-chart .panel .rev{display:flex;flex-wrap:wrap;gap:.3em 1em;}',
+    '#view .screen.dg-chart .panel .rev .line.ch-ansl{display:inline-flex;align-items:center;gap:.35em;margin:0;}',
+    '#view .screen.dg-chart .panel .rev .ch-n{background:#4F9A6B;font-size:.7em;}',
+    '@container (max-aspect-ratio:1/1){.ch-kwl .ch-body{flex-direction:column;}.ch-kwl .ch-tag{min-height:0;}.ch-kwl .ch-t{padding-top:.45em;}}',
+    /* Quick Check: picture tiles in tap-button order */
+    '.qc{gap:3.2cqh;}',
+    '.qc-skill{flex:0 0 auto;font-weight:900;font-size:clamp(18px,min(3.4cqw,6cqh),36px);color:#D9821A;}',
+    '.qc-row{display:flex;justify-content:center;align-items:center;gap:5cqw;width:100%;flex:0 1 auto;min-height:0;}',
+    '.qc-tile{position:relative;flex:0 1 40cqw;width:40cqw;max-width:66cqh;aspect-ratio:1/1;border-radius:clamp(16px,4cqmin,36px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1cqh;',
+    ' background:rgba(61,122,181,.10);border:clamp(3px,.7cqmin,6px) solid rgba(61,122,181,.38);box-sizing:border-box;transition:opacity .45s ease,background .45s ease,border-color .45s ease;}',
+    '.qc-t1{background:rgba(201,166,58,.12);border-color:rgba(201,166,58,.5);}',
+    '.qc-art{display:flex;align-items:flex-end;justify-content:center;gap:1.2cqw;}',
+    '.ill-qc{--s:clamp(72px,min(34cqh,19cqw),240px);}',
+    '.ill-qc.ill-qc2{--s:clamp(56px,min(24cqh,14cqw),170px);}',
+    '.ill-qc.ill-qcc{--s:clamp(56px,min(20cqh,13cqw),160px);}',
+    '.qc-e{display:inline-grid;place-items:center;}',
+    '.qc-fall0{transform:rotate(-28deg);}',
+    '.qc-fall1{transform:rotate(22deg);margin-bottom:6cqh;}',
+    '.qc-drops{display:flex;align-items:flex-end;gap:clamp(10px,2.4cqw,28px);padding-bottom:2cqh;}',
+    '.qc-drops i{display:block;width:clamp(30px,min(10cqh,6.4cqw),70px);aspect-ratio:1/1;border-radius:0 50% 50% 50%;transform:rotate(45deg);background:linear-gradient(135deg,#BFE6FB,#4AA8E8 55%,#2F7FC0);}',
+    '.qc-drops i:nth-child(2){width:clamp(40px,min(15cqh,9cqw),100px);margin-bottom:3cqh;}',
+    '.qc-tick{position:absolute;top:-5%;right:-5%;width:clamp(38px,10cqmin,70px);height:clamp(38px,10cqmin,70px);border-radius:50%;background:#4F9A6B;color:#fff;display:grid;place-items:center;font-weight:900;font-size:clamp(20px,5cqmin,38px);opacity:0;transform:scale(.3);transition:opacity .3s ease,transform .3s ease;}',
+    '.qc-tile.is-right{background:rgba(79,154,107,.16);border-color:#4F9A6B;}',
+    '.qc-tile.is-right .qc-tick{opacity:1;transform:none;}',
+    '.qc-tile.is-off{opacity:.38;}',
+    '@keyframes qcLit{0%,100%{transform:none;box-shadow:0 0 0 0 rgba(232,192,74,0)}45%{transform:scale(1.04);box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.6cqmin rgba(232,192,74,.85)}}',
+    '@media (prefers-reduced-motion:no-preference){',
+    ' .qc .qc-skill{animation:chIn .6s ease-out .2s both;}',
+    ' .qc.m-ask .qc-tile{animation:chIn .7s ease-out calc(.4s + var(--k) * .5s) both,qcLit 1.4s ease-in-out calc(1.8s + var(--k) * 1.5s) 1;}',
+    ' .qc.m-reveal .qc-tile.is-right{animation:qcLit 1.4s ease-in-out .5s 1;}',
+    ' .qc.m-reveal .qc-tile.is-right .qc-tick,.qc.is-live .qc-tile.is-right .qc-tick{animation:dgPop .6s ease-out .4s both;}',
+    ' .qc.is-live .qc-tile.is-right .qc-tick{animation-delay:0s;}',
+    '}',
+    '@container (max-aspect-ratio:1/1){.qc-row{gap:3cqw;}.qc-tile{flex:0 1 46cqw;width:46cqw;}}',
+    /* title/opener hero photo: fit the stage with its caption (calm-shell's imgbox img 100%/100% made it overflow) */
+    '#view .content > .imgbox .tx-stage.is-photo-hero .tx-hero > .tx-side{flex:1 1 0;min-height:0;height:auto;align-items:center;}',
+    '#view .content > .imgbox .tx-stage.is-photo-hero img.tx-photo-hero{width:auto;max-width:100%;height:100%;max-height:100%;aspect-ratio:3/2;object-fit:cover;}',
+    '#view .content > .imgbox .tx-stage.is-photo-hero .tx-lines{flex:0 0 auto;}',
   ].join('\n');
   function injectCss() {
     if (document.getElementById('rf-dg-css')) return;
