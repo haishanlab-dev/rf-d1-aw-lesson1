@@ -155,10 +155,9 @@ body.fs .shell-tabs,
 }
 /* Pause FAB only while a lesson session is active */
 body.playing #pausebtn { display: grid !important; }
-/* When playing but not fullscreen, keep stage clear of tab overlap via padding */
-body.playing:not(.fs) .screen {
-  padding-bottom: calc(var(--pad) + var(--pause) * 0.55 + var(--tab-h) + env(safe-area-inset-bottom, 0px));
-}
+/* Not fullscreen: the tab bar is a flex sibling *below* #stage, so the stage
+   already ends above it — do NOT reserve --tab-h again inside .screen (that
+   double reservation left an empty band and squeezed/clipped the panel). */
 
 /* Screens */
 .screen {
@@ -717,3 +716,95 @@ body.playing:not(.fs) #pausebtn {
 .parent-note code {
   font-size: 12px; font-weight: 700; background: #fff; padding: 1px 6px; border-radius: 6px;
 }
+
+
+/* ——— Fit & no-clip (iPad Safari with toolbar + tabs visible) ———
+   .content centred its columns and hid overflow, so a panel taller than the
+   row was cut at BOTH top and bottom with no way to scroll. Now each column is
+   capped to the row; the panel scrolls; centring uses auto margins, which
+   collapse to 0 instead of pushing content above the top edge. */
+.content > .panel {
+  max-height: 100%;
+  justify-content: flex-start;
+  overflow-y: auto; overflow-x: hidden;
+  overscroll-behavior: contain;
+}
+.content > .panel > :first-child { margin-top: auto; }
+.content > .panel > :last-child { margin-bottom: auto; }
+.content > .panel:has(.retell-box) > :first-child,
+.content > .panel:has(.retell-box) > :last-child { margin-top: 0; margin-bottom: 0; }
+/* Visual first: the picture / diagram takes all space the text doesn't need.
+   Image card fills the row height (so the img has a definite box and
+   object-fit:contain scales it fully — never cropped); the text panel is a
+   readable column sized to its content (34–46% wide in landscape). */
+#view .content > .imgbox {
+  flex: 1 1 0; align-self: stretch;
+  min-width: 0; min-height: 0; max-height: none;
+}
+#view .content > .imgbox img {
+  width: 100%; height: 100%; max-width: 100%; max-height: 100%;
+  object-fit: contain;
+}
+#view .content > .panel {
+  flex: 0 1 auto; width: max-content;
+  min-width: 34%; max-width: 46%;
+}
+@media (max-width: 700px), (orientation: portrait) and (max-width: 920px) {
+  #view .content > .panel {
+    width: auto; min-width: 0; max-width: none;
+    flex: 0 1 auto; max-height: 62%;
+  }
+}
+.endrow { flex-shrink: 0; }
+.endrow .endbtn { margin-top: 0; }
+.panel .mapnav button { flex-shrink: 0; }
+
+/* Short landscape (Safari toolbar + tabs visible ≈ 560–760px tall) */
+@media (orientation: landscape) and (max-height: 760px) {
+  :root { --gap: clamp(8px, 1.6vh, 18px); --pad: clamp(10px, 2vh, 24px); }
+  .zh { font-size: clamp(28px, 6.4vh, 52px); }
+  .en { font-size: clamp(16px, 3.2vh, 26px); }
+  .line { font-size: clamp(20px, 4.4vh, 34px); }
+  .line.big { font-size: clamp(24px, 5.6vh, 44px); }
+  .panel { gap: clamp(6px, 1.2vh, 14px); }
+  .mapnav { gap: clamp(6px, 1vh, 10px); margin-top: 0; }
+  .mapnav button { font-size: clamp(18px, 3.6vh, 26px); padding: clamp(6px, 1.1vh, 12px) clamp(12px, 1.6vw, 20px); }
+  .mapnav button .n { width: clamp(26px, 5vh, 36px); height: clamp(26px, 5vh, 36px); font-size: clamp(15px, 2.8vh, 20px); }
+  .contbtn, .endbtn { height: clamp(44px, 7.4vh, 56px); font-size: clamp(17px, 3.2vh, 22px); }
+  .pagehint { font-size: clamp(15px, 2.8vh, 22px); }
+  .q, .rev { padding: clamp(10px, 1.6vh, 20px); }
+}
+@media (orientation: landscape) and (max-height: 760px) {
+  .panel .q .line[style*="font-size"] { font-size: clamp(18px, 3.6vh, 30px) !important; }
+}
+
+/* ——— Short-text screens (≤2 body lines): stacked, visual first ———
+   Text sits in one centred row under the title; the picture/diagram below
+   takes the rest of the stage. The card is inset on both sides by the pause
+   FAB's width so the FAB never covers the picture. */
+#view .screen.stack .content { flex-direction: column; align-items: center; }
+#view .screen.stack .content > .panel {
+  order: -1; flex: 0 0 auto;
+  width: 100%; min-width: 0; max-width: 100%; max-height: none;
+  flex-direction: row; flex-wrap: wrap; justify-content: center; align-items: baseline;
+  column-gap: clamp(16px, 3vw, 40px); row-gap: 2px;
+  text-align: center; overflow: visible;
+  padding: 0 calc(var(--pause) * 0.4);
+}
+#view .screen.stack .content > .panel > * { margin: 0; }
+#view .screen.stack .line { font-size: clamp(20px, min(2.6vw, 4.6vh), 36px); }
+#view .screen.stack .line.big { font-size: clamp(24px, min(3.4vw, 6vh), 46px); }
+#view .screen.stack .content > .imgbox {
+  flex: 1 1 0; align-self: center; width: 100%;
+  max-width: calc(100% - 2 * (var(--pause) + clamp(8px, 2vw, 24px)));
+}
+
+/* Not fullscreen (Safari toolbar + tabs visible): smaller pause FAB tucked just
+   above the tabs, and the screen reserves its full height so it never covers
+   content (fullscreen keeps the big FAB). */
+body.playing:not(.fs) { --pause: 84px; }
+body.playing:not(.fs) #pausebtn {
+  bottom: calc(var(--tab-h) + 8px + env(safe-area-inset-bottom, 0px));
+  border-bottom-width: 6px;
+}
+body.playing:not(.fs) .screen { padding-bottom: calc(var(--pause) + 16px); }

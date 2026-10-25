@@ -151,7 +151,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
   .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
 }
 </style>
-<link rel="stylesheet" href="../assets/calm-shell.css">
+<link rel="stylesheet" href="../assets/calm-shell.css?v=fit1">
 <link rel="stylesheet" href="../assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 </head>
@@ -296,6 +296,7 @@ function render(sc,state){ // state: 'show' | 'ask' | 'reveal'
   }
   h+='</div></div></div>';
   view.innerHTML=h;
+  if(sc.type==='normal'&&!sc.map&&(sc.body||[]).length<=2){const scr=view.querySelector('.screen');if(scr)scr.classList.add('stack');}
   bindNav();
 }
 function wait(ms,id){return new Promise(res=>{let left=ms;const t=setInterval(()=>{if(id!==runId){clearInterval(t);return;}if(!paused){left-=50;if(left<=0){clearInterval(t);res();}}},50);});}
