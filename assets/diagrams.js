@@ -251,11 +251,11 @@
       return { html: textScene(null, { chips: wordsChips(unit) }), what: 'tx:words', hint: 'Look, say, and remember.', scene: true };
     }
     if (zh === 'Story Recap') {
-      var rcIll = unit === 'unit3' ? ['cloud_rain', 'snowflake', 'storm'] : (unit === 'unit4' ? ['fish', 'tornado'] : ['cow', 'horse', 'rabbit']);
+      var rcIll = unit === 'unit3' ? ['cloud_rain', 'snowflake', 'storm'] : (unit === 'unit4' ? ['fish', 'tornado', 'cloud_rain'] : ['cow', 'horse', 'farmer']);
       return { html: textScene(sc.body && sc.body.length ? sc.body : ['Remember the story'], { ills: rcIll, hero: true }), what: 'tx:recap', hint: '', scene: true };
     }
     if (zh === 'Weather & Animals' || zh === 'Cloud Spotting' || zh === 'Europe Weather' || zh === 'News Report' || (/^project_/i.test(img) && sc.type === 'normal')) {
-      var pIll = unit === 'unit2' ? ['cloud', 'storm', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_rain', 'cloud_snow', 'sun'] : (unit === 'unit4' ? ['fish', 'tornado', 'speaking'] : ['cow', 'horse', 'rabbit']));
+      var pIll = unit === 'unit2' ? ['cloud', 'storm', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_rain', 'cloud_snow', 'sun'] : (unit === 'unit4' ? ['fish', 'tornado', 'speaking'] : ['cow', 'horse', 'farmer']));
       var pBody = (sc.body && sc.body.length) ? sc.body : ['Project time!'];
       return { html: textScene(pBody, { ills: pIll, hero: true }), what: 'tx:project', hint: 'Get ready to try it.', scene: true };
     }
@@ -269,7 +269,7 @@
     // Lesson / unit title openers (and SR unit review cards that used title crops)
     if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img)) {
       if (sc.type === 'normal') {
-        var tIll = unit === 'unit2' ? ['cloud', 'cloud_rain'] : (unit === 'unit3' ? ['cloud_snow', 'snowflake'] : (unit === 'unit4' ? ['fish', 'tornado'] : (unit === 'scienceReview' ? ['sun_cloud', 'storm'] : ['sun', 'cow', 'rabbit'])));
+        var tIll = unit === 'unit2' ? ['cloud', 'cloud_rain', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_snow', 'snowflake', 'cloud_rain'] : (unit === 'unit4' ? ['fish', 'tornado', 'cloud_rain'] : (unit === 'scienceReview' ? ['sun_cloud', 'storm', 'fish'] : ['sun', 'cow', 'horse'])));
         // SR unit cards keep their body as the fact summary
         var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
         return { html: textScene(tBody, { ills: tIll, hero: true }), what: 'tx:title', hint: '', scene: true };
@@ -904,10 +904,10 @@
     '.tx-hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3.2cqh,36px);width:100%;height:100%;max-height:100%;padding:clamp(4px,1cqh,12px) clamp(8px,2cqw,24px);box-sizing:border-box;}',
     '.tx-hero .tx-side{flex:0 0 auto;width:100%;display:flex;justify-content:center;}',
     '.tx-hero .tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(12px,3cqmin,36px);max-width:min(96cqw,1100px);}',
-    '.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(96px,min(28cqh,22cqw),220px);}',
+    '.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(120px,min(38cqh,30cqw),280px);}',
     '.tx-hero .tx-lines{flex:0 0 auto;width:min(92cqw,820px);text-align:center;align-items:center;gap:clamp(4px,1cqh,10px);}',
     '.tx-hero .tx-line{font-size:clamp(18px,min(3cqw,4.6cqh),34px);text-align:center;}',
-    '@container (max-aspect-ratio:5/4){.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(72px,min(22cqh,28cqw),160px);}.tx-hero{gap:clamp(10px,2.4cqh,24px);}}',
+    '@container (max-aspect-ratio:5/4){.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(88px,min(26cqh,32cqw),180px);}.tx-hero{gap:clamp(10px,2.4cqh,24px);}}',
 
     '.tx-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4cqw,32px);width:100%;max-width:none;max-height:100%;padding:0 clamp(4px,1cqw,12px);}',
     '.tx-lines{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(6px,1.4cqh,14px);text-align:left;}',
