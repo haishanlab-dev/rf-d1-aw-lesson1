@@ -568,7 +568,7 @@
       // SR unit review cards: each card shows its own unit's title photo
       var m = /\bUnit\s*(\d)\b/i.exec(sc.zh || '') || /^unit(\d)_title_/i.exec(sc.img || '');
       var n = m ? +m[1] : ({ 'title_p14.jpg': 2, 'title_p18.jpg': 3, 'title_p22.jpg': 4 })[sc.img] || 0;
-      if (n === 1) return 'title_l1.jpg';
+      if (n === 1) return 'horse_p11.jpg'; // caption is cows & horses → horse photo, not the dog
       if (n >= 2 && n <= 4) return 'title_u' + n + '.jpg';
     }
     if (unit === 'unit2') return 'title_u2.jpg';
