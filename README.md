@@ -72,3 +72,15 @@ localStorage.setItem('rfMilesFamilyKey', 'the-same-key')
 ```
 
 Session 1, the parts that were opened, and **I spoke** should show. Play should be the clip from browser A. The soft star for that lesson waits until Session 2 is finished too (Weather review’s star lights when its single path ends). No key, or offline: the lesson still runs; nothing is thrown.
+
+## Rest break (forced)
+
+`assets/rest-break.js` is loaded in the `<head>` of every app page (Learn/Unit 1, Units 2–4, Weather review, Book, Progress, Parent settings, Voice demo).
+
+- After **20 minutes** of app time with the page visible, a full-screen **10-minute** countdown appears in the middle of the screen. Lesson audio, narration and any recording stop. Every tap, click, key (incl. desktop ←/→ skip and Space), scroll and the bottom tabs are blocked. There is **no close, skip or parent override**.
+- State is in `localStorage`: `rfRest.learnSec` (learned seconds) and `rfRest.breakEndsAt` (wall-clock end). Refresh, switching pages or closing the tab does not reset it; the break keeps running while the app is closed and shows the remaining time when reopened. The learn counter goes back to 0 for the next 20 minutes.
+- Time on Parent settings does not count as learning, but the page is still locked during a break.
+- When it ends the overlay fades out and the lesson stays paused (tap play to continue).
+- Limits: clearing website data or moving the device clock forward ends it early; it is per browser/device (not synced through the Worker).
+
+QA only: add `?restTest=1` to any page → 20 s learn / 15 s break, using separate `rfRestTest.*` keys (a real break still shows). It sticks for that tab; `?restTest=0` turns it off.
