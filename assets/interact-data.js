@@ -21,12 +21,13 @@ window.RF_IX = {
         { label: 'They ___ the air.', options: ['know', 'smell'], answer: 1, why: "We smell with our noses.", hint: "What do you do with your nose?", explain: "Smell. They smell the air." } ] },
       30: { kind: 'sortIntro', ref: 31 },
       31: { kind: 'sort',
+        prompt: "Drag each card to the right box.",
         bins: [{ id: 'rain', label: 'It will rain', tone: 'blue' }, { id: 'winter', label: 'Long, cold winter', tone: 'gold' }],
         cards: [
-          { t: 'a. Rabbits get very fat.', bin: 'winter', why: "Fat rabbits mean a long, cold winter.", hint: "Think about the rabbits. Do they tell us about rain or winter?" },
-          { t: 'b. Smell the air.', bin: 'rain', why: "Cows and horses smell the air before rain.", hint: "Cows and horses do this. What do they know?" },
-          { t: 'c. Rabbits eat a lot.', bin: 'winter', why: "Rabbits eat a lot before a long winter.", hint: "Rabbits get ready for something cold." },
-          { t: 'd. Stretch their necks.', bin: 'rain', why: "They stretch their necks when rain is coming.", hint: "Cows and horses do this. What do they know?" } ] }
+          { t: 'a. Rabbits get very fat.', ill: 'rabbit', bin: 'winter', why: "Fat rabbits mean a long, cold winter.", hint: "Think about the rabbits. Do they tell us about rain or winter?" },
+          { t: 'b. Smell the air.', ill: 'cow', bin: 'rain', why: "Cows and horses smell the air before rain.", hint: "Cows and horses do this. What do they know?" },
+          { t: 'c. Rabbits eat a lot.', ill: 'rabbit', bin: 'winter', why: "Rabbits eat a lot before a long winter.", hint: "Rabbits get ready for something cold." },
+          { t: 'd. Stretch their necks.', ill: 'horse', bin: 'rain', why: "They stretch their necks when rain is coming.", hint: "Cows and horses do this. What do they know?" } ] }
     },
     unit2: {
       10: { kind: 'choice', options: ['White clouds', 'Storm clouds'], answer: 1,
@@ -49,6 +50,7 @@ window.RF_IX = {
         { label: 'Low clouds are white and ___.', options: ['dark', 'fluffy'], answer: 1, why: "Low clouds are white and fluffy.", hint: "Low clouds look soft, like cotton.", explain: "Fluffy. Low clouds are white and fluffy." },
         { label: '___ clouds make rain!', options: ['High', 'Storm'], answer: 1, why: "Storm clouds make rain.", hint: "Which clouds are dark and tall?", explain: "Storm. Storm clouds make rain." } ] },
       25: { kind: 'sort',
+        prompt: "Drag each card to its cloud.",
         bins: [{ id: 'high', label: 'High clouds', tone: 'blue' }, { id: 'low', label: 'Low clouds', tone: 'green' }, { id: 'storm', label: 'Storm clouds', tone: 'gray' }],
         cards: [
           { t: 'thin, long', bin: 'high', why: "High clouds are thin and long.", hint: "These clouds are up high in the sky." },
@@ -80,12 +82,14 @@ window.RF_IX = {
         { label: '', options: ['becomes', 'happens'], answer: 1, why: "Happens is the word.", hint: "Read the sentence in the book again.", explain: "Happens is the word." },
         { label: '', options: ['snow', 'dangerous'], answer: 1, why: "Hail can be dangerous.", hint: "Hail is hard balls of ice.", explain: "Dangerous. Hail can be dangerous." } ] },
       23: { kind: 'sort',
+        prompt: "Look at the map. Where does each country go?",
+        visual: { key: 'img/u3_weather_key.jpg', map: 'img/u3_europe_map.jpg' },
         bins: [{ id: 'rs', label: 'Rain + snow', tone: 'blue' }, { id: 'snow', label: 'Snow', tone: 'gray' }, { id: 'cloudy', label: 'Cloudy', tone: 'green' }, { id: 'sunny', label: 'Sunny', tone: 'gold' }],
         cards: [
-          { t: 'Germany', bin: 'rs', why: "Germany has rain and snow today.", hint: "Look at the map. Germany has two kinds of weather." },
-          { t: 'Spain', bin: 'snow', why: "Spain has snow today.", hint: "Look at the map. Find Spain's icon." },
-          { t: 'France', bin: 'cloudy', why: "France is cloudy today.", hint: "Look at the map. Find France's icon." },
-          { t: 'Italy', bin: 'sunny', why: "Italy is sunny today.", hint: "Look at the map. Find Italy's icon." } ] }
+          { t: 'Germany', bin: 'rs', spot: [75, 34], why: "Germany has rain and snow today.", hint: "Look at the map. Find Germany's weather icon." },
+          { t: 'Spain', bin: 'snow', spot: [33, 86], why: "Spain has snow today.", hint: "Look at the map. Find Spain's weather icon." },
+          { t: 'France', bin: 'cloudy', spot: [54, 62], why: "France is cloudy today.", hint: "Look at the map. Find France's weather icon." },
+          { t: 'Italy', bin: 'sunny', spot: [77, 64], why: "Italy is sunny today.", hint: "Look at the map. Find Italy's weather icon." } ] }
     },
     unit4: {
       10: { kind: 'choice', options: ['Fish fell from the sky.', 'It snowed a lot.'], answer: 0,

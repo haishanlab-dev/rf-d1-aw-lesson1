@@ -845,3 +845,43 @@ body.fs #view .titles,
   border-radius: 0;
   filter: drop-shadow(0 2px 3px rgba(31,42,68,.16)) drop-shadow(0 6px 14px rgba(31,42,68,.10));
 }
+
+/* Narrow / portrait: keep the title clear of the 1–4 part pills (top-right). */
+@media (max-width: 1000px) {
+  #view .titles { padding-right: calc(4 * clamp(36px, 5.5vw, 56px) + 3 * clamp(6px, 1vw, 12px) + clamp(8px, 2vw, 40px)); }
+}
+
+/* ===== v2 layout safety (de-card pass) ===== */
+/* Bottom hint/prompt row on stacked screens stays clear of the pause FAB:
+   landscape → side insets the FAB's width; portrait → the screen reserves FAB height. */
+@media (orientation: landscape) {
+  #view .screen.stack .content > .panel { padding-left: calc(var(--pause) + clamp(12px, 2vw, 28px)); padding-right: calc(var(--pause) + clamp(12px, 2vw, 28px)); }
+}
+@media (orientation: portrait) {
+  body.fs #view .screen { padding-bottom: calc(var(--pause) + 20px); }
+  #view .screen.ix-on:not(.stack) .content > .imgbox:not(.has-ix),
+  #view .screen:has(.retell-box) .content > .imgbox { flex: 0 1 22%; max-height: 22%; }
+  #view .screen.ix-on:not(.stack) .content > .panel,
+  #view .screen:has(.retell-box) .content > .panel { max-height: none; flex: 1 1 auto; }
+}
+#view .panel .q, #view .panel .rev { padding: 4px 0 !important; }
+
+/* v3 scene screens (mockup standard): the illustrated board uses the full width;
+   only the bottom panel keeps clear of the pause FAB. */
+#view .screen.stack.scene .content > .imgbox { max-width: 100%; }
+@media (min-aspect-ratio: 1/1) {
+  body.playing:not(.fs) #view .screen.stack.scene.is-sort { padding-bottom: 12px; }
+  body.playing:not(.fs) #view .screen.stack.scene .ix-bins > .ix-bin:last-child { padding-right: calc(var(--pause) + 8px); }
+}
+/* v3 title row: title + small grey-pill subtitle tag (mockup standard) */
+#view .titles { align-items: center; }
+#view .titles .en { font-size: clamp(13px, min(1.5vw, 2.6vh), 18px); font-weight: 800; color: #3D7AB5; background: rgba(61,122,181,.1); padding: .32em .85em; border-radius: 999px; line-height: 1.2; }
+@media (min-aspect-ratio: 1/1) {
+  body.playing:not(.fs) #view .screen.stack.scene:not(.is-sort) { padding-bottom: 50px; }
+  body.playing:not(.fs) #view .screen.stack.scene .content > .panel { padding-right: calc(var(--pause) + 24px); }
+}
+#view .screen.scene .panel .pagehint { align-self: flex-start !important; text-align: left !important; }
+@media (max-height: 700px) and (min-aspect-ratio: 1/1) {
+  #view .screen.scene .panel .sx-qline { font-size: clamp(18px, 4.6vh, 30px) !important; }
+  .sx-ans { font-size: clamp(16px, 3.8vh, 24px) !important; }
+}
