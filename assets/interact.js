@@ -103,16 +103,17 @@
   function equalizeOptWidth(box) {
     var opts = box.querySelectorAll('.ix-opt');
     if (!opts.length) return;
-    var max = 0;
-    for (var i = 0; i < opts.length; i++) {
+    // Batch write → batch read → batch restore (avoid write/read thrash per option).
+    var i, max = 0;
+    for (i = 0; i < opts.length; i++) {
       opts[i].style.width = 'auto';
       opts[i].style.minWidth = '0';
-      max = Math.max(max, opts[i].offsetWidth);
     }
+    for (i = 0; i < opts.length; i++) max = Math.max(max, opts[i].offsetWidth);
     // room for longest word on this screen (e.g. necks / smell / dangerous)
     var w = Math.max(max, 96) + 4;
     box.style.setProperty('--ix-btn-w', w + 'px');
-    for (var j = 0; j < opts.length; j++) { opts[j].style.width = ''; opts[j].style.minWidth = ''; }
+    for (i = 0; i < opts.length; i++) { opts[i].style.width = ''; opts[i].style.minWidth = ''; }
   }
   function setActiveRow(box, rows, idx) {
     cur.rowIdx = idx;

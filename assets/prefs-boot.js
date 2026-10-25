@@ -100,18 +100,24 @@
   if (document.body) mount();
   else document.addEventListener('DOMContentLoaded', mount);
 
+  function removeSplash() {
+    var el = document.getElementById('milesSplash');
+    if (!el) return;
+    el.classList.add('out');
+    setTimeout(function () { if (el && el.parentNode) el.parentNode.removeChild(el); }, 320);
+  }
   function enter() {
-    if (done) return;
+    /* Always clear splash once we've decided to enter — even if done was set by the
+       2.5 s fallback before DOMContentLoaded mounted anything. mount() already refuses
+       to create a splash after done=true; this covers any late node. */
+    if (done) { removeSplash(); return; }
     done = true;
     document.documentElement.classList.remove('miles-loading');
     try { document.documentElement.style.visibility = ''; } catch (e) {}
     try { if (document.body) document.body.style.visibility = ''; } catch (e) {}
     var wrap = document.getElementById('wrap');
     if (wrap) wrap.style.visibility = '';
-    var el = document.getElementById('milesSplash');
-    if (!el) return;
-    el.classList.add('out');
-    setTimeout(function () { if (el && el.parentNode) el.parentNode.removeChild(el); }, 320);
+    removeSplash();
   }
 
   var started = Date.now();

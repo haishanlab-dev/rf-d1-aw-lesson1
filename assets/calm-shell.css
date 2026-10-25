@@ -1,8 +1,7 @@
 /* Marvilo + Calm Classroom shell for live Reading Future lessons.
-   Uses Nunito (SIL OFL) + Material Symbols FILL. No Duo branding. */
-
-@import url("./fonts/nunito-font.css");
-@import url("./fonts/material-symbols.css");
+   Uses Nunito (SIL OFL) + Material Symbols FILL. No Duo branding.
+   Fonts are linked directly from each page head (preload + stylesheet) so the
+   browser does not wait on this file's @import discovery chain. */
 
 :root {
   /* Calm Classroom tokens (also map legacy lesson vars) */
