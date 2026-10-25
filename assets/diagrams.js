@@ -29,6 +29,9 @@
   };
 
   /* ---------- builders ---------- */
+  function lns(arr, start) {
+    return arr.map(function (l, k) { return '<span class="dg-ln' + (start < 0 ? '' : ' seq') + '" style="--i:' + (start + k) + '">' + esc(l) + '</span>'; }).join('<br>');
+  }
   function mapDg(labels, foot, marks) {
     // marks[i]: '' | 'done' | 'next' | 'seq' | 'here'
     var h = '<div class="dg dg-map"><div class="dg-title">Lesson Map</div><div class="dg-row">';
@@ -59,13 +62,14 @@
   }
   function skillsDg(mode) {
     return '<div class="dg dg-skills m-' + mode + '"><div class="dg-title">Two skills we will use today</div><div class="dg-row2">' +
-      '<div class="dg-sk dg-sk1"><div class="dg-sk-t">Critical Thinking</div><div class="dg-sk-b">Ask questions.<br>Do not just believe.<br>Check the facts.</div><div class="dg-sk-q">“Is it always true?”</div></div>' +
-      '<div class="dg-sk dg-sk2"><div class="dg-sk-t">Communication</div><div class="dg-sk-b">Share your ideas.<br>Listen to others.<br>Say it clearly.</div><div class="dg-sk-q">“Tell a friend.”</div></div>' +
+      '<div class="dg-sk dg-sk1"><div class="dg-sk-t">Critical Thinking</div><div class="dg-sk-b">' + lns(['Ask questions.', 'Do not just believe.', 'Check the facts.'], mode === 'both' ? 1 : -1) + '</div><div class="dg-sk-q">“Is it always true?”</div></div>' +
+      '<div class="dg-sk dg-sk2"><div class="dg-sk-t">Communication</div><div class="dg-sk-b">' + lns(['Share your ideas.', 'Listen to others.', 'Say it clearly.'], mode === 'both' ? 5 : 1) + '</div><div class="dg-sk-q">“Tell a friend.”</div></div>' +
       '</div></div>';
   }
   function alwaysDg(lines, stamp, mode) {
-    return '<div class="dg dg-always m-' + mode + '"><div class="dg-al"><div class="dg-al-t">Is it always true?</div><div class="dg-al-b">' +
-      lines.map(esc).join('<br>') + '</div><div class="dg-al-s">Think carefully!</div>' +
+    return '<div class="dg dg-always m-' + mode + '"><div class="dg-al"><div class="dg-al-t dg-ln" style="--i:0">Is it always true?</div><div class="dg-al-b">' +
+      lines.map(function (l, k) { return '<span class="dg-ln" style="--i:' + (k + 1) + '">' + esc(l) + '</span>'; }).join('<br>') +
+      '</div><div class="dg-al-s"><span class="dg-ln" style="--i:' + (lines.length + 1) + '">Think carefully!</span></div>' +
       (stamp ? '<div class="dg-stamp">' + esc(stamp) + '</div>' : '') + '</div></div>';
   }
   function binsDg(b, mode) {
@@ -126,12 +130,21 @@
     return null;
   }
 
+  // Generated card/diagram + short text → stacked big centred visual.
+  function chars(a) { return (a || []).reduce(function (n, l) { return n + String(l).length; }, 0); }
+  function isShort(sc) {
+    if (sc.type === 'normal') return (sc.body || []).length <= 3 && chars(sc.body) <= 100;
+    if (sc.type === 'pause') return (sc.q || []).length <= 3 && (sc.reveal || []).length <= 3 && chars(sc.q) <= 90 && chars(sc.reveal) <= 90;
+    return false;
+  }
   function apply(view, sc, state, unit) {
     try {
       var box = view.querySelector('.imgbox'); if (!box) return null;
       var r = pick(sc, state, unit); if (!r) return null;
       box.classList.add('has-dg');
       box.innerHTML = r.html;
+      var scr = view.querySelector('.screen');
+      if (scr && !sc.map && isShort(sc)) scr.classList.add('stack');
       return r.what;
     } catch (e) { return null; }
   }
@@ -179,17 +192,17 @@
     ' box-shadow:0 .8cqmin 0 rgba(0,0,0,.08);transition:opacity .4s ease;}',
     '.dg-sk1{background:#4AA8E8;color:#fff;}',
     '.dg-sk2{background:#FFD84D;color:#2B3445;}',
-    '.dg-sk-t{font-weight:800;font-size:clamp(15px,min(3.8cqw,10cqh),46px);}',
-    '.dg-sk-b{font-weight:700;font-size:clamp(12px,min(2.8cqw,7cqh),34px);line-height:1.45;}',
+    '.dg-sk-t{font-weight:800;font-size:clamp(15px,min(3.8cqw,11cqh),50px);}',
+    '.dg-sk-b{font-weight:700;font-size:clamp(12px,min(2.9cqw,8.4cqh),38px);line-height:1.45;}',
     '.dg-sk-q{font-weight:600;font-size:clamp(12px,min(2.4cqw,6cqh),28px);opacity:.9;}',
     '.dg-skills.m-comm .dg-sk1{opacity:.45;}',
     /* always */
-    '.dg-always .dg-al{position:relative;width:82%;max-height:88cqh;background:#F28BA0;color:#fff;border-radius:clamp(12px,3cqmin,28px);',
+    '.dg-always .dg-al{position:relative;width:min(92%,190cqh);height:auto;min-height:66cqh;max-height:94cqh;justify-content:center;background:#F28BA0;color:#fff;border-radius:clamp(12px,3cqmin,28px);',
     ' padding:4cqmin 3cqmin;display:flex;flex-direction:column;gap:2.6cqmin;box-shadow:0 .8cqmin 0 rgba(0,0,0,.08);}',
-    '.dg-al-t{font-weight:900;font-size:clamp(18px,min(5.4cqw,12cqh),60px);}',
-    '.dg-al-b{font-weight:700;font-size:clamp(14px,min(3.6cqw,8.4cqh),42px);line-height:1.4;}',
-    '.dg-al-s{font-weight:600;font-size:clamp(12px,min(2.6cqw,6cqh),30px);opacity:.92;}',
-    '.dg-stamp{align-self:center;background:#4F9A6B;color:#fff;font-weight:900;font-size:clamp(14px,min(3.2cqw,6.4cqh),36px);',
+    '.dg-al-t{font-weight:900;font-size:clamp(18px,min(5.6cqw,15cqh),72px);}',
+    '.dg-al-b{font-weight:700;font-size:clamp(14px,min(4cqw,10.5cqh),52px);line-height:1.4;}',
+    '.dg-al-s{font-weight:600;font-size:clamp(12px,min(2.8cqw,7.5cqh),36px);opacity:.92;}',
+    '.dg-stamp{align-self:center;background:#4F9A6B;color:#fff;font-weight:900;font-size:clamp(14px,min(3.4cqw,8cqh),40px);',
     ' padding:1.4cqmin 3.4cqmin;border-radius:999px;border:3px solid #fff;box-shadow:0 4px 10px rgba(0,0,0,.15);}',
     /* bins */
     '.dg-bin{flex:1 1 0;min-height:52cqh;max-height:76cqh;border-radius:clamp(10px,2.6cqmin,24px);border:clamp(2px,.6cqmin,6px) solid;padding:3cqmin 2cqmin;',
@@ -235,6 +248,18 @@
     ' .dg-bins.m-fill .dg-bin-i{animation:dgIn .8s ease-out calc(.5s + var(--i) * .9s) both;}',
     '}',
     '.dg-card.is-seq,.dg-card.is-next{z-index:1;}',
+    '.dg-ln{display:inline-block;border-radius:.4em;padding:0 .25em;}',
+    
+    '@keyframes dgLn{0%{background:rgba(255,255,255,0);transform:none}45%{background:rgba(255,244,194,.55);transform:scale(1.04)}100%{background:rgba(255,255,255,0);transform:none}}',
+    '@media (prefers-reduced-motion:no-preference){.dg-always .dg-ln,.dg-ln.seq{animation:dgLn 1.4s ease-in-out calc(.6s + var(--i) * 1.2s) both;}.dg-always.m-stamp .dg-ln{animation:none;}}',
+    /* stacked pause screens: question + countdown / answer in one centred row */
+    '#view .screen.stack .panel .q,#view .screen.stack .panel .rev{padding:clamp(6px,1.2vh,14px) clamp(12px,1.6vw,22px);}',
+    '#view .screen.stack .panel .q .line,#view .screen.stack .panel .rev .line{display:inline;margin-right:.35em;}',
+    '#view .screen.stack .panel .q .line[style*="font-size"]{font-size:clamp(16px,min(2vw,3.4vh),26px) !important;}',
+    '#view .screen.stack .panel .cd{width:clamp(48px,9vh,84px);height:clamp(48px,9vh,84px);font-size:clamp(28px,6vh,52px);border-width:4px;margin:0;}',
+    '#view .screen.stack .panel .pagehint{align-self:center;}',
+    '#view .screen.stack .panel .q[style*="border-color"]{display:none;}',
+    '#view .screen.stack .content:has(.cd) > .imgbox{max-height:none;}',
     'body:has(#pausebtn.is-paused) .dg,body:has(#pausebtn.is-paused) .dg *{animation-play-state:paused !important;}'
   ].join('\n');
   function injectCss() {
