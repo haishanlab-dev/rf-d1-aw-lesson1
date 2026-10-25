@@ -380,7 +380,7 @@ async function runFromIndex(startIdx){
   }
   if(id!==runId)return;
   log({ev:'sessionend',sess:start.s}); try{if(window.RFProgress&&RFProgress.markSessionDone)RFProgress.markSessionDone(RF_UNIT, start.s); else if(window.RFProgress)RFProgress.markComplete(RF_UNIT);}catch(_e){}
-  const p=$('panel');if(p){const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};p.appendChild(b);}
+  const p=$('panel');if(p){const row=document.createElement('div');row.className='endrow';row.style.cssText='display:flex;flex-wrap:wrap;gap:12px;align-items:center;';const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};row.appendChild(b);const nx=SCREENS.find(s=>s.s!==start.s&&s.i>startIdx);if(nx){const n=document.createElement('button');n.className='endbtn endnext';n.style.cssText='background:var(--blue,#3D7AB5);color:#fff;border-color:#2c5f8f;';n.innerHTML='Session 2 <span class="ms" style="font-size:22px">arrow_forward</span>';n.onclick=()=>{runId++;au.pause();holdResolve=null;jumpToPart(nx.part);};row.appendChild(n);}p.appendChild(row);}
 }
 function jumpToPart(part){
   const sc=partFirst(part); if(!sc) return;
