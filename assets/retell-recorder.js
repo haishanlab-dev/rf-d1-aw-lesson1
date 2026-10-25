@@ -23,22 +23,27 @@
   var mime = '';
 
   var CSS = [
-    '.retell-box{margin-top:8px;background:#fff;border:3px solid var(--yellow,#E8C04A);border-radius:16px;',
-    'padding:10px 12px;display:flex;flex-direction:column;gap:8px;align-self:stretch;',
-    'position:sticky;bottom:0;z-index:3;box-shadow:0 -8px 16px rgba(255,255,255,.9);}',
+    /* No yellow frame — prompt + equal-width Record|Continue side by side */
+    '.retell-box{margin-top:8px;background:transparent;border:0;border-radius:0;',
+    'padding:0;display:flex;flex-direction:column;gap:10px;align-self:stretch;',
+    'position:sticky;bottom:0;z-index:3;box-shadow:none;}',
     '.content:has(.retell-box) .imgbox{flex:0 1 32%;max-height:36%;}',
     '.panel:has(.retell-box){justify-content:flex-start;}',
-    '.retell-box .contbtn{align-self:flex-start;}',
-    '.retell-box .rt-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}',
+    '.retell-box .rt-status{font-size:clamp(14px,1.8vw,18px);font-weight:700;color:#5a6a7a;line-height:1.3;text-align:center;}',
+    '.retell-box .rt-actions{display:flex;flex-direction:row;align-items:stretch;gap:10px;width:100%;}',
+    '.retell-box .rt-actions > .rt-rec,',
+    '.retell-box .rt-actions > .rt-stop,',
+    '.retell-box .rt-actions > .contbtn{flex:1 1 0;width:0;min-width:0;justify-content:center;align-self:stretch;}',
+    '.retell-box .rt-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center;}',
     '.retell-box button{font-family:inherit;font-weight:800;border-radius:999px;border:none;',
-    'padding:10px 14px;min-height:44px;font-size:clamp(16px,2vw,22px);cursor:pointer;touch-action:manipulation;}',
+    'padding:10px 14px;min-height:48px;font-size:clamp(16px,2vw,22px);cursor:pointer;touch-action:manipulation;',
+    'display:inline-flex;align-items:center;justify-content:center;gap:6px;}',
     '.retell-box button[disabled]{opacity:.55;cursor:default;}',
-    '.retell-box .rt-rec{background:#E35D6A;color:#fff;}',
-    '.retell-box .rt-stop{background:#E35D6A;color:#fff;}',
+    '.retell-box .rt-rec,.retell-box .rt-stop{background:#E35D6A;color:#fff;}',
+    '.retell-box .rt-actions > .contbtn{margin:0;width:auto;}',
     '.retell-box .rt-play{background:var(--blue,#3D7AB5);color:#fff;}',
     '.retell-box .rt-save{background:var(--green,#4F9A6B);color:#fff;}',
     '.retell-box .rt-again{background:#fff;color:var(--blue,#3D7AB5);border:2px solid var(--blue,#3D7AB5);}',
-    '.retell-box .rt-status{font-size:clamp(14px,1.8vw,18px);font-weight:700;color:#5a6a7a;line-height:1.3;}',
     '.retell-box audio{width:100%;height:32px;}',
   ].join('');
 
@@ -346,9 +351,11 @@
     box.className = 'retell-box';
     box.innerHTML = [
       '<div class="rt-status">Tap Record and tell it in your words.</div>',
-      '<div class="rt-row">',
+      '<div class="rt-actions">',
       '<button type="button" class="rt-rec"><span class="ms" style="font-size:20px">mic</span> Record</button>',
       '<button type="button" class="rt-stop" hidden><span class="ms" style="font-size:20px">stop</span> Stop</button>',
+      '</div>',
+      '<div class="rt-row">',
       '<span class="rt-timer" hidden>0:00</span>',
       '<button type="button" class="rt-play" hidden><span class="ms" style="font-size:20px">play_arrow</span> Play</button>',
       '<button type="button" class="rt-again" hidden>Again</button>',
@@ -363,7 +370,8 @@
     box.querySelector('.rt-again').onclick = function (ev) { ev.preventDefault(); ev.stopPropagation(); again(); };
     box.querySelector('.rt-save').onclick = function (ev) { ev.preventDefault(); ev.stopPropagation(); save(); };
     panel.appendChild(box);
-    if (cont) box.appendChild(cont);
+    // Continue sits beside Record/Stop, equal width
+    if (cont) box.querySelector('.rt-actions').appendChild(cont);
     try { box.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
     if (rec && rec.state === 'recording') setStatus('Listening… tap Stop when you are done.');
     else if (saved) setStatus('Saved. Your other iPad can play this.');
