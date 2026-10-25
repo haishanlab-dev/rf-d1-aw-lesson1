@@ -130,9 +130,32 @@
     if (document.readyState === 'complete') resolve();
     else window.addEventListener('load', resolve);
   });
-  Promise.all([fontsP, loadP]).then(function () {
+  var domP = new Promise(function (resolve) {
+    if (document.readyState !== 'loading') resolve();
+    else document.addEventListener('DOMContentLoaded', resolve);
+  });
+  /* Icon font is font-display:block, so until it arrives every icon (Start included) is
+     blank. Wait for it on both paths, but never hold the splash past 4 s for it alone.
+     Ask for it after DOMContentLoaded: this script runs before material-symbols.css is
+     parsed, and fonts.load() with no matching @font-face resolves at once. */
+  var iconP = Promise.race([
+    domP.then(function () {
+      return (document.fonts && document.fonts.load)
+        ? document.fonts.load('24px "Material Symbols Rounded"', 'face').catch(function () {})
+        : null;
+    }),
+    new Promise(function (r) { setTimeout(r, 4000); })
+  ]);
+  Promise.all([fontsP, loadP, iconP]).then(function () {
     var wait = Math.max(0, minMs - (Date.now() - started));
     setTimeout(enter, wait);
   });
-  setTimeout(enter, 2500);
+
+  /* Slow-network fallback. Never reveal before DOMContentLoaded: the page's own scripts
+     (which bind Start and the other buttons) have not run yet, so a tap would be lost. */
+  Promise.all([
+    new Promise(function (r) { setTimeout(r, 2500); }),
+    domP,
+    iconP
+  ]).then(enter);
 })();
