@@ -160,7 +160,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <link rel="preload" href="../assets/fonts/Nunito-400.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="../assets/fonts/nunito-font.css">
 <link rel="stylesheet" href="../assets/fonts/material-symbols.css?v=ms3">
-<link rel="stylesheet" href="../assets/calm-shell.css?v=fit13">
+<link rel="stylesheet" href="../assets/calm-shell.css?v=fit14">
 <link rel="stylesheet" href="../assets/prefs.css">
 <!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
 </head>
@@ -230,10 +230,11 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <script src="../assets/rf-assets.js?v=as1"></script>
 <script src="../assets/progress-api.js?v=8591ff96"></script>
 <script src="../assets/retell-recorder.js?v=mic6"></script>
-<script src="../assets/diagrams.js?v=dg39"></script>
+<script src="../assets/diagrams.js?v=dg40"></script>
 <script src="../assets/reading.js?v=rd8"></script>
 <script src="../assets/interact-data.js?v=ix6"></script>
 <script src="../assets/interact.js?v=ix18"></script>
+<script src="../assets/end-actions.js?v=ea1"></script>
 <script>
 function activeAUD(){
   try{
@@ -486,7 +487,25 @@ async function runFromIndex(startIdx){
   }
   if(id!==runId)return;
   log({ev:'sessionend',sess:start.s}); try{if(window.RFProgress&&RFProgress.markSessionDone)RFProgress.markSessionDone(RF_UNIT, start.s); else if(window.RFProgress)RFProgress.markComplete(RF_UNIT);}catch(_e){}
-  const p=$('panel');if(p){const row=document.createElement('div');row.className='endrow';row.style.cssText='display:flex;flex-wrap:wrap;gap:12px;align-items:center;';const b=document.createElement('button');b.className='endbtn';b.innerHTML='<span class="ms" style="font-size:22px">replay</span> Back to start';b.onclick=()=>{runId++;au.pause();holdResolve=null;setPlaying(false); $('start').style.display='flex';};row.appendChild(b);const nx=SCREENS.find(s=>s.s!==start.s&&s.i>startIdx);if(nx){const n=document.createElement('button');n.className='endbtn endnext';n.style.cssText='background:var(--blue,#3D7AB5);color:#fff;border-color:#2c5f8f;';n.innerHTML='Session 2 <span class="ms" style="font-size:22px">arrow_forward</span>';n.onclick=()=>{runId++;au.pause();holdResolve=null;jumpToPart(nx.part);};row.appendChild(n);}p.appendChild(row);}
+  const p=$('panel');
+  if(p){
+    const nx=SCREENS.find(s=>s.s!==start.s&&s.i>startIdx);
+    const isFinal=!nx || (SCREENS[SCREENS.length-1]&&SCREENS[SCREENS.length-1].zh==='Great job!'&&start.s===SCREENS[SCREENS.length-1].s);
+    const restart=()=>{runId++;au.pause();holdResolve=null;setPlaying(false);$('start').style.display='flex';};
+    if(window.RFEndActions){
+      RFEndActions.mount(p,{
+        unit:RF_UNIT,
+        isFinal:isFinal,
+        onRestart:restart,
+        onSession2:nx?()=>{runId++;au.pause();holdResolve=null;jumpToPart(nx.part);}:undefined
+      });
+    }else{
+      const row=document.createElement('div');row.className='endrow';
+      const b=document.createElement('button');b.className='endbtn';b.textContent='重新开始';b.onclick=restart;row.appendChild(b);
+      if(nx){const n=document.createElement('button');n.className='endbtn endnext';n.textContent='Session 2';n.onclick=()=>{runId++;au.pause();holdResolve=null;jumpToPart(nx.part);};row.appendChild(n);}
+      p.appendChild(row);
+    }
+  }
 }
 function jumpToPart(part){
   const sc=partFirst(part); if(!sc) return;
