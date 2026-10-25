@@ -60,10 +60,68 @@
     };
   }
 
+  /**
+   * fetch with a time limit and a few retries (F10).
+   * Without a limit a stalled request on iPad Wi-Fi never settles, and because writes
+   * run one at a time (enqueueWrite) every later save would wait behind it forever.
+   * Retries only on network errors, timeouts, 408, 429 and 5xx. Every call here is safe
+   * to repeat: progress PUT is an OR-merge, retell POST replaces the unit's latest file.
+   * The time limit covers waiting for the response headers. A retell upload retries once
+   * only, so a child is not left on "Saving…" for minutes.
+   */
+  var RETRY_DELAYS_MS = [1000, 3000];
+  function isRetryableStatus(status) {
+    return status === 408 || status === 429 || status >= 500;
+  }
+  function sleep(ms) {
+    return new Promise(function (r) { setTimeout(r, ms); });
+  }
+  function fetchOnce(url, opts, timeoutMs) {
+    var ctrl = (typeof AbortController === 'function') ? new AbortController() : null;
+    var o = {};
+    for (var k in opts) o[k] = opts[k];
+    if (ctrl) o.signal = ctrl.signal;
+    var timer;
+    var timeout = new Promise(function (_res, rej) {
+      timer = setTimeout(function () {
+        if (ctrl) { try { ctrl.abort(); } catch (e) {} }
+        rej(new Error('timeout'));
+      }, timeoutMs);
+    });
+    return Promise.race([fetch(url, o), timeout]).then(function (res) {
+      clearTimeout(timer);
+      return res;
+    }, function (err) {
+      clearTimeout(timer);
+      throw err;
+    });
+  }
+  function fetchWithRetry(url, opts, timeoutMs, maxRetries) {
+    var attempt = 0;
+    var retries = Math.min(maxRetries == null ? RETRY_DELAYS_MS.length : maxRetries, RETRY_DELAYS_MS.length);
+    function run() {
+      return fetchOnce(url, opts, timeoutMs).then(function (res) {
+        if (isRetryableStatus(res.status) && attempt < retries) {
+          return sleep(RETRY_DELAYS_MS[attempt++]).then(run);
+        }
+        return res;
+      }, function (err) {
+        if (attempt < retries) {
+          return sleep(RETRY_DELAYS_MS[attempt++]).then(run);
+        }
+        throw err;
+      });
+    }
+    return run();
+  }
+  var PROGRESS_TIMEOUT_MS = 10000;
+  var RETELL_UPLOAD_TIMEOUT_MS = 60000;
+  var RETELL_DOWNLOAD_TIMEOUT_MS = 30000;
+
   async function fetchProgress() {
     var headers = authHeaders();
     if (!headers) return null;
-    var res = await fetch(API_BASE + '/progress', { method: 'GET', headers: headers });
+    var res = await fetchWithRetry(API_BASE + '/progress', { method: 'GET', headers: headers }, PROGRESS_TIMEOUT_MS);
     if (!res.ok) throw new Error('progress_get_' + res.status);
     return res.json();
   }
@@ -71,11 +129,11 @@
   async function putProgress(body) {
     var headers = authHeaders();
     if (!headers) return null;
-    var res = await fetch(API_BASE + '/progress', {
+    var res = await fetchWithRetry(API_BASE + '/progress', {
       method: 'PUT',
       headers: headers,
       body: JSON.stringify(body || {}),
-    });
+    }, PROGRESS_TIMEOUT_MS);
     if (!res.ok) throw new Error('progress_put_' + res.status);
     return res.json();
   }
@@ -234,11 +292,11 @@
       headers['X-Duration-Ms'] = String(Math.max(0, Math.round(durationMs)));
     }
     return enqueueWrite(function () {
-      return fetch(API_BASE + '/retell/' + encodeURIComponent(unitId), {
+      return fetchWithRetry(API_BASE + '/retell/' + encodeURIComponent(unitId), {
         method: 'POST',
         headers: headers,
         body: blob,
-      }).then(function (res) {
+      }, RETELL_UPLOAD_TIMEOUT_MS, 1).then(function (res) {
         if (!res.ok) throw new Error('retell_post_' + res.status);
         return res.json();
       });
@@ -249,10 +307,10 @@
     if (!isUnit(unitId)) return Promise.resolve(null);
     var headers = authHeaders();
     if (!headers) return Promise.resolve(null);
-    return fetch(API_BASE + '/retell/' + encodeURIComponent(unitId), {
+    return fetchWithRetry(API_BASE + '/retell/' + encodeURIComponent(unitId), {
       method: 'GET',
       headers: { Authorization: headers.Authorization },
-    }).then(function (res) {
+    }, RETELL_DOWNLOAD_TIMEOUT_MS).then(function (res) {
       if (res.status === 404) return null;
       if (!res.ok) throw new Error('retell_get_' + res.status);
       var ct = res.headers.get('Content-Type') || 'audio/mp4';
