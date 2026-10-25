@@ -127,6 +127,7 @@
     return '<' + (marks.tap ? 'button type="button" data-part="' + (i + 1) + '" aria-label="Go to part ' + (i + 1) + '"' : 'div') +
       ' class="dg-card dg-c' + i + (m ? ' is-' + m : '') + '" style="--c:' + MAP_COLORS[i] + ';--d:' + (marks.seqDelay ? marks.seqDelay(i) : 0) + 's" data-sess="' + (i < 2 ? '1' : '2') + '">' +
       '<div class="dg-num">' + (i + 1) + '</div><div class="dg-lab">' + esc(label) + '</div>' +
+      '<div class="dg-card-ill" aria-hidden="true">' + ill(MAP_ILLS[i], 'ill-map', i) + '</div>' +
       (m === 'done' ? '<div class="dg-check" aria-label="done">' + ill('check', 'ill-check', i) + '</div>' : '') +
       '</' + (marks.tap ? 'button' : 'div') + '>';
   }
@@ -139,20 +140,14 @@
     h += mapCard(0, labels[0], marks[0], marks);
     h += '<div class="dg-arrow" aria-hidden="true">▸</div>';
     h += mapCard(1, labels[1], marks[1], marks);
-    h += '</div><div class="dg-map-glyphs" aria-hidden="true">' +
-      '<span class="dg-map-g">' + ill(MAP_ILLS[0], 'ill-map', 0) + '</span>' +
-      '<span class="dg-map-g">' + ill(MAP_ILLS[1], 'ill-map', 1) + '</span></div>';
-    h += '<div class="dg-sess-lab">' + esc(labs.s1 || '') + '</div></div>';
+    h += '</div><div class="dg-sess-lab">' + esc(labs.s1 || '') + '</div></div>';
     h += '<div class="dg-arrow dg-arrow-mid" aria-hidden="true">▸</div>';
     // right group: cards 3–4
     h += '<div class="dg-map-half" data-sess="2"><div class="dg-map-cards">';
     h += mapCard(2, labels[2], marks[2], marks);
     h += '<div class="dg-arrow" aria-hidden="true">▸</div>';
     h += mapCard(3, labels[3], marks[3], marks);
-    h += '</div><div class="dg-map-glyphs" aria-hidden="true">' +
-      '<span class="dg-map-g">' + ill(MAP_ILLS[2], 'ill-map', 2) + '</span>' +
-      '<span class="dg-map-g">' + ill(MAP_ILLS[3], 'ill-map', 3) + '</span></div>';
-    h += '<div class="dg-sess-lab">' + esc(labs.s2 || '') + '</div></div>';
+    h += '</div><div class="dg-sess-lab">' + esc(labs.s2 || '') + '</div></div>';
     h += '</div></div>';
     return h;
   }
@@ -207,12 +202,14 @@
   function isEnd(sc) {
     if (!sc || !sc.map) return false;
     var zh = sc.zh || '';
+    var en = sc.en || '';
     return zh === 'Session 1 done' || zh === 'Session 2 done' || zh === 'Great job!';
   }
   function pick(sc, state, unit) {
     var u = UNITS[unit] || UNITS.unit1;
     var img = state === 'reveal' && sc.rimg ? sc.rimg : sc.img;
     var zh = sc.zh || '';
+    var en = sc.en || '';
     var end = isEnd(sc);
     if (img === 'map_all.png' || end) {
       var labels, foot = { s1: 'Session 1 · Parts 1–2', s2: 'Session 2 · Parts 3–4' }, marks = [];
@@ -241,7 +238,64 @@
       }
       return { html: mapDg(labels, foot, marks), what: end ? 'map:end' : 'map', map: !!sc.map || end, end: end };
     }
+
+    // ---- Textbook crop → HTML text + Noto/photo (no page scans) ----
+    if (zh === 'Warm-Up' || /^warmup_/i.test(img)) {
+      return { html: textScene(warmBody(unit), { ills: warmIlls(unit) }), what: 'tx:warm', hint: warmHint(unit), scene: true };
+    }
+    if (zh === 'Academic Objectives' || /^ao_/i.test(img)) {
+      var ao = (sc.body && sc.body.length) ? sc.body : ['Common kinds of weather', 'Unusual kinds of weather', 'How weather affects the places we live'];
+      return { html: textScene(ao, { ills: ['sun', 'cloud_rain', 'storm', 'snowflake'] }), what: 'tx:ao', hint: '', scene: true };
+    }
+    if (zh === 'New Words' || zh === 'Word Bank' || /^newwords_/i.test(img)) {
+      return { html: textScene(null, { chips: wordsChips(unit) }), what: 'tx:words', hint: 'Look, say, and remember.', scene: true };
+    }
+    if (zh === 'Story Recap') {
+      var rcIll = unit === 'unit3' ? ['cloud_rain', 'snowflake', 'storm'] : (unit === 'unit4' ? ['fish', 'tornado'] : ['cow', 'horse', 'rabbit']);
+      return { html: textScene(sc.body && sc.body.length ? sc.body : ['Remember the story'], { ills: rcIll }), what: 'tx:recap', hint: '', scene: true };
+    }
+    if (zh === 'Weather & Animals' || zh === 'Cloud Spotting' || zh === 'Europe Weather' || zh === 'News Report' || (/^project_/i.test(img) && sc.type === 'normal')) {
+      var pIll = unit === 'unit2' ? ['cloud', 'storm', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_rain', 'cloud_snow', 'sun'] : (unit === 'unit4' ? ['fish', 'tornado', 'speaking'] : ['cow', 'horse', 'rabbit']));
+      var pBody = (sc.body && sc.body.length) ? sc.body : ['Project time!'];
+      return { html: textScene(pBody, { ills: pIll }), what: 'tx:project', hint: 'Get ready to try it.', scene: true };
+    }
+    if (/^project_/i.test(img)) {
+      var pIllB = unit === 'unit2' ? ['cloud', 'speaking'] : (unit === 'unit3' ? ['cloud_rain', 'speaking'] : (unit === 'unit4' ? ['fish', 'speaking'] : ['cow', 'rabbit', 'speaking']));
+      return { html: textScene([], { ills: pIllB }), what: 'tx:projectbg', scene: true };
+    }
+    if (zh === 'Retell Skill') {
+      return { html: textScene(sc.body && sc.body.length ? sc.body : ['First → Next → Then → Last'], { ills: ['speaking', 'thinking', 'child'] }), what: 'tx:retellskill', hint: '', scene: true };
+    }
+    // Lesson / unit title openers (and SR unit review cards that used title crops)
+    if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img)) {
+      if (sc.type === 'normal') {
+        var tIll = unit === 'unit2' ? ['cloud', 'cloud_rain'] : (unit === 'unit3' ? ['cloud_snow', 'snowflake'] : (unit === 'unit4' ? ['fish', 'tornado'] : (unit === 'scienceReview' ? ['sun_cloud', 'storm'] : ['sun', 'cow', 'rabbit'])));
+        // SR unit cards keep their body as the fact summary
+        var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
+        return { html: textScene(tBody, { ills: tIll }), what: 'tx:title', hint: '', scene: true };
+      }
+      // pause screens that used a title crop as decoration → soft Noto backdrop, keep Q in panel
+      var pIll2 = unit === 'unit2' ? ['cloud', 'question'] : (unit === 'unit3' ? ['snowflake', 'question'] : (unit === 'unit4' ? ['fish', 'question'] : ['sun_cloud', 'question']));
+      return { html: textScene([], { ills: pIll2 }), what: 'tx:titlebg', hint: undefined, scene: true };
+    }
+    if (/^opener_/i.test(img) && sc.type !== 'normal') {
+      return { html: textScene([], { ills: ['sun', 'cloud_rain', 'question'] }), what: 'tx:opener', scene: true };
+    }
+    if (/^vocabreview_/i.test(img)) {
+      return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'] }), what: 'tx:vocab', scene: true };
+    }
+    if (/^rc_p/i.test(img)) {
+      return { html: textScene([], { ills: ['thinking', 'check'] }), what: 'tx:rc', scene: true };
+    }
+
     if (img === 'table_blank.png' || img === 'table_filled.png') {
+      // Short definition tips → sticky prop; table drawing stays for Table Top & Legs / Find the Legs
+      if (sc.type === 'normal' && /^Main Idea/.test(zh) && !/comprehension|chart|reading/i.test(zh+en)) {
+        return { html: tipProp(sc.body && sc.body.length ? sc.body : ['Main idea = what the WHOLE story is about'], 'yellow'), what: 'tip:main', hint: '', scene: true };
+      }
+      if (sc.type === 'normal' && /^Details?$/.test(zh)) {
+        return { html: tipProp(sc.body && sc.body.length ? sc.body : ['Detail = one little fact'], 'mint'), what: 'tip:detail', hint: '', scene: true };
+      }
       var mode = 'topLegs';
       if (/^Main Idea/.test(zh)) mode = 'top';
       else if (/^Details?$/.test(zh)) mode = 'legs';
@@ -254,16 +308,21 @@
     }
     if (img === 'two_skills.jpg') {
       var m = zh === 'Tell a friend' ? 'comm' : 'both';
+      if (m === 'both' && sc.type === 'normal') {
+        return { html: tipProp(sc.body && sc.body.length ? sc.body : ['Critical Thinking = ask and check', 'Communication = share and listen'], 'blue'), what: 'tip:skills', hint: '', scene: true };
+      }
       var sh = m === 'comm' ? (sc.body || []).filter(function (l) { return !/speak clearly|listen/i.test(l); }).join(' ') : '';
       return { html: skillsScene(m), what: 'skills:' + m, hint: sh, scene: true };
     }
     if (img === 'always.jpg') {
-      // One illustrated scene; the question is ONE big line at the bottom with one coloured keyword,
-      // the reveal a green answer pill (✓) + the book-page line.
+      // Tip screen (Critical Thinking definition) → sticky prop; pause ask/reveal keeps the scene
+      if (sc.type === 'normal') {
+        return { html: tipProp(sc.body && sc.body.length ? sc.body : ['Do not just believe.', 'Ask questions.', 'Check the facts.'], 'pink'), what: 'tip:always', hint: '', scene: true };
+      }
       var sx = SCENES[unit] || SCENES.unit1;
-      var amode = sc.type === 'pause' ? (state === 'reveal' ? 'stamp' : 'ask') : 'show';
-      return { html: alwaysScene(sx, amode), what: 'always:' + (sc.type === 'pause' ? state : 'show'), scene: true,
-        sceneQ: sxQ(sx), sub: sc.type === 'normal' ? (sc.body || []).join(' ') : '',
+      var amode = state === 'reveal' ? 'stamp' : 'ask';
+      return { html: alwaysScene(sx, amode), what: 'always:' + state, scene: true,
+        sceneQ: sxQ(sx), sub: '',
         ans: (sc.reveal || []).filter(function (l) { return !/smart/i.test(l); }).join(' ') };
     }
     if (img === 'fish_road.jpg') {
@@ -287,46 +346,138 @@
   }
 
   var mapTok = 0;
-  function mapSessHighlight(box, sc, what) {
+  // Char-proportional positions of "Part 1…" / "Part 3…" / closing tap hint in each map narration.
+  var MAP_TIMING = {
+    'unit1:1': [0.36, 0.54, 0.64], 'unit1:18': [null, 0.23, 0.81],
+    'unit2:1': [0.40, 0.62, 0.77], 'unit2:14': [null, 0.26, 0.79],
+    'unit3:1': [0.32, 0.57, 0.74], 'unit3:13': [null, 0.18, 0.75],
+    'unit4:1': [0.26, 0.47, 0.80], 'unit4:14': [null, 0.26, 0.85],
+    'scienceReview:0': [0.25, 0.50, 0.73]
+  };
+  function mapSessHighlight(box, sc, what, unit) {
     var root = box.querySelector('.dg-map'); if (!root) return;
     var my = ++mapTok;
     function setGroup(g) {
+      if (root._g === g) return; root._g = g;
       root.classList.remove('lit-s1', 'lit-s2');
       if (g === 1) root.classList.add('lit-s1');
       else if (g === 2) root.classList.add('lit-s2');
     }
-    // Session 1 done → light next (parts 3–4); Great job → both done, no pulse
     var zh = sc.zh || '';
     if (zh === 'Session 1 done') { setGroup(2); return; }
     if (what === 'map:end' || zh === 'Great job!') { setGroup(0); return; }
-    // Session B map: focus Part 3–4 (with brief Part 1–2 as done context)
-    var sessB = sc.s === 'B' || /session 2/i.test(sc.en || '');
-    var dur = Math.max(4, Number(sc.dn) || 12);
+    var tm = MAP_TIMING[unit + ':' + sc.i] || (sc.s === 'B' ? [null, 0.2, 0.8] : [0.35, 0.55, 0.75]);
+    var dur = Math.max(3, Number(sc.dn) || 12);
     var au = document.getElementById('au');
-    var reduce = false;
-    try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
-    if (reduce) { setGroup(sessB ? 2 : 1); return; }
-    // Timed to narration: intro → Session1/Parts1–2 → Session2/Parts3–4
-    // Fractions of clip duration (matches "Today we do Part 1 and Part 2. Next time… Part 3 and Part 4.")
-    var t1 = sessB ? 0.08 : 0.22; // start lighting s1 (or skip quickly on sess B)
-    var t2 = sessB ? 0.18 : 0.52; // switch to s2
-    var t3 = 0.92; // clear near end (tap hint)
+    var t0 = null;               // wall clock at the real 'playing' event of THIS screen's clip
+    var shown = Date.now();
+    function rate() { return (au && au.playbackRate > 0) ? au.playbackRate : 1; }
+    var viaAudio = false;
+    function onPlay() { if (my === mapTok) viaAudio = true, t0 = Date.now() - (au && au.currentTime ? au.currentTime * 1000 / rate() : 0); }
+    if (au) { au.addEventListener('playing', onPlay); au.addEventListener('seeked', onPlay); if (!au.paused && au.currentTime > 0) onPlay(); }
     var iv = setInterval(function () {
-      if (my !== mapTok) { clearInterval(iv); return; }
-      var t = 0;
-      if (au && !au.paused && isFinite(au.currentTime)) t = au.currentTime / Math.max(0.5, (au.duration || dur));
-      else if (au && au.ended) t = 1;
-      else {
-        // fallback clock from first paint if audio not yet playing
-        if (!root._t0) root._t0 = Date.now();
-        t = (Date.now() - root._t0) / (dur * 1000);
-      }
-      if (t < t1) setGroup(0);
-      else if (t < t2) setGroup(sessB ? 2 : 1);
-      else if (t < t3) setGroup(2);
-      else setGroup(0);
-      if (t >= 1.05) clearInterval(iv);
-    }, 100);
+      if (my !== mapTok || !root.isConnected) { clearInterval(iv); if (au) { au.removeEventListener('playing', onPlay); au.removeEventListener('seeked', onPlay); } return; }
+      var f;
+      var d = (au && isFinite(au.duration) && au.duration > 0.5) ? au.duration : dur;
+      if (t0 != null && au && !au.paused && au.currentTime > 0.05) f = au.currentTime / d;   // real playback clock
+      else if (t0 != null) f = (viaAudio && au && au.paused && !au.ended) ? null : (Date.now() - t0) * rate() / (d * 1000); // iOS stuck currentTime → wall clock since playing
+      else if (Date.now() - shown > 2500) { t0 = Date.now() - 2500; f = 2.5 * rate() / dur; }  // no audio event (muted/QA) → wall clock
+      else f = 0;
+      if (f == null) return; // paused: hold current state
+      var g = 0;
+      if (tm[0] != null && f >= tm[0] && f < tm[1]) g = 1;
+      else if (tm[1] != null && f >= tm[1] && f < tm[2]) g = 2;
+      if (viaAudio && au && au.ended) g = 0;
+      setGroup(g);
+      if (f > 1.15) { clearInterval(iv); if (au) { au.removeEventListener('playing', onPlay); au.removeEventListener('seeked', onPlay); } }
+    }, 90);
+  }
+
+
+  function imgSrc(name) {
+    try { if (typeof IMGS !== 'undefined' && IMGS && IMGS[name]) return IMGS[name]; } catch (e) {}
+    return IBASE + 'img/' + name;
+  }
+  // Crop-replacement: real HTML text + Noto scene (or rounded HD photo). No page scans.
+  function textScene(lines, opts) {
+    opts = opts || {};
+    var ills = opts.ills || [];
+    var photo = opts.photo || null;
+    var chips = opts.chips || null; // [{w,ill}] for New Words
+    var body;
+    if (chips && chips.length) {
+      body = '<div class="tx-chips">' + chips.map(function (c, i) {
+        return '<div class="tx-chip">' + (c.ill ? ill(c.ill, 'ill-tx', i) : '') +
+          '<span class="tx-chip-w">' + esc(c.w) + '</span></div>';
+      }).join('') + '</div>';
+    } else {
+      body = '<div class="tx-lines">' + (lines || []).map(function (l) {
+        return '<div class="tx-line">' + esc(l) + '</div>';
+      }).join('') + '</div>';
+    }
+    var side = '';
+    if (photo) {
+      side = '<img class="tx-photo" src="' + imgSrc(photo) + '" alt="">';
+    } else if (ills.length) {
+      side = '<div class="tx-ills" aria-hidden="true">' + ills.map(function (n, i) {
+        return ill(n, 'ill-tx', i);
+      }).join('') + '</div>';
+    }
+    return '<div class="dg sx tx-stage"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+      '<div class="tx-row">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
+  }
+  function warmBody(unit) {
+    // Full useful book wording (kid-friendly). Answer-question lives on the next Big Question screen.
+    if (unit === 'unit2') return ['Clouds are made of water.', 'Clouds do not always mean rain.', 'Only some clouds are rain clouds.'];
+    if (unit === 'unit3') return ['Clouds give rain when it is warm.', 'Snow when it is cold.', 'Hail too — from water changing temperature.'];
+    if (unit === 'unit4') return ['Rain, snow, and ice fall from the sky.', 'Did you know fish can fall too?'];
+    return ['The weather changes often.', 'It can be sunny one day and rainy the next.', 'People use technology to guess the weather.', 'But animals can guess the weather, too.'];
+  }
+  function warmIlls(unit) {
+    if (unit === 'unit2') return ['cloud', 'cloud_rain', 'sun_cloud'];
+    if (unit === 'unit3') return ['cloud_rain', 'cloud_snow', 'snowflake'];
+    if (unit === 'unit4') return ['cloud_rain', 'fish', 'tornado'];
+    return ['sun', 'cloud_rain', 'farmer'];
+  }
+  function warmHint(unit) {
+    if (unit === 'unit2') return 'Next: How do you know when it will rain?';
+    if (unit === 'unit3') return 'Next: How do you know if it will rain or snow?';
+    if (unit === 'unit4') return 'Next: What things can fall from the sky?';
+    return 'Next: How can animals guess the weather?';
+  }
+  function wordsChips(unit) {
+    if (unit === 'unit2') return [
+      { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'cloud' },
+      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'sun' }, { w: 'all', ill: 'check' }
+    ];
+    if (unit === 'unit3') return [
+      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'thinking' }, { w: 'fall', ill: 'cloud_snow' },
+      { w: 'warm', ill: 'sun' }, { w: 'dangerous', ill: 'storm' }, { w: 'happen', ill: 'question' }
+    ];
+    if (unit === 'unit4') return [
+      { w: 'into', ill: 'tornado' }, { w: 'carry', ill: 'tornado' }, { w: 'wind', ill: 'storm' },
+      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'child' }, { w: 'probably', ill: 'thinking' }
+    ];
+    if (unit === 'scienceReview') return [
+      { w: 'tornado', ill: 'tornado' }, { w: 'wind', ill: 'storm' }, { w: 'carry', ill: 'tornado' },
+      { w: 'surprised', ill: 'child' }, { w: 'probably', ill: 'thinking' }, { w: 'into', ill: 'fish' }
+    ];
+    return [
+      { w: 'neck', ill: 'horse' }, { w: 'air', ill: 'cloud' }, { w: 'rabbit', ill: 'rabbit' },
+      { w: 'fat', ill: 'rabbit' }, { w: 'know', ill: 'thinking' }, { w: 'when', ill: 'sun_cloud' }
+    ];
+  }
+  function isCropImg(img) {
+    return /^(warmup_|ao_|newwords_|project_|title_p|unit\d+_title_|reading_p|opener_|vocabreview_|rc_p)/i.test(img || '');
+  }
+
+  function tipProp(lines, tone) {
+    // Neon sticky + red binder clip. Short tip text only.
+    var body = (lines || []).map(function (l) { return '<div class="tip-line">' + esc(l) + '</div>'; }).join('');
+    return '<div class="dg sx tip-stage"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+      '<div class="tip-prop tip-' + (tone || 'yellow') + '">' +
+      '<div class="tip-clip" aria-hidden="true"><span class="tip-clip-bar"></span><span class="tip-clip-wire"></span></div>' +
+      '<div class="tip-note">' + body + '</div></div></div>';
   }
 
   function apply(view, sc, state, unit) {
@@ -345,7 +496,7 @@
         box.querySelectorAll('.dg-card[data-part]').forEach(function (b) {
           b.addEventListener('click', function (e) { e.stopPropagation(); try { if (window.jumpToPart) jumpToPart(+b.getAttribute('data-part')); } catch (_e) {} });
         });
-        try { mapSessHighlight(box, sc, r.what); } catch (_h) {}
+        try { mapSessHighlight(box, sc, r.what, unit); } catch (_h) {}
       } else if (scr && !sc.map && (isShort(sc) || r.hint !== undefined)) scr.classList.add('stack');
       if (r.scene && scr) scr.classList.add('stack', 'scene');
       if (r.sceneQ) {
@@ -710,14 +861,12 @@
     '.dg-map-half{flex:1 1 0;min-width:0;max-width:48%;display:flex;flex-direction:column;align-items:stretch;}',
     '.dg-map-cards{display:flex;align-items:center;justify-content:center;gap:1.2cqw;width:100%;}',
     '.dg-map-half .dg-card{flex:1 1 0;max-width:none;width:auto;}',
-    '.dg-arrow-mid{align-self:center;margin-bottom:18%;}',
+    '.dg-arrow-mid{align-self:center;margin-bottom:calc(1em + 4px);}',
     '.dg-map-glyphs{display:flex;justify-content:space-around;align-items:flex-end;width:100%;margin-top:1.6cqh;min-height:clamp(36px,10cqh,72px);pointer-events:none;}',
     '.dg-map-g{display:grid;place-items:center;flex:1 1 0;}',
     '.ill-map{--s:clamp(36px,min(9cqh,7cqw),72px);}',
     '.dg-sess-lab{margin-top:1em;text-align:left;align-self:flex-start;font-weight:700;font-size:clamp(12px,min(2.4cqw,6.4cqh),28px);color:#3C4656;line-height:1.2;padding-left:0.15em;}',
-    '.dg-map .dg-card{transition:box-shadow .35s ease,transform .35s ease,filter .35s ease;}',
-    '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-card,',
-    '.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-card{box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.4cqmin #E8C04A;transform:translateY(-2px);filter:saturate(1.08);z-index:1;}',
+    '.dg-map .dg-card{transition:box-shadow .35s ease,filter .35s ease;}',
     '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-sess-lab,',
     '.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-sess-lab{color:#2F5F8C;font-weight:800;}',
     '.dg-map.lit-s1 .dg-map-half[data-sess="2"],',
@@ -732,6 +881,44 @@
     '  .dg-map-half .dg-card{flex:0 0 44cqw;max-width:44cqw;aspect-ratio:1.15;max-height:none;}',
     '  .ill-map{--s:clamp(32px,min(8cqh,12cqw),64px);}',
     '}',
+    '.dg-card{justify-content:flex-start;padding-top:clamp(8px,2.2cqmin,18px);padding-bottom:clamp(8px,2cqmin,16px);gap:1.2cqmin;}',
+    '.dg-card .dg-card-ill{margin-top:auto;display:grid;place-items:center;width:100%;flex:0 0 auto;}',
+    '.dg-card .ill-map{--s:clamp(36px,min(14cqh,9cqw),88px);}',
+    '.dg-sess-lab{margin-top:1em;}',
+    '.dg-map-glyphs{display:none!important;}',
+    '#view .screen.is-end .dg-card .ill-map{--s:clamp(28px,min(10cqh,6cqw),64px);}',
+    '@container (max-aspect-ratio:1/1){.dg-card .ill-map{--s:clamp(32px,min(10cqh,14cqw),72px);}.dg-arrow-mid{margin-bottom:0;}}',
+    '.tx-stage{justify-content:center;padding:clamp(6px,1.5cqh,16px);}',
+    '.tx-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(12px,3cqw,36px);width:min(96%,1100px);max-height:100%;}',
+    '.tx-lines{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(6px,1.4cqh,14px);text-align:left;}',
+    '.tx-line{font-weight:800;font-size:clamp(18px,min(3.2cqw,5.6cqh),36px);line-height:1.35;color:#1F2A44;}',
+    '.tx-chips{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1.6cqmin,16px);align-content:center;}',
+    '.tx-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,1cqh,10px);background:#fff;border-radius:clamp(14px,2cqmin,22px);padding:clamp(10px,2cqh,18px) clamp(8px,1.5cqw,14px);box-shadow:0 6px 16px rgba(31,42,68,.10);}',
+    '.tx-chip-w{font-weight:800;font-size:clamp(16px,min(2.8cqw,4.8cqh),28px);color:#1F2A44;}',
+    '.tx-side{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}',
+    '.tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(6px,1.5cqmin,14px);max-width:min(42cqw,340px);}',
+    '.ill-tx{--s:clamp(52px,min(16cqh,12cqw),120px);}',
+    '.tx-photo{width:min(42cqw,380px);height:min(78cqh,520px);max-height:min(78cqh,520px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 10px 24px rgba(31,42,68,.14);}',
+    '@container (max-aspect-ratio:5/4){.tx-row{flex-direction:column;gap:clamp(8px,2cqh,18px);}.tx-ills{max-width:90%;}.ill-tx{--s:clamp(40px,min(12cqh,14cqw),88px);}.tx-photo{width:min(78cqw,320px);max-height:32cqh;}.tx-chips{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}.tx-line{font-size:clamp(16px,min(4.2cqw,5cqh),28px);}}',
+    '.tip-stage{justify-content:center;}',
+    '.tip-prop{position:relative;z-index:1;width:min(78cqw,520px);transform:rotate(-3.5deg);filter:drop-shadow(0 14px 22px rgba(31,42,68,.18));}',
+    '.tip-clip{position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:54px;height:42px;z-index:2;}',
+    '.tip-clip-bar{position:absolute;left:50%;top:0;transform:translateX(-50%);width:46px;height:18px;background:linear-gradient(#E25555,#C43B3B);border-radius:5px 5px 3px 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}',
+    ".tip-clip-bar::before{content:'';position:absolute;left:50%;top:4px;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#FBF6E9;box-shadow:inset 0 0 0 2px #9A2A2A;}",
+    '.tip-clip-wire{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:38px;height:26px;border:3px solid #C43B3B;border-top:0;border-radius:0 0 10px 10px;background:transparent;}',
+    '.tip-note{background:#FFE566;color:#1F2A44;border-radius:18px;padding:clamp(28px,6cqh,48px) clamp(22px,4cqw,40px) clamp(24px,5cqh,40px);',
+    ' text-align:center;font-weight:800;font-size:clamp(20px,min(3.6cqw,6.2cqh),40px);line-height:1.35;}',
+    '.tip-yellow .tip-note{background:#FFE566;}',
+    '.tip-mint .tip-note{background:#C8F0D4;}',
+    '.tip-pink .tip-note{background:#FFC4D6;}',
+    '.tip-blue .tip-note{background:#CDE4F8;}',
+    '.tip-line{margin:0.15em 0;}',
+    '@media (prefers-reduced-motion:reduce){.tip-prop{transform:none}}',
+    '@container (max-aspect-ratio:1/1){.tip-prop{width:min(88cqw,520px);transform:rotate(-2deg);}.tip-note{font-size:clamp(18px,min(5.2cqw,5cqh),34px);}}',
+    '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-card,.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-card{z-index:2;box-shadow:0 0 0 .8cqmin #FFF4C2,0 0 0 2cqmin #E8C04A,0 10px 22px rgba(201,154,34,.35);animation:dgWiggle .9s ease-in-out infinite;}',
+    '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-card:last-child,.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-card:last-child{animation-delay:.15s;}',
+    '@keyframes dgWiggle{0%,100%{transform:rotate(0) scale(1.03)}25%{transform:rotate(-2.5deg) scale(1.05)}75%{transform:rotate(2.5deg) scale(1.05)}}',
+    '@media (prefers-reduced-motion:reduce){.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-card,.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-card{animation:none;transform:none;box-shadow:0 0 0 .8cqmin #FFF4C2,0 0 0 2.2cqmin #E8C04A;}}',
   ].join('\n');
   function injectCss() {
     if (document.getElementById('rf-dg-css')) return;
