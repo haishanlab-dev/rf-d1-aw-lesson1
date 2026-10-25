@@ -62,14 +62,16 @@
   function say(lines, bubble, tone) {
     hush();
     var my = tok;
+    var state = cur; /* ignore if cancel()/remount raced past this say */
     lines = lines.filter(Boolean);
     if (bubble) { bubble.textContent = lines.join(' '); bubble.className = 'ix-say show' + (tone ? ' ' + tone : ''); }
     speaking++;
     var au = document.getElementById('au');
     if (au && !au.paused && !ducked) { ducked = au; try { au.pause(); } catch (e) {} }
     var p = Promise.resolve();
-    lines.forEach(function (l) { p = p.then(function () { return sayOne(l, my); }); });
+    lines.forEach(function (l) { p = p.then(function () { if (cur !== state || my !== tok) return; return sayOne(l, my); }); });
     return p.then(function () {
+      if (cur !== state) { speaking = Math.max(0, speaking - 1); return; }
       speaking--;
       if (!speaking && ducked) { var d = ducked; ducked = null; try { if (!isPaused()) d.play().catch(function () {}); } catch (e) {} }
     });
@@ -125,11 +127,13 @@
     }
   }
   function askRow(rows, idx, bubble) {
+    var state = cur;
     var r = rows[idx];
     var line = r.ask || ((r.label ? r.label.replace(/___/g, 'blank') + ' ' : '') + 'Tap ' + r.options.join(', or ') + '.');
-    return say([line], bubble, 'ask').then(touch);
+    return say([line], bubble, 'ask').then(function () { if (cur !== state) return; touch(); });
   }
   function afterRowDone(rows, bubble) {
+    var state = cur;
     var all = cur.rows.every(function (x) { return x.done; });
     if (all && rows.length > 1 && cur.rows.every(function (x) { return x.tries === 0; })) note('firstTry');
     if (all) { finish(); touch(); return; }
@@ -138,6 +142,7 @@
     cur.box.classList.add('ix-wait'); // lock while next prompt speaks
     setActiveRow(cur.box, rows, nextIdx);
     askRow(rows, nextIdx, bubble).then(function () {
+      if (cur !== state) return;
       cur.box.classList.remove('ix-wait');
       touch();
     });
@@ -170,7 +175,9 @@
         st.done = true; b.classList.add('ix-ok'); rowEl.classList.add('is-done');
         if (st.tries === 0 && rows.length === 1) note('firstTry');
         if (stepped) box.classList.add('ix-wait');
+        var stateOk = cur;
         say([next('praise'), r.why], bubble, 'ok').then(function () {
+          if (cur !== stateOk) return;
           if (stepped) afterRowDone(rows, bubble);
           else { if (cur.rows.every(function (x) { return x.done; })) finish(); touch(); }
         });
@@ -180,11 +187,13 @@
         if (st.tries >= 2) {
           st.done = true; showAnswer(rowEl, r);
           if (stepped) box.classList.add('ix-wait');
+          var stateEx = cur;
           say([next('explainLead'), r.explain], bubble, 'explain').then(function () {
+            if (cur !== stateEx) return;
             if (stepped) afterRowDone(rows, bubble);
             else { if (cur.rows.every(function (x) { return x.done; })) finish(); touch(); }
           });
-        } else say([next('hintLead'), r.hint], bubble, 'hint').then(touch);
+        } else { var stateHint = cur; say([next('hintLead'), r.hint], bubble, 'hint').then(function () { if (cur !== stateHint) return; touch(); }); }
       }
     });
   }
@@ -260,7 +269,7 @@
           place(cardEl, right, k);
           var all2 = cur.cards.every(function (x) { return x.placed; });
           say([next('explainLead'), c.why], bubble, 'explain').then(function () { if (all2) { board.classList.add('is-done'); finish(); } touch(); });
-        } else { ping(k); say([next('hintLead'), c.hint], bubble, 'hint').then(touch); }
+        } else { ping(k); var stateHint = cur; say([next('hintLead'), c.hint], bubble, 'hint').then(function () { if (cur !== stateHint) return; touch(); }); }
       }
     }
     cur.autoPlaceRest = function () {
@@ -390,6 +399,7 @@
   }
   function begin() {
     if (!cur || !cur.box) return;
+    var state = cur;
     var root = cur.box.closest('.ix-sort') || cur.box;
     // Multi-blank choice: speak the current line first, then unlock only that row.
     if (cur.stepped && cur.cfg && cur.cfg.kind === 'rows') {
@@ -397,6 +407,7 @@
       var bubble = cur.box.querySelector('.ix-say');
       setActiveRow(cur.box, rows, cur.rowIdx || 0);
       askRow(rows, cur.rowIdx || 0, bubble).then(function () {
+        if (cur !== state) return;
         cur.box.classList.remove('ix-wait');
         root.classList.remove('ix-wait');
         touch();
@@ -542,5 +553,18 @@
   ].join('\n');
   var st = document.createElement('style'); st.id = 'rf-ix-css'; st.textContent = CSS; (document.head || document.documentElement).appendChild(st);
 
-  window.RFInteract = { mount: mount, begin: begin, holding: holding, resolved: resolved, settle: settle, cfgFor: cfgFor, _state: function () { return cur; }, clipUrl: clipUrl, fnv: fnv };
+  /** Abort in-flight feedback / drag when the lesson skips screens (←/→). */
+  function cancel() {
+    hush();
+    speaking = 0;
+    ducked = null;
+    try {
+      document.querySelectorAll('.ix-ghost').forEach(function (g) { g.remove(); });
+      document.querySelectorAll('.ix-card.is-lifted').forEach(function (el) { el.classList.remove('is-lifted'); });
+      document.querySelectorAll('.ix-bin.ix-over').forEach(function (b) { b.classList.remove('ix-over'); });
+    } catch (e) {}
+    cur = null;
+  }
+
+  window.RFInteract = { mount: mount, begin: begin, cancel: cancel, holding: holding, resolved: resolved, settle: settle, cfgFor: cfgFor, _state: function () { return cur; }, clipUrl: clipUrl, fnv: fnv };
 })();

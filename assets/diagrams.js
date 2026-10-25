@@ -569,8 +569,9 @@
   }
   function warmPhoto(unit) {
     if (unit === 'unit2') return 'warm_u2.jpg';
-    if (unit === 'unit3') return 'warm_u3.jpg';
-    if (unit === 'unit4') return 'warm_u4.jpg';
+    /* title_u3/u4 SHA-identical to warm_u3/u4 — reuse title_* so Warm-Up shares one cached file */
+    if (unit === 'unit3') return 'title_u3.jpg';
+    if (unit === 'unit4') return 'title_u4.jpg';
     return 'warm_l1.jpg';
   }
   function titlePhoto(unit, sc) {
