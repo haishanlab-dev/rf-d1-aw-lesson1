@@ -9,7 +9,7 @@
 
   /* Noto Emoji (Google, Apache 2.0) – self-hosted under assets/illus/noto/ */
   var IBASE = (function () { var sc = document.currentScript && document.currentScript.src; return sc ? sc.replace(/[^\/]*$/, '') : 'assets/'; })();
-  var PALE = { rabbit: 1, snowman: 1, cloud: 1, cloud_snow: 1, cloud_rain: 1, snowflake: 1, sun_cloud: 1 };
+  var PALE = { rabbit: 1, snowman: 1, cloud: 1, cloud_snow: 1, cloud_rain: 1, snowflake: 1, sun_cloud: 1, wind_face: 1, up_arrow: 1, alarm_clock: 1, leaf_wind: 1 };
   function ill(name, cls, i) {
     return '<span class="ill' + (PALE[name] ? ' pale' : '') + (cls ? ' ' + cls : '') + '" style="--b:' + (i || 0) + '" aria-hidden="true"><img class="ill-i" src="' + IBASE + 'illus/noto/' + name + '.svg" alt="" draggable="false"></span>';
   }
@@ -585,25 +585,27 @@
     return 'Next: How can animals guess the weather?';
   }
   function wordsChips(unit) {
+    /* Each chip icon must literally depict the word (or a strong everyday association
+       a 7-year-old gets). Noto Emoji SVGs under assets/illus/noto/. */
     if (unit === 'unit2') return [
-      { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'cloud' },
-      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'sun' }, { w: 'all', ill: 'check' }
+      { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'giraffe' },
+      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'up_arrow' }, { w: 'all', ill: 'hundred' }
     ];
     if (unit === 'unit3') return [
-      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'thinking' }, { w: 'fall', ill: 'cloud_snow' },
-      { w: 'warm', ill: 'sun' }, { w: 'dangerous', ill: 'storm' }, { w: 'happen', ill: 'question' }
+      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'sparkles' }, { w: 'fall', ill: 'cloud_rain' },
+      { w: 'warm', ill: 'sun' }, { w: 'dangerous', ill: 'warning' }, { w: 'happen', ill: 'exclamation' }
     ];
     if (unit === 'unit4') return [
-      { w: 'into', ill: 'tornado' }, { w: 'carry', ill: 'tornado' }, { w: 'wind', ill: 'storm' },
-      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'child' }, { w: 'probably', ill: 'thinking' }
+      { w: 'into', ill: 'inbox' }, { w: 'carry', ill: 'flexed_biceps' }, { w: 'wind', ill: 'leaf_wind' },
+      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'thinking' }
     ];
     if (unit === 'scienceReview') return [
-      { w: 'tornado', ill: 'tornado' }, { w: 'wind', ill: 'storm' }, { w: 'carry', ill: 'tornado' },
-      { w: 'surprised', ill: 'child' }, { w: 'probably', ill: 'thinking' }, { w: 'into', ill: 'fish' }
+      { w: 'tornado', ill: 'tornado' }, { w: 'wind', ill: 'leaf_wind' }, { w: 'carry', ill: 'flexed_biceps' },
+      { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'thinking' }, { w: 'into', ill: 'inbox' }
     ];
     return [
-      { w: 'neck', ill: 'horse' }, { w: 'air', ill: 'cloud' }, { w: 'rabbit', ill: 'rabbit' },
-      { w: 'fat', ill: 'rabbit' }, { w: 'know', ill: 'thinking' }, { w: 'when', ill: 'sun_cloud' }
+      { w: 'neck', ill: 'giraffe' }, { w: 'air', ill: 'wind_face' }, { w: 'rabbit', ill: 'rabbit' },
+      { w: 'fat', ill: 'carrot' }, { w: 'know', ill: 'light_bulb' }, { w: 'when', ill: 'alarm_clock' }
     ];
   }
   function isCropImg(img) {
@@ -689,7 +691,7 @@
     /* session-end: title, one full-width row of big map cards, foot line, buttons centred below */
     '#view .screen.is-end .dg-map > .dg-title{display:none;}',
     '#view .screen.is-end .dg-map{gap:3cqh;}',
-    '#view .screen.is-end .dg-map .dg-row{gap:1.6cqw;}',
+    '#view .screen.is-end .dg-map .dg-row{gap:clamp(14px,2.6cqw,36px);}',
     '#view .screen.is-end .dg-card{max-width:24cqw;max-height:84cqh;aspect-ratio:.8;}',
     '#view .screen.is-end .dg-map .dg-arrow{font-size:clamp(12px,2.4cqw,24px);}',
     '#view .screen.is-end .content > .panel{align-items:center;text-align:center;}',
@@ -707,7 +709,7 @@
     '.dg-title{font-weight:800;font-size:clamp(14px,min(3cqw,8cqh),36px);color:#2B3445;}',
     '.dg-foot{font-weight:700;font-size:clamp(12px,min(2.4cqw,6.4cqh),28px);color:#3C4656;}',
     /* map */
-    '.dg-map .dg-row{display:flex;align-items:center;justify-content:center;gap:1.4cqw;width:100%;flex:0 1 auto;}',
+    '.dg-map .dg-row{display:flex;align-items:center;justify-content:center;gap:clamp(14px,2.6cqw,36px);width:100%;flex:0 1 auto;}',
     '.dg-map .dg-arrow{color:#9AA3AD;font-size:clamp(12px,3cqw,26px);flex:0 0 auto;}',
     '.dg-card{position:relative;flex:1 1 0;max-width:23cqw;aspect-ratio:.72;max-height:68cqh;background:var(--c);border-radius:clamp(8px,2.4cqmin,20px);',
     ' display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2cqmin;padding:1.5cqmin;box-shadow:0 .8cqmin 0 rgba(0,0,0,.08);',
@@ -715,12 +717,12 @@
     '.dg-num{font-weight:900;font-size:clamp(24px,min(9cqw,20cqh),96px);line-height:1;color:#2B3445;}',
     '.dg-lab{font-weight:700;font-size:clamp(12px,min(2.4cqw,6cqh),26px);line-height:1.2;color:#1F2A44;}',
     '.dg-c0 .dg-num,.dg-c0 .dg-lab,.dg-c2 .dg-num,.dg-c2 .dg-lab{color:#1B2A3A;}',
-    '.dg-check{position:absolute;top:-3cqmin;right:-3cqmin;width:clamp(36px,min(10cqmin,14cqh),72px);height:clamp(36px,min(10cqmin,14cqh),72px);display:grid;place-items:center;z-index:2;}',
+    '.dg-check{position:absolute;top:clamp(4px,1.2cqmin,10px);right:clamp(4px,1.2cqmin,10px);width:clamp(28px,min(8cqmin,12cqh),56px);height:clamp(28px,min(8cqmin,12cqh),56px);display:grid;place-items:center;z-index:2;pointer-events:none;}',
     '.dg-check .ill-check{--s:100%;width:100%;height:100%;}',
     '.dg-check .ill.pale::before{display:none;}',
     '.dg-check .ill > img.ill-i{filter:drop-shadow(0 2px 3px rgba(31,52,84,.28));}',
     '.dg-card.is-done{filter:saturate(.75);opacity:.88;}',
-    '.dg-card.is-next,.dg-card.is-seq{box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.4cqmin #E8C04A;}',
+    '.dg-card.is-next,.dg-card.is-seq{box-shadow:0 0 0 .45cqmin #FFF4C2,0 0 0 1cqmin #E8C04A;}',
     '.dg-card.is-next2{opacity:.95;}',
     /* table */
     '.dg-table{gap:0;justify-content:stretch;}',
@@ -806,7 +808,7 @@
     '@keyframes dgIn{0%{opacity:0;transform:translateY(-40%) scale(.85)}100%{opacity:1;transform:none}}',
     '@keyframes dgPop{0%{opacity:0;transform:scale(.2)}70%{opacity:1;transform:scale(1.15)}100%{opacity:1;transform:scale(1)}}',
     '@keyframes dgNext{0%,100%{transform:none}50%{transform:translateY(-4%) scale(1.04)}}',
-    '@keyframes dgSeq{0%{transform:none;box-shadow:none}40%{transform:translateY(-5%) scale(1.04);box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.6cqmin #E8C04A}100%{transform:none;box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.4cqmin #E8C04A}}',
+    '@keyframes dgSeq{0%{transform:none;box-shadow:none}40%{transform:translateY(-5%) scale(1.04);box-shadow:0 0 0 .45cqmin #FFF4C2,0 0 0 1.15cqmin #E8C04A}100%{transform:none;box-shadow:0 0 0 .45cqmin #FFF4C2,0 0 0 1cqmin #E8C04A}}',
     '@keyframes dgSoft{0%{opacity:.35;transform:scale(.97)}100%{opacity:1;transform:none}}',
     '@keyframes dgStamp{0%{opacity:0;transform:scale(1.6) rotate(-8deg)}100%{opacity:1;transform:rotate(-3deg)}}',
     '@media (prefers-reduced-motion:no-preference){',
@@ -1009,10 +1011,10 @@
     '@media (prefers-reduced-motion:reduce){.fr-spout-core,.fr-up,.fr-fall{animation:none}.fr-up{transform:translateY(-80%) rotate(10deg);opacity:1}.fr-fall{top:35%;opacity:1;transform:rotate(12deg) scale(var(--s))}}',
     '@container (max-aspect-ratio:1/1){.sx-fish{--u:min(1.4cqw,2cqh);}.fr-sea{right:35%;}.fr-town{right:2%;bottom:12%;}}',
     '.dg-map{display:flex;flex-direction:column;justify-content:center;align-items:stretch;gap:0;width:100%;height:100%;max-height:100%;padding:0;box-sizing:border-box;overflow:visible;}',
-    '.dg-map-row{display:flex;align-items:center;justify-content:center;gap:clamp(6px,1cqw,12px);width:100%;flex:1 1 auto;min-height:0;}',
+    '.dg-map-row{display:flex;align-items:center;justify-content:center;gap:clamp(14px,2.6cqw,36px);width:100%;flex:1 1 auto;min-height:0;}',
     /* Width-driven cards: equal flex share of row; height from aspect-ratio; cap so foots always fit */
     '.dg-map-row .dg-card{flex:1 1 0;width:0;min-width:0;aspect-ratio:.82;height:auto;max-height:min(64cqh,calc(100% - 0px));}',
-    '.dg-map-foots{display:grid;grid-template-columns:1fr 1fr;width:100%;flex:0 0 auto;margin-top:1em;gap:clamp(6px,1cqw,12px);}',
+    '.dg-map-foots{display:grid;grid-template-columns:1fr 1fr;width:100%;flex:0 0 auto;margin-top:1em;gap:clamp(14px,2.6cqw,36px);}',
     '.dg-map .dg-num{font-size:clamp(28px,min(7cqw,11cqh),80px);}',
     '.dg-map .dg-lab{font-size:clamp(13px,min(2.3cqw,3.6cqh),26px);}',
     '.dg-map .dg-card .ill-map{--s:clamp(36px,min(12cqh,9cqw),88px);}',
