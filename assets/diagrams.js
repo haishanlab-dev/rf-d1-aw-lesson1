@@ -19,6 +19,7 @@
     unit1: {
       main: 'Animals can help farmers know about the weather.',
       legs: [['stretch', 'their necks'], ['smell', 'the air'], ['eat', 'a lot'], ['get', 'very fat']],
+      legIll: ['giraffe', 'wind_face', 'carrot', 'rabbit'],
       always: ['If rabbits eat a lot,', 'must winter be coming?'],
       scene: { l: ['rabbit', 'carrot'], r: ['cloud_snow', 'snowman'] }, topIll: ['farmer', 'cow'],
       binIll: { a: 'cloud_rain', b: 'snowman' },
@@ -32,6 +33,7 @@
     scienceReview: {
       main: 'Animals can help farmers know about the weather.',
       legs: [['stretch', 'their necks'], ['smell', 'the air'], ['eat', 'a lot'], ['get', 'very fat']],
+      legIll: ['giraffe', 'wind_face', 'carrot', 'rabbit'],
       always: ['If you see clouds,', 'must it rain?'], scene: { l: ['cloud'], r: ['cloud_rain'] }, topIll: ['farmer', 'cow'],
       story: ['Animals guess weather', 'Which clouds make rain?', 'Rain, snow, or hail?', 'Can fish fall too?']
     }
@@ -74,17 +76,22 @@
   }
 
   function tableScene(u, mode, unit) {
-    // Drawn wooden table: the farmer & cow stand on the top (main idea), each leg is a post
-    // with a white-pill label (Detail ? / the detail).
+    // Drawn wooden table: topIll stand on the top (main idea); each leg pill can carry a
+    // matching Noto icon + Detail ? / the detail text.
     var filled = mode === 'fill' || mode === 'filledSeq';
     var legs = u.legs || [['', ''], ['', ''], ['', ''], ['', '']];
     var tops = u.topIll || ['farmer', 'cow'];
+    var legIll = u.legIll || [];
     var h = '<div class="dg sx sx-table m-' + mode + '"><div class="sx-tb">' +
       '<div class="sx-tb-ill">' + tops.map(function (n, k) { return '<span class="sx-tb-i sx-tb-i' + k + '">' + ill(n, 'ill-sx', k) + '</span>'; }).join('') + '</div>' +
       '<div class="sx-top"><span class="sx-tag">Main idea</span><span class="sx-top-s">' + esc(u.main) + '</span></div><div class="sx-legs">';
     for (var i = 0; i < 4; i++) {
+      var icon = legIll[i] ? '<span class="sx-leg-ill">' + ill(legIll[i], 'ill-leg', i) + '</span>' : '';
+      var body = filled
+        ? icon + '<span class="sx-leg-tx">' + esc(legs[i][0]) + ' ' + esc(legs[i][1]) + '</span>'
+        : icon + '<span class="sx-leg-tx">Detail <b>?</b></span>';
       h += '<div class="sx-leg" style="--i:' + i + '"><div class="sx-post"></div><div class="sx-lab sx-leg-l' + (filled ? ' is-filled' : '') + '" style="--i:' + (i + 2) + '">' +
-        (filled ? esc(legs[i][0]) + ' ' + esc(legs[i][1]) : 'Detail <b>?</b>') + '</div></div>';
+        body + '</div></div>';
     }
     return h + '</div></div></div>';
   }
@@ -153,15 +160,17 @@
   function tableDg(u, mode) {
     // mode: top | legs | topLegs | blankAsk | fill | filledSeq
     // Self-explanatory drawing: icons stand on the table top ("Main idea" + sentence),
-    // four wide legs ("Detail"). No repeated captions – the one hint line is in the panel.
+    // four wide legs ("Detail") with matching Noto glyphs when available.
     var filled = mode === 'fill' || mode === 'filledSeq';
     var legs = u.legs || [['', ''], ['', ''], ['', ''], ['', '']];
+    var legIll = u.legIll || [];
     var h = '<div class="dg dg-table m-' + mode + '">' +
       (u.topIll ? '<div class="dg-top-ill">' + u.topIll.map(function (n, k) { return ill(n, 'ill-top', k); }).join('') + '</div>' : '') +
       '<div class="dg-top"><div class="dg-top-t">Main idea</div><div class="dg-top-s">' + esc(u.main) + '</div></div><div class="dg-legs">';
     for (var i = 0; i < 4; i++) {
+      var icon = legIll[i] ? '<div class="dg-leg-ill">' + ill(legIll[i], 'ill-leg', i) + '</div>' : '';
       h += '<div class="dg-legcol" style="--i:' + i + '"><div class="dg-post"></div><div class="dg-leg' + (filled ? ' is-filled' : '') + '">' +
-        '<div class="dg-leg-t">Detail</div>' +
+        icon + '<div class="dg-leg-t">Detail</div>' +
         (filled ? '<div class="dg-leg-x">' + esc(legs[i][0]) + ' ' + esc(legs[i][1]) + '</div>' : '<div class="dg-q">?</div>') +
         '</div></div>';
     }
@@ -414,7 +423,7 @@
       var th;
       if (sc.type === 'normal') th = mode === 'filledSeq' ? 'Details hold up the main idea.' : (mode === 'topLegs' ? 'Legs hold up the top!' : (sc.body || [])[(sc.body || []).length - 1] || '');
       else if (state === 'reveal') th = 'These details hold up the top!';
-      return { html: tableScene(u, mode, unit), what: 'table:' + mode, hint: th, scene: true };
+      return { html: tableScene(u, mode, unit), what: 'table:' + mode, hint: th, scene: true, wide: 'dg-table-split', noStack: true };
     }
     if (img === 'two_skills.jpg') {
       var m = zh === 'Tell a friend' ? 'comm' : 'both';
@@ -654,7 +663,7 @@
         }
         if (state !== 'reveal') try { linkIx(view, box, r); } catch (_l) {}
       }
-      if (r.scene && scr) scr.classList.add('stack', 'scene');
+      if (r.scene && scr) { scr.classList.add('scene'); if (!r.noStack) scr.classList.add('stack'); }
       if (r.sceneQ) {
         var pq = view.querySelector('#panel') || view.querySelector('.panel');
         if (pq) {
@@ -680,6 +689,7 @@
           }
         }
       }
+      if (r.noStack && scr) scr.classList.remove('stack');
       return r.what;
     } catch (e) { return null; }
   }
@@ -1096,20 +1106,21 @@
 
     '@container (max-aspect-ratio:5/4){.tx-row{flex-direction:column;gap:clamp(8px,2cqh,18px);}.tx-ills{max-width:90%;}.ill-tx{--s:clamp(40px,min(12cqh,14cqw),88px);}.tx-photo{width:min(78cqw,320px);max-height:32cqh;}.tx-chips{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}.tx-line{font-size:clamp(16px,min(4.2cqw,5cqh),28px);}}',
     '.tip-stage{justify-content:center;}',
-    '.tip-prop{position:relative;z-index:1;width:min(78cqw,520px);transform:rotate(-3.5deg);filter:drop-shadow(0 14px 22px rgba(31,42,68,.18));}',
-    '.tip-clip{position:absolute;left:50%;top:-18px;transform:translateX(-50%);width:54px;height:42px;z-index:2;}',
-    '.tip-clip-bar{position:absolute;left:50%;top:0;transform:translateX(-50%);width:46px;height:18px;background:linear-gradient(#E25555,#C43B3B);border-radius:5px 5px 3px 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}',
-    ".tip-clip-bar::before{content:'';position:absolute;left:50%;top:4px;transform:translateX(-50%);width:10px;height:10px;border-radius:50%;background:#FBF6E9;box-shadow:inset 0 0 0 2px #9A2A2A;}",
-    '.tip-clip-wire{position:absolute;left:50%;top:14px;transform:translateX(-50%);width:38px;height:26px;border:3px solid #C43B3B;border-top:0;border-radius:0 0 10px 10px;background:transparent;}',
-    '.tip-note{background:#FFE566;color:#1F2A44;border-radius:18px;padding:clamp(28px,6cqh,48px) clamp(22px,4cqw,40px) clamp(24px,5cqh,40px);',
-    ' text-align:center;font-weight:800;font-size:clamp(20px,min(3.6cqw,6.2cqh),40px);line-height:1.35;}',
+    '.tip-stage .sx-hill,.tip-stage .sx-hill2{display:none!important;}',
+    '.tip-prop{position:relative;z-index:1;width:min(92cqw,900px);transform:rotate(-2.5deg);filter:drop-shadow(0 16px 26px rgba(31,42,68,.2));}',
+    '.tip-clip{position:absolute;left:50%;top:-22px;transform:translateX(-50%);width:64px;height:50px;z-index:2;}',
+    '.tip-clip-bar{position:absolute;left:50%;top:0;transform:translateX(-50%);width:54px;height:22px;background:linear-gradient(#E25555,#C43B3B);border-radius:6px 6px 3px 3px;box-shadow:inset 0 1px 0 rgba(255,255,255,.25);}',
+    ".tip-clip-bar::before{content:'';position:absolute;left:50%;top:5px;transform:translateX(-50%);width:12px;height:12px;border-radius:50%;background:#FBF6E9;box-shadow:inset 0 0 0 2px #9A2A2A;}",
+    '.tip-clip-wire{position:absolute;left:50%;top:16px;transform:translateX(-50%);width:44px;height:30px;border:3.5px solid #C43B3B;border-top:0;border-radius:0 0 12px 12px;background:transparent;}',
+    '.tip-note{background:#FFE566;color:#1F2A44;border-radius:22px;padding:clamp(32px,6.5cqh,56px) clamp(28px,5cqw,56px) clamp(28px,5.5cqh,48px);',
+    ' text-align:center;font-weight:800;font-size:clamp(24px,min(4.2cqw,7cqh),48px);line-height:1.35;}',
     '.tip-yellow .tip-note{background:#FFE566;}',
     '.tip-mint .tip-note{background:#C8F0D4;}',
     '.tip-pink .tip-note{background:#FFC4D6;}',
     '.tip-blue .tip-note{background:#CDE4F8;}',
-    '.tip-line{margin:0.15em 0;}',
+    '.tip-line{margin:0.18em 0;white-space:nowrap;}',
     '@media (prefers-reduced-motion:reduce){.tip-prop{transform:none}}',
-    '@container (max-aspect-ratio:1/1){.tip-prop{width:min(88cqw,520px);transform:rotate(-2deg);}.tip-note{font-size:clamp(18px,min(5.2cqw,5cqh),34px);}}',
+    '@container (max-aspect-ratio:1/1){.tip-prop{width:min(94cqw,720px);transform:rotate(-1.5deg);}.tip-note{font-size:clamp(20px,min(5cqw,5.4cqh),36px);padding:clamp(24px,5cqh,40px) clamp(18px,4cqw,36px);}.tip-line{white-space:normal;}}',
     '.dg-map.lit-s1 .dg-card[data-sess="1"],.dg-map.lit-s2 .dg-card[data-sess="2"]{z-index:2;box-shadow:0 0 0 .8cqmin #FFF4C2,0 0 0 2cqmin #E8C04A,0 10px 22px rgba(201,154,34,.35);animation:dgWiggle .9s ease-in-out infinite;}',
     '.dg-map.lit-s1 .dg-card[data-part="2"],.dg-map.lit-s2 .dg-card[data-part="4"]{animation-delay:.15s;}',
     '@keyframes dgWiggle{0%,100%{transform:rotate(0) scale(1.03)}25%{transform:rotate(-2.5deg) scale(1.05)}75%{transform:rotate(2.5deg) scale(1.05)}}',
@@ -1200,6 +1211,25 @@
     ' .qc.is-live .qc-tile.is-right .qc-tick{animation-delay:0s;}',
     '}',
     '@container (max-aspect-ratio:1/1){.qc-row{gap:3cqw;}.qc-tile{flex:0 1 46cqw;width:46cqw;}}',
+    /* table split: left = HTML diagram (large), right = Q / reveal / hint (Warm-Up 50/50) */
+    '#view .screen.dg-table-split.scene .content,#view .screen.dg-table-split.scene.stack .content{flex-direction:row!important;align-items:center;justify-content:stretch;gap:clamp(12px,2.4vw,36px);}',
+    '#view .screen.dg-table-split.scene .content > .imgbox{flex:1 1 52%;max-width:58%;min-width:0;order:0!important;}',
+    '#view .screen.dg-table-split.scene .content > .panel{flex:1 1 42%;max-width:46%;min-width:0;order:0!important;align-items:flex-start;justify-content:center;text-align:left;row-gap:clamp(8px,1.4vh,16px);padding-left:clamp(8px,2vw,28px);padding-right:clamp(12px,3vw,40px);flex-wrap:nowrap;flex-direction:column;}',
+    '#view .screen.dg-table-split.scene .panel .q,#view .screen.dg-table-split.scene .panel .rev,#view .screen.dg-table-split.scene .panel .line.hint{text-align:left;align-self:stretch;}',
+    '#view .screen.dg-table-split.scene .panel .q .line,#view .screen.dg-table-split.scene .panel .rev .line{text-align:left;}',
+    '#view .screen.dg-table-split.scene .panel .pagehint{align-self:flex-start;text-align:left;margin:0;}',
+    '#view .screen.dg-table-split.scene .panel .cd{align-self:flex-start;}',
+    '#view .screen.dg-table-split.scene .panel .sx-ans{align-self:flex-start;}',
+    '#view .screen.dg-table-split .sx-table{--u:min(1.2cqw,2.55cqh);}',
+    '#view .screen.dg-table-split .sx-tb{width:min(100%,calc(var(--u)*94));}',
+    '#view .screen.dg-table-split .sx-hill,#view .screen.dg-table-split .sx-hill2{display:none!important;}',
+    '.sx-leg-l{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:calc(var(--u)*.45);}',
+    '.sx-leg-ill{display:block;line-height:0;}',
+    '.ill-leg{--s:clamp(26px,calc(var(--u)*5.2),54px);width:var(--s);height:auto;aspect-ratio:1/1;display:block;}',
+    '.sx-leg-tx{display:block;line-height:1.2;}',
+    '.dg-leg-ill{display:flex;justify-content:center;line-height:0;margin-bottom:.2cqh;}',
+    '.dg-leg .ill-leg{--s:clamp(28px,min(8cqh,6cqw),56px);}',
+    '@container (max-aspect-ratio:5/4){#view .screen.dg-table-split.scene .content{flex-direction:column!important;}#view .screen.dg-table-split.scene .content > .imgbox{flex:1 1 55%;max-width:100%;}#view .screen.dg-table-split.scene .content > .panel{flex:0 1 auto;max-width:100%;align-items:center;text-align:center;padding-left:clamp(12px,3vw,36px);padding-right:clamp(12px,3vw,36px);}#view .screen.dg-table-split.scene .panel .q,#view .screen.dg-table-split.scene .panel .rev,#view .screen.dg-table-split.scene .panel .line.hint,#view .screen.dg-table-split.scene .panel .pagehint{text-align:center;align-self:center;}}',
     /* title/opener hero photo: fit the stage with its caption (calm-shell's imgbox img 100%/100% made it overflow) */
     '#view .content > .imgbox .tx-stage.is-photo-hero .tx-hero > .tx-side{flex:1 1 0;min-height:0;height:auto;align-items:center;}',
     '#view .content > .imgbox .tx-stage.is-photo-hero img.tx-photo-hero{width:auto;max-width:100%;height:100%;max-height:100%;aspect-ratio:3/2;object-fit:cover;}',
