@@ -220,8 +220,8 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <audio id="au" preload="auto" playsinline></audio>
 <script src="../assets/progress-api.js"></script>
 <script src="../assets/retell-recorder.js?v=mic3"></script>
-<script src="../assets/diagrams.js?v=dg26"></script>
-<script src="../assets/reading.js?v=rd7"></script>
+<script src="../assets/diagrams.js?v=dg27"></script>
+<script src="../assets/reading.js?v=rd8"></script>
 <script src="../assets/interact-data.js?v=ix5"></script>
 <script src="../assets/interact.js?v=ix12"></script>
 <script>
@@ -246,7 +246,7 @@ const stage=document.getElementById('stage'), view=document.getElementById('view
 function fit(){/* fluid layout — no fixed stage scale */}
 addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEventListener('webkitfullscreenchange',fit);
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
-let session='A', paused=false, actx=null, runId=0;
+let session='A', paused=false, actx=null, runId=0, playIdx=0;
 var RF_UNIT='unit2';
 const $=id=>document.getElementById(id);
 
@@ -362,6 +362,7 @@ async function runFromIndex(startIdx){
   const start=SCREENS[startIdx]; if(!start)return;
   session=start.s;
   for(let i=startIdx;i<SCREENS.length;i++){
+    playIdx=i;
     const sc=SCREENS[i];
     if(sc.s!==start.s) break;
     if(id!==runId)return;
@@ -396,6 +397,7 @@ async function runFromIndex(startIdx){
 }
 function jumpToPart(part){
   const sc=partFirst(part); if(!sc) return;
+  playIdx=sc.i;
   ensureAudio(); unlockAudioFor(sc); tryFullscreen();
   $('start').style.display='none'; setPlaying(true); setPauseIcon(false);
   log({ev:'jump',part});
@@ -405,6 +407,38 @@ async function runSession(sess){
   const first=SCREENS.find(s=>s.s===sess); if(!first)return;
   await runFromIndex(first.i);
 }
+
+/* Desktop-only keyboard skip (never iPad / iPhone — incl. iPadOS desktop-UA + Bluetooth keyboard) */
+function rfIsIPadLike(){
+  const ua=navigator.userAgent||'';
+  if(/iPad|iPhone|iPod/.test(ua)) return true;
+  if(navigator.platform==='MacIntel' && (navigator.maxTouchPoints||0)>1) return true;
+  return false;
+}
+function rfSkipScreen(delta){
+  if(rfIsIPadLike()) return;
+  if(!document.body.classList.contains('playing')) return;
+  if($('start') && $('start').style.display!=='none' && !document.body.classList.contains('playing')) return;
+  const next=Math.max(0, Math.min(SCREENS.length-1, playIdx+delta));
+  if(next===playIdx && (next===0 || next===SCREENS.length-1)) return;
+  runId++;
+  try{ au.pause(); }catch(e){}
+  holdResolve=null; paused=false; setPauseIcon(false);
+  try{ if(window.RFInteract&&RFInteract.cancel) RFInteract.cancel(); }catch(e){}
+  try{ if(window.RFRetell&&RFRetell.stopIfRecording) RFRetell.stopIfRecording(); }catch(e){}
+  try{ if(window.RFReading&&RFReading.stop) RFReading.stop(); }catch(e){}
+  playIdx=next;
+  runFromIndex(next);
+}
+if(!rfIsIPadLike()){
+  window.addEventListener('keydown', (e)=>{
+    if(e.metaKey||e.ctrlKey||e.altKey) return;
+    const t=e.target; if(t && (t.tagName==='INPUT'||t.tagName==='TEXTAREA'||t.isContentEditable)) return;
+    if(e.key==='ArrowRight'||e.key==='j'||e.key==='J'||e.key==='.'){ e.preventDefault(); rfSkipScreen(1); }
+    else if(e.key==='ArrowLeft'||e.key==='k'||e.key==='K'||e.key===','){ e.preventDefault(); rfSkipScreen(-1); }
+  }, true);
+}
+
 $('go').onclick=()=>{
   ensureAudio();
   const first=SCREENS.find(s=>s.s===session); unlockAudioFor(first); tryFullscreen();
@@ -438,7 +472,7 @@ if(P.get('s')==='A'||P.get('session')==='A'){session='A';$('sA').classList.add('
 const wantPart=+P.get('part');
 if(wantPart>=1&&wantPart<=4){const sc=partFirst(wantPart); if(sc){session=sc.s; if(session==='B'){$('sB').classList.add('sel');$('sA').classList.remove('sel');} else {$('sA').classList.add('sel');$('sB').classList.remove('sel');}}}
 // static frame mode for export/QA: ?frame=N&state=show|ask|reveal
-if(P.has('frame')){$('start').style.display='none';setPlaying(true);setPauseIcon(false);const sc=SCREENS[+P.get('frame')];const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
+if(P.has('frame')){$('start').style.display='none';setPlaying(true);setPauseIcon(false);const sc=SCREENS[+P.get('frame')];playIdx=sc.i;const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
 setPauseIcon(false); // init
 </script>
 </body>
