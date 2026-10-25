@@ -38,7 +38,7 @@
   --h-play: 100px;
   --tab-h: 72px;
   --stats-h: 56px;
-  --pause: clamp(96px, 14vw, 112px);
+  --pause: clamp(78px, 11.5vw, 92px);
   --title: clamp(32px, 4.2vw, 64px);
   --sub: clamp(18px, 2vw, 28px);
   --body: clamp(22px, 2.6vw, 40px);
@@ -364,12 +364,12 @@ body.playing #pausebtn { display: grid !important; }
 /* Large pause / play FAB — lifts above tabs when not fullscreen */
 #pausebtn {
   position: fixed;
-  right: clamp(16px, 3vw, 36px);
-  bottom: clamp(12px, 3vw, 36px);
+  right: clamp(14px, 2.6vw, 28px);
+  bottom: clamp(10px, 2.6vw, 28px);
   width: var(--pause); height: var(--pause);
   border-radius: 50%;
   border: 0;
-  border-bottom: 8px solid var(--blue-deep);
+  border-bottom: 6px solid var(--blue-deep);
   background: var(--blue);
   color: #fff;
   font-size: calc(var(--pause) * 0.42);
@@ -503,7 +503,7 @@ body.playing:not(.fs) #pausebtn {
   .shell-stats .stat.last { display: none; }
 }
 @media (max-height: 500px) and (orientation: landscape) {
-  :root { --tab-h: 56px; --pause: 84px; }
+  :root { --tab-h: 56px; --pause: 70px; }
   .shell-stats { height: 48px; }
   .shell-tabs { height: 56px; }
   .imgbox { flex: 0 1 40%; }
@@ -797,13 +797,18 @@ body.playing:not(.fs) #pausebtn {
 #view .screen.stack .line.big { font-size: clamp(24px, min(3.4vw, 6vh), 46px); }
 #view .screen.stack .content > .imgbox {
   flex: 1 1 0; align-self: center; width: 100%;
-  max-width: calc(100% - 2 * (var(--pause) + clamp(8px, 2vw, 24px)));
+  max-width: calc(100% - 2 * clamp(6px, 1vw, 14px));
+}
+/* Reading + Lesson Map: true full-bleed stage width */
+#view .screen.stack.is-read .content > .imgbox,
+#view .screen.stack.is-map .content > .imgbox {
+  max-width: 100%;
 }
 
 /* Not fullscreen (Safari toolbar + tabs visible): smaller pause FAB tucked just
    above the tabs, and the screen reserves its full height so it never covers
    content (fullscreen keeps the big FAB). */
-body.playing:not(.fs) { --pause: 84px; }
+body.playing:not(.fs) { --pause: 70px; }
 body.playing:not(.fs) #pausebtn {
   bottom: calc(var(--tab-h) + 8px + env(safe-area-inset-bottom, 0px));
   border-bottom-width: 6px;
