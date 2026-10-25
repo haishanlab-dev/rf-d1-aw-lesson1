@@ -361,7 +361,7 @@
       return { html: textScene(ao, { ills: ['sun', 'cloud_rain', 'storm', 'snowflake'], hero: true }), what: 'tx:ao', hint: '', scene: true };
     }
     if (zh === 'New Words' || zh === 'Word Bank' || /^newwords_/i.test(img)) {
-      return { html: textScene(null, { chips: wordsChips(unit) }), what: 'tx:words', hint: 'Look, say, and remember.', scene: true };
+      return { html: textScene(null, { chips: wordsChips(unit, sc) }), what: 'tx:words', hint: 'Look, say, and remember.', scene: true };
     }
     if (zh === 'Story Recap') {
       var rcIll = unit === 'unit3' ? ['cloud_rain', 'snowflake', 'storm'] : (unit === 'unit4' ? ['fish', 'tornado', 'cloud_rain'] : ['cow', 'horse', 'farmer']);
@@ -594,29 +594,46 @@
     if (unit === 'unit4') return 'Next: What things can fall from the sky?';
     return 'Next: How can animals guess the weather?';
   }
-  function wordsChips(unit) {
+  function wordsChips(unit, sc) {
     /* Each chip icon must literally depict the word (or a strong everyday association
        a 7-year-old gets). Noto Emoji SVGs under assets/illus/noto/. */
-    if (unit === 'unit2') return [
+    var u2 = [
       { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'giraffe' },
       { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'up_arrow' }, { w: 'all', ill: 'hundred' }
     ];
-    if (unit === 'unit3') return [
+    var u3 = [
       { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'sparkles' }, { w: 'fall', ill: 'cloud_rain' },
       { w: 'warm', ill: 'sun' }, { w: 'dangerous', ill: 'warning' }, { w: 'happen', ill: 'exclamation' }
     ];
-    if (unit === 'unit4') return [
+    var u4 = [
       { w: 'into', ill: 'inbox' }, { w: 'carry', ill: 'flexed_biceps' }, { w: 'wind', ill: 'leaf_wind' },
       { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'thinking' }
     ];
-    if (unit === 'scienceReview') return [
-      { w: 'tornado', ill: 'tornado' }, { w: 'wind', ill: 'leaf_wind' }, { w: 'carry', ill: 'flexed_biceps' },
-      { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'thinking' }, { w: 'into', ill: 'inbox' }
-    ];
-    return [
+    var l1 = [
       { w: 'neck', ill: 'giraffe' }, { w: 'air', ill: 'wind_face' }, { w: 'rabbit', ill: 'rabbit' },
       { w: 'fat', ill: 'carrot' }, { w: 'know', ill: 'light_bulb' }, { w: 'when', ill: 'alarm_clock' }
     ];
+    if (unit === 'unit2') return u2;
+    if (unit === 'unit3') return u3;
+    if (unit === 'unit4') return u4;
+    if (unit === 'scienceReview') {
+      var en = ((sc && sc.en) || '').toLowerCase();
+      if (/animals/.test(en)) {
+        /* Match SR Word Bank body: stretch · smell · neck / fat · know · when */
+        return [
+          { w: 'stretch', ill: 'flexed_biceps' }, { w: 'smell', ill: 'wind_face' }, { w: 'neck', ill: 'giraffe' },
+          { w: 'fat', ill: 'carrot' }, { w: 'know', ill: 'light_bulb' }, { w: 'when', ill: 'alarm_clock' }
+        ];
+      }
+      if (/clouds/.test(en)) {
+        /* unit2 chips + fluffy from body line 2 */
+        return u2.concat([{ w: 'fluffy', ill: 'cloud' }]);
+      }
+      if (/snow|ice/.test(en)) return u3;
+      if (/fish/.test(en)) return u4;
+      return u4;
+    }
+    return l1;
   }
   function isCropImg(img) {
     return /^(warmup_|ao_|newwords_|project_|title_p|unit\d+_title_|reading_p|opener_|vocabreview_|rc_p)/i.test(img || '');
