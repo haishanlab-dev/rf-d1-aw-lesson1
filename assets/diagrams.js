@@ -333,8 +333,8 @@
       } else {
         labels = [1, 2, 3, 4].map(function (p) { return window.partLabel ? partLabel(p) : 'Part ' + p; });
       }
-      if (zh === 'Session 1 done') { marks = ['done', 'done', 'next', '']; marks.seqDelay = function (i) { return 0.5 + i * 0.7; }; }
-      else if (zh === 'Lesson Map' && sc.s === 'B') { marks = ['done', 'done', 'next', 'next2']; marks.seqDelay = function (i) { return i < 2 ? 0.3 : 0.8 + (i - 2) * 0.6; }; }
+      /* Session 1 done shows the same map state as Session 2's Lesson Map: 1–2 done, 3 next. */
+      if (zh === 'Session 1 done' || (zh === 'Lesson Map' && sc.s === 'B')) { marks = ['done', 'done', 'next', 'next2']; marks.seqDelay = function (i) { return i < 2 ? 0.3 : 0.8 + (i - 2) * 0.6; }; }
       else if (zh === 'Lesson Map' || zh === 'Weather Review') { marks = ['seq', 'seq', 'seq', 'seq']; marks.seqDelay = function (i) { return 0.6 + i * 1.1; }; }
       else if (zh === 'Great job!' || end) { marks = ['done', 'done', 'done', 'done']; marks.seqDelay = function (i) { return 0.4 + i * 0.6; }; }
       else { marks = ['seq', 'seq', 'seq', 'seq']; marks.seqDelay = function (i) { return (sc.type === 'retell' && state === 'reveal' ? 0.3 : 0.8) + i * 1.3; }; }
@@ -483,7 +483,6 @@
       else if (g === 2) root.classList.add('lit-s2');
     }
     var zh = sc.zh || '';
-    if (zh === 'Session 1 done') { setGroup(2); return; }
     if (what === 'map:end' || zh === 'Great job!') { setGroup(0); return; }
     var tm = MAP_TIMING[unit + ':' + sc.i] || (sc.s === 'B' ? [null, 0.2, 0.8] : [0.35, 0.55, 0.75]);
     var dur = Math.max(3, Number(sc.dn) || 12);
@@ -723,7 +722,6 @@
     '#view .screen.is-end .dg-map > .dg-title{display:none;}',
     '#view .screen.is-end .dg-map{gap:0;}',
     '#view .screen.is-end .dg-map-row .dg-card{max-width:none;aspect-ratio:auto;height:100%;max-height:none;}',
-    '#view .screen.is-end .dg-map .dg-arrow{font-size:clamp(12px,2.4cqw,24px);}',
     '#view .screen.is-end .content > .panel{align-items:center;text-align:center;}',
     '#view .screen.is-end .endrow{justify-content:center;align-items:stretch;width:100%;gap:clamp(10px,1.6vh,18px);padding:0 clamp(24px,6vw,96px) clamp(8px,2vh,20px);}',
     '#view .screen.is-end .endrow .endbtn{margin:0;}',
@@ -1084,7 +1082,6 @@
     /* Map glyphs must stay visible: illIn+both with --b:3 left card 4 at opacity:0 during delay */
     '.dg-card .ill,.dg-card .ill-map{animation:none!important;opacity:1!important;transform:none!important;}',
     '.dg-map-glyphs{display:none!important;}',
-    '#view .screen.is-end .dg-card .ill-map{--s:clamp(28px,min(10cqh,6cqw),64px);}',
     '@container (max-aspect-ratio:1/1){.dg-card .ill-map{--s:clamp(32px,min(10cqh,14cqw),72px);}.dg-arrow-mid{margin-bottom:0;}}',
     '.tx-stage{justify-content:center;padding:clamp(4px,1cqh,10px) clamp(2px,.6cqw,8px);width:100%;}',
     '.tx-stage.is-hero{justify-content:center;align-items:center;}',
