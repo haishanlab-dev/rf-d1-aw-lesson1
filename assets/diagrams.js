@@ -122,17 +122,38 @@
   function lns(arr, start) {
     return arr.map(function (l, k) { return '<span class="dg-ln' + (start < 0 ? '' : ' seq') + '" style="--i:' + (start + k) + '">' + esc(l) + '</span>'; }).join('<br>');
   }
+  var MAP_ILLS = ['sun_cloud', 'speaking', 'thinking', 'child'];
+  function mapCard(i, label, m, marks) {
+    return '<' + (marks.tap ? 'button type="button" data-part="' + (i + 1) + '" aria-label="Go to part ' + (i + 1) + '"' : 'div') +
+      ' class="dg-card dg-c' + i + (m ? ' is-' + m : '') + '" style="--c:' + MAP_COLORS[i] + ';--d:' + (marks.seqDelay ? marks.seqDelay(i) : 0) + 's" data-sess="' + (i < 2 ? '1' : '2') + '">' +
+      '<div class="dg-num">' + (i + 1) + '</div><div class="dg-lab">' + esc(label) + '</div>' +
+      (m === 'done' ? '<div class="dg-check" aria-label="done">' + ill('check', 'ill-check', i) + '</div>' : '') +
+      '</' + (marks.tap ? 'button' : 'div') + '>';
+  }
   function mapDg(labels, foot, marks) {
-    // marks[i]: '' | 'done' | 'next' | 'seq' | 'here'
-    var h = '<div class="dg dg-map"><div class="dg-row">';
-    for (var i = 0; i < 4; i++) {
-      var m = marks[i] || '';
-      h += (i ? '<div class="dg-arrow" aria-hidden="true">▸</div>' : '') +
-        '<' + (marks.tap ? 'button type="button" data-part="' + (i + 1) + '" aria-label="Go to part ' + (i + 1) + '"' : 'div') + ' class="dg-card dg-c' + i + (m ? ' is-' + m : '') + '" style="--c:' + MAP_COLORS[i] + ';--d:' + (marks.seqDelay ? marks.seqDelay(i) : 0) + 's">' +
-        '<div class="dg-num">' + (i + 1) + '</div><div class="dg-lab">' + esc(labels[i]) + '</div>' +
-        (m === 'done' ? '<div class="dg-check" aria-label="done">' + ill('check', 'ill-check', i) + '</div>' : '') + '</' + (marks.tap ? 'button' : 'div') + '>';
-    }
-    h += '</div>' + (foot ? '<div class="dg-foot">' + esc(foot) + '</div>' : '') + '</div>';
+    // foot: { s1: 'Session 1 · Parts 1–2', s2: 'Session 2 · Parts 3–4' } or legacy string (ignored)
+    var labs = (foot && typeof foot === 'object') ? foot : { s1: 'Session 1 · Parts 1–2', s2: 'Session 2 · Parts 3–4' };
+    var h = '<div class="dg dg-map"><div class="dg-map-body">';
+    // left group: cards 1–2
+    h += '<div class="dg-map-half" data-sess="1"><div class="dg-map-cards">';
+    h += mapCard(0, labels[0], marks[0], marks);
+    h += '<div class="dg-arrow" aria-hidden="true">▸</div>';
+    h += mapCard(1, labels[1], marks[1], marks);
+    h += '</div><div class="dg-map-glyphs" aria-hidden="true">' +
+      '<span class="dg-map-g">' + ill(MAP_ILLS[0], 'ill-map', 0) + '</span>' +
+      '<span class="dg-map-g">' + ill(MAP_ILLS[1], 'ill-map', 1) + '</span></div>';
+    h += '<div class="dg-sess-lab">' + esc(labs.s1 || '') + '</div></div>';
+    h += '<div class="dg-arrow dg-arrow-mid" aria-hidden="true">▸</div>';
+    // right group: cards 3–4
+    h += '<div class="dg-map-half" data-sess="2"><div class="dg-map-cards">';
+    h += mapCard(2, labels[2], marks[2], marks);
+    h += '<div class="dg-arrow" aria-hidden="true">▸</div>';
+    h += mapCard(3, labels[3], marks[3], marks);
+    h += '</div><div class="dg-map-glyphs" aria-hidden="true">' +
+      '<span class="dg-map-g">' + ill(MAP_ILLS[2], 'ill-map', 2) + '</span>' +
+      '<span class="dg-map-g">' + ill(MAP_ILLS[3], 'ill-map', 3) + '</span></div>';
+    h += '<div class="dg-sess-lab">' + esc(labs.s2 || '') + '</div></div>';
+    h += '</div></div>';
     return h;
   }
   function tableDg(u, mode) {
@@ -194,9 +215,9 @@
     var zh = sc.zh || '';
     var end = isEnd(sc);
     if (img === 'map_all.png' || end) {
-      var labels, foot = 'Session 1: parts 1–2 · Session 2: parts 3–4', marks = [];
+      var labels, foot = { s1: 'Session 1 · Parts 1–2', s2: 'Session 2 · Parts 3–4' }, marks = [];
       if (unit === 'scienceReview') {
-        foot = '';
+        foot = { s1: 'Parts 1–2', s2: 'Parts 3–4' };
         if (zh === 'Weather Review' || zh === 'Great job!') labels = [1, 2, 3, 4].map(function (p) { return window.partLabel ? partLabel(p) : 'Part ' + p; });
         else labels = u.story;
       } else {
@@ -216,7 +237,7 @@
           marks.seqDelay = function (i) { return 0.4 + i * 0.6; };
           marks.tap = true;
         }
-        if (unit === 'scienceReview') foot = '';
+        if (unit === 'scienceReview') foot = { s1: 'Parts 1–2', s2: 'Parts 3–4' };
       }
       return { html: mapDg(labels, foot, marks), what: end ? 'map:end' : 'map', map: !!sc.map || end, end: end };
     }
@@ -264,6 +285,50 @@
     if (sc.type === 'pause') return (sc.q || []).length <= 3 && (sc.reveal || []).length <= 3 && chars(sc.q) <= 90 && chars(sc.reveal) <= 90;
     return false;
   }
+
+  var mapTok = 0;
+  function mapSessHighlight(box, sc, what) {
+    var root = box.querySelector('.dg-map'); if (!root) return;
+    var my = ++mapTok;
+    function setGroup(g) {
+      root.classList.remove('lit-s1', 'lit-s2');
+      if (g === 1) root.classList.add('lit-s1');
+      else if (g === 2) root.classList.add('lit-s2');
+    }
+    // Session 1 done → light next (parts 3–4); Great job → both done, no pulse
+    var zh = sc.zh || '';
+    if (zh === 'Session 1 done') { setGroup(2); return; }
+    if (what === 'map:end' || zh === 'Great job!') { setGroup(0); return; }
+    // Session B map: focus Part 3–4 (with brief Part 1–2 as done context)
+    var sessB = sc.s === 'B' || /session 2/i.test(sc.en || '');
+    var dur = Math.max(4, Number(sc.dn) || 12);
+    var au = document.getElementById('au');
+    var reduce = false;
+    try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (reduce) { setGroup(sessB ? 2 : 1); return; }
+    // Timed to narration: intro → Session1/Parts1–2 → Session2/Parts3–4
+    // Fractions of clip duration (matches "Today we do Part 1 and Part 2. Next time… Part 3 and Part 4.")
+    var t1 = sessB ? 0.08 : 0.22; // start lighting s1 (or skip quickly on sess B)
+    var t2 = sessB ? 0.18 : 0.52; // switch to s2
+    var t3 = 0.92; // clear near end (tap hint)
+    var iv = setInterval(function () {
+      if (my !== mapTok) { clearInterval(iv); return; }
+      var t = 0;
+      if (au && !au.paused && isFinite(au.currentTime)) t = au.currentTime / Math.max(0.5, (au.duration || dur));
+      else if (au && au.ended) t = 1;
+      else {
+        // fallback clock from first paint if audio not yet playing
+        if (!root._t0) root._t0 = Date.now();
+        t = (Date.now() - root._t0) / (dur * 1000);
+      }
+      if (t < t1) setGroup(0);
+      else if (t < t2) setGroup(sessB ? 2 : 1);
+      else if (t < t3) setGroup(2);
+      else setGroup(0);
+      if (t >= 1.05) clearInterval(iv);
+    }, 100);
+  }
+
   function apply(view, sc, state, unit) {
     try {
       try { if (window.RFReading && RFReading.apply(view, sc, state, unit)) return 'reading'; } catch (_r) {}
@@ -280,6 +345,7 @@
         box.querySelectorAll('.dg-card[data-part]').forEach(function (b) {
           b.addEventListener('click', function (e) { e.stopPropagation(); try { if (window.jumpToPart) jumpToPart(+b.getAttribute('data-part')); } catch (_e) {} });
         });
+        try { mapSessHighlight(box, sc, r.what); } catch (_h) {}
       } else if (scr && !sc.map && (isShort(sc) || r.hint !== undefined)) scr.classList.add('stack');
       if (r.scene && scr) scr.classList.add('stack', 'scene');
       if (r.sceneQ) {
@@ -639,6 +705,33 @@
     '@keyframes frFall{0%{transform:translateY(-20%) rotate(-15deg) scale(var(--s));opacity:0}10%{opacity:1}85%{opacity:1}100%{transform:translateY(120%) rotate(35deg) scale(var(--s));opacity:0}}',
     '@media (prefers-reduced-motion:reduce){.fr-spout-core,.fr-up,.fr-fall{animation:none}.fr-up{transform:translateY(-80%) rotate(10deg);opacity:1}.fr-fall{top:35%;opacity:1;transform:rotate(12deg) scale(var(--s))}}',
     '@container (max-aspect-ratio:1/1){.sx-fish{--u:min(1.4cqw,2cqh);}.fr-sea{right:35%;}.fr-town{right:2%;bottom:12%;}}',
+    '.dg-map{justify-content:center;gap:0;}',
+    '.dg-map-body{display:flex;align-items:stretch;justify-content:center;gap:1.2cqw;width:100%;flex:0 1 auto;}',
+    '.dg-map-half{flex:1 1 0;min-width:0;max-width:48%;display:flex;flex-direction:column;align-items:stretch;}',
+    '.dg-map-cards{display:flex;align-items:center;justify-content:center;gap:1.2cqw;width:100%;}',
+    '.dg-map-half .dg-card{flex:1 1 0;max-width:none;width:auto;}',
+    '.dg-arrow-mid{align-self:center;margin-bottom:18%;}',
+    '.dg-map-glyphs{display:flex;justify-content:space-around;align-items:flex-end;width:100%;margin-top:1.6cqh;min-height:clamp(36px,10cqh,72px);pointer-events:none;}',
+    '.dg-map-g{display:grid;place-items:center;flex:1 1 0;}',
+    '.ill-map{--s:clamp(36px,min(9cqh,7cqw),72px);}',
+    '.dg-sess-lab{margin-top:1em;text-align:left;align-self:flex-start;font-weight:700;font-size:clamp(12px,min(2.4cqw,6.4cqh),28px);color:#3C4656;line-height:1.2;padding-left:0.15em;}',
+    '.dg-map .dg-card{transition:box-shadow .35s ease,transform .35s ease,filter .35s ease;}',
+    '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-card,',
+    '.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-card{box-shadow:0 0 0 .7cqmin #FFF4C2,0 0 0 1.4cqmin #E8C04A;transform:translateY(-2px);filter:saturate(1.08);z-index:1;}',
+    '.dg-map.lit-s1 .dg-map-half[data-sess="1"] .dg-sess-lab,',
+    '.dg-map.lit-s2 .dg-map-half[data-sess="2"] .dg-sess-lab{color:#2F5F8C;font-weight:800;}',
+    '.dg-map.lit-s1 .dg-map-half[data-sess="2"],',
+    '.dg-map.lit-s2 .dg-map-half[data-sess="1"]{opacity:.72;}',
+    '#view .screen.is-end .dg-map-glyphs{display:none;}',
+    '#view .screen.is-end .dg-sess-lab{margin-top:.6em;}',
+    '#view .screen.is-end .dg-arrow-mid{margin-bottom:8%;}',
+    '@container (max-aspect-ratio:1/1){',
+    '  .dg-map-body{flex-wrap:wrap;gap:3cqh 2cqw;}',
+    '  .dg-map-half{flex:0 0 100%;max-width:100%;}',
+    '  .dg-arrow-mid{display:none;}',
+    '  .dg-map-half .dg-card{flex:0 0 44cqw;max-width:44cqw;aspect-ratio:1.15;max-height:none;}',
+    '  .ill-map{--s:clamp(32px,min(8cqh,12cqw),64px);}',
+    '}',
   ].join('\n');
   function injectCss() {
     if (document.getElementById('rf-dg-css')) return;
