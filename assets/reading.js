@@ -1,0 +1,223 @@
+/* Reading Future · Listen-and-Read as real HTML (rounded white box).
+   RFReading.apply(view, sc, state, unit) — replaces page-screenshot crops.
+   Read-along: sentence highlight timed by character length × screen narration. */
+(function () {
+  'use strict';
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
+
+  var PASS = {
+    unit1: {
+      vocab: ['know', 'when', 'necks', 'air', 'rabbits', 'fat'],
+      photo: { p1: 'horse_p11.jpg', p2: 'horse_p11.jpg', p3: 'rabbit_big.jpg', all: 'horse_p11.jpg' },
+      paras: [
+        { id: 'p1', sents: ['Farmers need to know about the weather.', 'Their farms need it!', 'Animals can help.'] },
+        { id: 'p2', sents: ['Cows and horses know when it will rain.', 'They stretch their necks.', 'They smell the air.', 'Then the farmer knows it will rain.'] },
+        { id: 'p3', sents: ['Winter is coming.', 'The rabbits are eating a lot.', 'They are getting very fat.', 'Then the farmer knows it will be a long, cold winter.', 'How do the animals know?'] }
+      ]
+    },
+    unit2: {
+      vocab: ['storm', 'cloudy', 'tall', 'sky', 'top', 'all'],
+      photo: { p1: 'cloudy.jpg', p2: 'cloudy.jpg', p3: 'cloudy.jpg', p4: 'storm_cloud.jpg', all: 'storm_cloud.jpg' },
+      paras: [
+        { id: 'p1', sents: ["It's cloudy outside.", 'But will it rain?', 'Not all clouds make rain.'] },
+        { id: 'p2', sents: ['Some clouds are high.', 'They are thin and long.', 'They do not make rain.'] },
+        { id: 'p3', sents: ['Other clouds are low.', 'They are white and fluffy.', 'They do not make rain.'] },
+        { id: 'p4', sents: ['Storm clouds are dark and gray.', 'They are very big and tall.', 'Their bottoms are low in the sky, and their tops are high.', 'These clouds make rain!'] }
+      ]
+    },
+    unit3: {
+      vocab: ['snow', 'become', 'fall', 'warm', 'dangerous', 'happen'],
+      photo: { p1: null, p2: null, p3: 'snow_photo.jpg', all: 'snow_photo.jpg' },
+      paras: [
+        { id: 'p1', sents: ['Clouds are made of water.', 'In the end, this water falls down to the earth as rain.'] },
+        { id: 'p2', sents: ['Rain happens when it is warm or hot.', 'Rain falls as drops of water.', 'Snow happens when it is cold.', 'Snow falls as flakes of ice.'] },
+        { id: 'p3', sents: ['Hail happens when it is cold or warm.', 'Water moves up and down inside the storm clouds.', 'It becomes ice.', 'Hail falls as balls of ice.', 'It can be dangerous.'] }
+      ]
+    },
+    unit4: {
+      vocab: ['surprised', 'tornadoes', 'tornado', 'winds', 'into', 'carry', 'probably'],
+      photo: { p1: 'fish_road.jpg', p2: 'fish_road.jpg', p3: null, p4: 'fish_road.jpg', all: 'fish_road.jpg' },
+      paras: [
+        { id: 'p1', sents: ['Rain falls from the sky.', 'Snow falls from the sky.', 'In 2014, fish fell from the sky.', 'It was in Sri Lanka.'] },
+        { id: 'p2', sents: ['People there were surprised.', 'Fish were falling on their homes.', 'How could this happen?'] },
+        { id: 'p3', sents: ['Tornadoes are strong winds.', 'They pick up things and move them into the sky.', 'A tornado can carry things far.', 'A tornado over water can pick up fish.'] },
+        { id: 'p4', sents: ['Is this what happened?', 'Probably!'] }
+      ]
+    }
+  };
+
+  function focusIds(sc) {
+    var en = (sc.en || '').toLowerCase();
+    var m = /part\s*(\d)/.exec(en);
+    if (m) return ['p' + m[1]];
+    if (sc.zh === 'Listen and Read') return ['p1'];
+    return null; // all paras equally visible (Think / Retell / Recap)
+  }
+
+  var IBASE = (function () { var sc = document.currentScript && document.currentScript.src; return sc ? sc.replace(/[^\/]*$/, '') : 'assets/'; })();
+  function imgSrc(name) {
+    try { if (typeof IMGS !== 'undefined' && IMGS && IMGS[name]) return IMGS[name]; } catch (e) {}
+    return IBASE + 'img/' + name;
+  }
+
+  function markVocab(text, vocab) {
+    if (!vocab || !vocab.length) return esc(text);
+    var re = new RegExp('\\b(' + vocab.map(function (w) { return w.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }).join('|') + ')\\b', 'gi');
+    return esc(text).replace(re, '<span class="rd-v">$1</span>');
+  }
+
+  function buildHtml(pass, focus, photoName) {
+    var h = '<div class="rd-box" role="document">';
+    if (photoName) h += '<img class="rd-photo" src="' + imgSrc(photoName) + '" alt="">';
+    h += '<div class="rd-body">';
+    var si = 0;
+    pass.paras.forEach(function (p) {
+      var on = !focus || focus.indexOf(p.id) >= 0;
+      h += '<p class="rd-p' + (on ? ' is-focus' : ' is-dim') + '" data-pid="' + p.id + '">';
+      p.sents.forEach(function (s) {
+        h += '<span class="rd-s" data-si="' + (si++) + '">' + markVocab(s, pass.vocab) + '</span> ';
+      });
+      h += '</p>';
+    });
+    return h + '</div></div>';
+  }
+
+  function flatSents(pass, focus) {
+    var out = [];
+    pass.paras.forEach(function (p) {
+      if (focus && focus.indexOf(p.id) < 0) return;
+      p.sents.forEach(function (s) { out.push(s); });
+    });
+    return out;
+  }
+
+  var alongTok = 0, alongTimer = null;
+
+  function stopAlong() {
+    alongTok++;
+    if (alongTimer) { clearInterval(alongTimer); alongTimer = null; }
+    try { document.querySelectorAll('.rd-s.is-on').forEach(function (el) { el.classList.remove('is-on'); }); } catch (e) {}
+  }
+
+  function startAlong(box, sc, sents) {
+    stopAlong();
+    if (!sents.length) return;
+    var my = ++alongTok;
+    var reduce = false;
+    try { reduce = matchMedia('(prefers-reduced-motion: reduce)').matches; } catch (e) {}
+    if (reduce) return;
+    var weights = sents.map(function (s) { return Math.max(8, s.length); });
+    var sum = weights.reduce(function (a, b) { return a + b; }, 0);
+    var dur = Math.max(2, Number(sc.dn) || 10);
+    // leave a short lead-in for "Miles, turn to page…" on Part 1 screens
+    var lead = /part\s*1/i.test(sc.en || '') ? Math.min(3.2, dur * 0.28) : 0.35;
+    var speak = Math.max(1.5, dur - lead);
+    var spans = box.querySelectorAll('.rd-s');
+    // map local sentence index → global data-si among focused
+    var map = [];
+    spans.forEach(function (el) {
+      if (el.closest('.rd-p.is-dim')) return;
+      map.push(el);
+    });
+    function paint(i) {
+      map.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
+    }
+    var au = document.getElementById('au');
+    var t0 = null;
+    alongTimer = setInterval(function () {
+      if (my !== alongTok) return;
+      var t;
+      if (au && !au.paused && isFinite(au.currentTime) && au.currentTime > 0.05) {
+        if (t0 == null) t0 = au.currentTime;
+        // use wall clock from first audible moment; fallback to audio clock delta
+        t = au.currentTime;
+        // Prefer elapsed since play started for this clip
+        var elapsed = t; // from start of clip
+        if (elapsed < lead) { paint(-1); return; }
+        var u = Math.min(1, (elapsed - lead) / speak);
+        var acc = 0, idx = map.length - 1;
+        for (var i = 0; i < weights.length; i++) {
+          acc += weights[i] / sum;
+          if (u <= acc) { idx = i; break; }
+        }
+        paint(idx);
+      } else if (au && au.ended) {
+        paint(-1); stopAlong();
+      }
+    }, 80);
+  }
+
+  function shouldHandle(sc) {
+    if (!sc) return false;
+    if (sc.zh === 'Listen and Read') return true;
+    var img = sc.img || '';
+    if (/^reading_p\d+\.jpg$/i.test(img)) return true;
+    return false;
+  }
+
+  function photoFor(pass, focus, sc) {
+    var ph = pass.photo || {};
+    if (focus && focus.length === 1 && ph[focus[0]] !== undefined) return ph[focus[0]];
+    // companion photo from the screen itself when it is a photo (not the page crop)
+    var img = sc.img || '';
+    if (img && !/^reading_p/i.test(img) && /\.(jpg|png)$/i.test(img) && img !== 'fish_road.jpg') return img;
+    if (img === 'fish_road.jpg') return null; // animation lives elsewhere; keep box text-only or skip conflict
+    return ph.all || null;
+  }
+
+  function apply(view, sc, state, unit) {
+    try {
+      if (!shouldHandle(sc)) return null;
+      var pass = PASS[unit] || PASS.unit1;
+      if (!pass) return null;
+      var box = view.querySelector('.imgbox'); if (!box) return null;
+      var focus = focusIds(sc);
+      // Story Recap / Think / Retell on reading page: show all paras, focus none special (all readable)
+      if (sc.zh !== 'Listen and Read') focus = null;
+      var photo = photoFor(pass, focus, sc);
+      // U4 Listen parts that used fish_road: keep HTML box; photo optional null (fish scene is separate)
+      if (sc.zh === 'Listen and Read' && sc.img === 'fish_road.jpg') photo = null;
+      if (sc.zh === 'Listen and Read' && sc.img === 'title_p22.jpg') photo = null;
+
+      box.classList.add('has-dg', 'has-rd');
+      box.innerHTML = buildHtml(pass, focus, photo);
+      var scr = view.querySelector('.screen');
+      if (scr) scr.classList.add('stack', 'is-read');
+      // drop duplicate side lines for normal Listen and Read
+      var panel = view.querySelector('#panel') || view.querySelector('.panel');
+      if (panel && sc.type === 'normal' && sc.zh === 'Listen and Read') {
+        panel.innerHTML = '<div class="line hint">Listen and follow the words.</div>';
+      }
+      if (sc.zh === 'Listen and Read') {
+        var sents = flatSents(pass, focus);
+        startAlong(box, sc, sents);
+      } else {
+        stopAlong();
+      }
+      return 'reading';
+    } catch (e) { return null; }
+  }
+
+  var CSS = [
+    '#view .imgbox.has-rd{display:flex;align-items:center;justify-content:center;padding:clamp(4px,1cqh,12px) clamp(8px,2cqw,20px);}',
+    '.rd-box{position:relative;width:min(100%,92cqw);height:min(100%,96cqh);max-width:920px;background:#fff;border-radius:clamp(16px,2.4cqmin,28px);',
+    ' box-shadow:0 8px 28px rgba(31,42,68,.10),0 1px 0 rgba(31,42,68,.04);padding:clamp(16px,min(3cqw,4cqh),36px) clamp(18px,min(3.4cqw,4cqh),40px);',
+    ' overflow:auto;container-type:size;display:flex;flex-direction:column;}',
+    '.rd-photo{float:right;width:min(42%,280px);max-height:42cqh;object-fit:cover;object-position:center;border-radius:14px;margin:0 0 12px 18px;shape-outside:margin-box;}',
+    '#view .content > .imgbox.has-rd img.rd-photo,#view .imgbox img.rd-photo{width:min(38%,260px)!important;height:auto!important;max-height:min(40cqh,240px)!important;object-fit:cover!important;border-radius:14px;filter:none!important;float:right;margin:0 0 12px 16px;}',
+    '.rd-body{font-family:inherit;color:#1F2A44;font-weight:700;font-size:clamp(18px,min(2.8cqw,5.2cqh),34px);line-height:1.55;text-align:left;}',
+    '.rd-p{margin:0 0 0.85em;} .rd-p:last-child{margin-bottom:0;}',
+    '.rd-p.is-dim{opacity:.34;}.rd-p.is-dim .rd-v{opacity:.85;}',
+    '.rd-p.is-focus{opacity:1;}',
+    '.rd-s{border-radius:6px;padding:0 2px;transition:background .25s ease,box-shadow .25s ease;}',
+    '.rd-s.is-on{background:#FFF4C2;box-shadow:0 0 0 3px rgba(232,192,74,.35);}',
+    '.rd-v{color:#2F7FC0;font-weight:900;}',
+    '#view .screen.is-read .content > .panel .line.hint{color:#2F5F8C;font-weight:800;}',
+    '@container (max-width:420px){.rd-photo,#view .content > .imgbox img.rd-photo{float:none;display:block;width:min(100%,280px);max-height:28cqh;margin:0 auto 12px;}}',
+    '@media (prefers-reduced-motion:reduce){.rd-s{transition:none}}'
+  ].join('\n');
+  var st = document.createElement('style'); st.id = 'rf-rd-css'; st.textContent = CSS;
+  (document.head || document.documentElement).appendChild(st);
+
+  window.RFReading = { apply: apply, stop: stopAlong, _pass: PASS };
+})();

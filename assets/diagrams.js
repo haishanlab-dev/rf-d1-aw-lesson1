@@ -266,6 +266,7 @@
   }
   function apply(view, sc, state, unit) {
     try {
+      try { if (window.RFReading && RFReading.apply(view, sc, state, unit)) return 'reading'; } catch (_r) {}
       var box = view.querySelector('.imgbox'); if (!box) return null;
       var r = pick(sc, state, unit); if (!r) return null;
       box.classList.add('has-dg');
