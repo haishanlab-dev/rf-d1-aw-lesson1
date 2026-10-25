@@ -233,7 +233,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <script src="../assets/diagrams.js?v=dg38"></script>
 <script src="../assets/reading.js?v=rd8"></script>
 <script src="../assets/interact-data.js?v=ix6"></script>
-<script src="../assets/interact.js?v=ix16"></script>
+<script src="../assets/interact.js?v=ix17"></script>
 <script>
 function activeAUD(){
   try{
@@ -384,8 +384,10 @@ function playSrc(key,src,fallbackSec,id){return new Promise(res=>{
   au.onended=()=>fin('ended');
   au.onerror=()=>{log({ev:'audioerror',key,voice:activeVoice()});wait(fb*1000/RATE,id).then(()=>fin('fallback'));};
   let seeked=false;
+  let want='';
   const kick=()=>{
     if(kicked||done||id!==runId)return;
+    if(want&&au.src!==want)return; /* event from an older source (silent unlock / previous clip) */
     if(au.readyState<3)return; /* HAVE_FUTURE_DATA required — ignore stale early canplay */
     if(!seeked){
       seeked=true;
@@ -409,15 +411,25 @@ function playSrc(key,src,fallbackSec,id){return new Promise(res=>{
   };
   au.onloadeddata=()=>kick();
   au.oncanplay=()=>kick();
-  au.src=src;
+  au.src=src; want=au.src;
   try{au.load();}catch(e){}
   if(au.readyState>=3) kick();
-  else readyTimer=setTimeout(()=>{
-    if(kicked||done||id!==runId)return;
-    if(au.readyState>=3){ kick(); return; }
-    log({ev:'playtimeout',key,rs:au.readyState,voice:activeVoice()});
-    wait(fb*1000/RATE,id).then(()=>fin('timeout'));
-  },1200);
+  else{
+    /* Soft check at 1.2 s (slow network): keep waiting for canplay — never play at rs<3.
+       Hard stop at 12 s: give up on this clip and continue on the timed fallback. */
+    readyTimer=setTimeout(()=>{
+      if(kicked||done||id!==runId)return;
+      if(au.readyState>=3){ kick(); return; }
+      log({ev:'playslow',key,rs:au.readyState,voice:activeVoice()});
+      readyTimer=setTimeout(()=>{
+        if(kicked||done||id!==runId)return;
+        if(au.readyState>=3){ kick(); return; }
+        kicked=true; au.onloadeddata=null; au.oncanplay=null;
+        log({ev:'playtimeout',key,rs:au.readyState,voice:activeVoice()});
+        wait(fb*1000/RATE,id).then(()=>fin('timeout'));
+      },10800);
+    },1200);
+  }
 });}
 function unlockAudioFor(sc){
   /* Unlock HTMLAudioElement inside the Start gesture without priming the lesson

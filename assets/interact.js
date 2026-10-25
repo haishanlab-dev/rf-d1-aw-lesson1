@@ -85,6 +85,7 @@
     if (typeof v === 'string') return RFIllus.html(v, cls, 0);
     return '<span class="ix-ill2">' + v.map(function (n, j) { return RFIllus.html(n, cls + (j ? ' ill-2b' : ' ill-2a'), j); }).join('') + '</span>';
   }
+  var dragAbort = null;
   var cur = null; // { sc, unit, cfg, state, live, engagedAt, done, tries, ... }
   function now() { return Date.now(); }
   function touch() { if (cur) cur.lastTouch = now(); }
@@ -283,6 +284,14 @@
     };
     // pointer drag
     var drag = null;
+    /* F7: lets cancel() drop an in-flight drag (ghost + pointer capture) when the lesson skips screens */
+    dragAbort = function () {
+      var d = drag; drag = null; if (!d) return;
+      try { if (d.el.hasPointerCapture && d.el.hasPointerCapture(d.id)) d.el.releasePointerCapture(d.id); } catch (_e) {}
+      if (d.ghost) { try { d.ghost.remove(); } catch (_e) {} }
+      d.el.classList.remove('is-lifted');
+      board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.remove('ix-over'); });
+    };
     board.addEventListener('pointerdown', function (e) {
       var el = e.target.closest && e.target.closest('.ix-card');
       if (!el || el.classList.contains('is-placed') || board.classList.contains('ix-wait')) return;
@@ -309,7 +318,8 @@
     });
     function end(e) {
       if (!drag || (e && e.pointerId !== drag.id)) return;
-      var d = drag; drag = null; cur.dragging = false;
+      var d = drag; drag = null; if (cur) cur.dragging = false;
+      if (!board.isConnected) { if (d.ghost) d.ghost.remove(); return; }
       board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.remove('ix-over'); });
       if (d.ghost) {
         var bin = e && e.type === 'pointerup' ? binAt(e.clientX, e.clientY) : null;
@@ -555,9 +565,11 @@
 
   /** Abort in-flight feedback / drag when the lesson skips screens (←/→). */
   function cancel() {
+    ducked = null; /* clear first so hush() can never resume the old screen's narration */
     hush();
     speaking = 0;
-    ducked = null;
+    try { if (dragAbort) dragAbort(); } catch (e) {}
+    dragAbort = null;
     try {
       document.querySelectorAll('.ix-ghost').forEach(function (g) { g.remove(); });
       document.querySelectorAll('.ix-card.is-lifted').forEach(function (el) { el.classList.remove('is-lifted'); });
