@@ -18,7 +18,7 @@ def lines():
     js = "global.window={};require(%r);const D=window.RF_IX;const out=new Set();" \
          "['praise','hintLead','explainLead','parentPraise','sortDone'].forEach(k=>D[k].forEach(t=>out.add(t)));" \
          "for(const u of Object.values(D.units))for(const c of Object.values(u)){const rows=c.rows||[c];" \
-         "for(const r of rows)['why','hint','explain'].forEach(k=>r[k]&&out.add(r[k]));(c.cards||[]).forEach(x=>{out.add(x.why);out.add(x.hint);});}" \
+         "for(const r of rows)['why','hint','explain','ask'].forEach(k=>r[k]&&out.add(r[k]));(c.cards||[]).forEach(x=>{out.add(x.why);out.add(x.hint);});}" \
          "console.log(JSON.stringify([...out]))" % os.path.join(ROOT, 'assets/interact-data.js')
     return json.loads(subprocess.check_output(['node', '-e', js]))
 

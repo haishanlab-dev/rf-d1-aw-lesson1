@@ -80,10 +80,52 @@
     r.options.forEach(function (o, k) { h += '<button type="button" class="ix-opt ix-c' + (k % 3) + '" data-k="' + k + '">' + esc(o) + '</button>'; });
     return h + '</div></div>';
   }
+  function equalizeOptWidth(box) {
+    var opts = box.querySelectorAll('.ix-opt');
+    if (!opts.length) return;
+    var max = 0;
+    for (var i = 0; i < opts.length; i++) {
+      opts[i].style.width = 'auto';
+      opts[i].style.minWidth = '0';
+      max = Math.max(max, opts[i].offsetWidth);
+    }
+    // room for longest word on this screen (e.g. necks / smell / dangerous)
+    var w = Math.max(max, 96) + 4;
+    box.style.setProperty('--ix-btn-w', w + 'px');
+    for (var j = 0; j < opts.length; j++) { opts[j].style.width = ''; opts[j].style.minWidth = ''; }
+  }
+  function setActiveRow(box, rows, idx) {
+    cur.rowIdx = idx;
+    var els = box.querySelectorAll('.ix-row');
+    for (var i = 0; i < els.length; i++) {
+      els[i].classList.toggle('is-active', i === idx);
+      els[i].classList.toggle('is-locked', i > idx && !cur.rows[i].done);
+      els[i].classList.toggle('is-ahead', i > idx && !cur.rows[i].done);
+    }
+  }
+  function askRow(rows, idx, bubble) {
+    var r = rows[idx];
+    var line = r.ask || ((r.label ? r.label.replace(/___/g, 'blank') + ' ' : '') + 'Tap ' + r.options.join(', or ') + '.');
+    return say([line], bubble, 'ask').then(touch);
+  }
+  function afterRowDone(rows, bubble) {
+    var all = cur.rows.every(function (x) { return x.done; });
+    if (all && rows.length > 1 && cur.rows.every(function (x) { return x.tries === 0; })) note('firstTry');
+    if (all) { finish(); touch(); return; }
+    var nextIdx = cur.rows.findIndex(function (x) { return !x.done; });
+    if (nextIdx < 0) { finish(); touch(); return; }
+    cur.box.classList.add('ix-wait'); // lock while next prompt speaks
+    setActiveRow(cur.box, rows, nextIdx);
+    askRow(rows, nextIdx, bubble).then(function () {
+      cur.box.classList.remove('ix-wait');
+      touch();
+    });
+  }
   function mountChoice(panel, cfg) {
-    var rows = cfg.kind === 'rows' ? cfg.rows : [{ label: null, options: cfg.options, answer: cfg.answer, why: cfg.why, hint: cfg.hint, explain: cfg.explain }];
+    var rows = cfg.kind === 'rows' ? cfg.rows : [{ label: null, options: cfg.options, answer: cfg.answer, ask: cfg.ask, why: cfg.why, hint: cfg.hint, explain: cfg.explain }];
     var box = document.createElement('div');
-    box.className = 'ix-choices ix-wait' + (cfg.kind === 'rows' ? ' is-rows' : '');
+    var stepped = cfg.kind === 'rows' && rows.length > 1;
+    box.className = 'ix-choices ix-wait' + (cfg.kind === 'rows' ? ' is-rows' : '') + (stepped ? ' is-step' : '');
     box.innerHTML = rows.map(choiceRowHtml).join('') + '<div class="ix-say" aria-live="polite"></div>';
     var cd = panel.querySelector('.cd'), q = panel.querySelector('.q');
     if (q && cd) { var qr = document.createElement('div'); qr.className = 'ix-qrow'; panel.insertBefore(qr, q); qr.appendChild(q); qr.appendChild(cd); }
@@ -91,24 +133,37 @@
     if (cfg.kind === 'rows') panel.classList.add('ix-has-rows');
     cur.rows = rows.map(function () { return { tries: 0, done: false }; });
     cur.box = box;
+    cur.stepped = stepped;
+    cur.rowIdx = 0;
+    equalizeOptWidth(box);
+    if (stepped) setActiveRow(box, rows, 0);
     var bubble = box.querySelector('.ix-say');
     box.addEventListener('click', function (e) {
       var b = e.target.closest && e.target.closest('.ix-opt'); if (!b || box.classList.contains('ix-wait')) return;
       var rowEl = b.closest('.ix-row'), ri = +rowEl.getAttribute('data-row'), r = rows[ri], st = cur.rows[ri];
       if (st.done) return;
+      if (stepped && ri !== cur.rowIdx) return; // only current line
       cur.engaged = true; touch();
       var k = +b.getAttribute('data-k');
       if (k === r.answer) {
         st.done = true; b.classList.add('ix-ok'); rowEl.classList.add('is-done');
         if (st.tries === 0 && rows.length === 1) note('firstTry');
-        var all = cur.rows.every(function (x) { return x.done; });
-        if (all && rows.length > 1 && cur.rows.every(function (x) { return x.tries === 0; })) note('firstTry');
-        say([next('praise'), r.why], bubble, 'ok').then(function () { if (all) finish(); touch(); });
+        if (stepped) box.classList.add('ix-wait');
+        say([next('praise'), r.why], bubble, 'ok').then(function () {
+          if (stepped) afterRowDone(rows, bubble);
+          else { if (cur.rows.every(function (x) { return x.done; })) finish(); touch(); }
+        });
       } else {
         st.tries++;
         b.classList.remove('ix-shake'); void b.offsetWidth; b.classList.add('ix-shake', 'ix-no');
-        if (st.tries >= 2) { st.done = true; showAnswer(rowEl, r); var all2 = cur.rows.every(function (x) { return x.done; }); say([next('explainLead'), r.explain], bubble, 'explain').then(function () { if (all2) finish(); touch(); }); }
-        else say([next('hintLead'), r.hint], bubble, 'hint').then(touch);
+        if (st.tries >= 2) {
+          st.done = true; showAnswer(rowEl, r);
+          if (stepped) box.classList.add('ix-wait');
+          say([next('explainLead'), r.explain], bubble, 'explain').then(function () {
+            if (stepped) afterRowDone(rows, bubble);
+            else { if (cur.rows.every(function (x) { return x.done; })) finish(); touch(); }
+          });
+        } else say([next('hintLead'), r.hint], bubble, 'hint').then(touch);
       }
     });
   }
@@ -313,8 +368,21 @@
   }
   function begin() {
     if (!cur || !cur.box) return;
+    var root = cur.box.closest('.ix-sort') || cur.box;
+    // Multi-blank choice: speak the current line first, then unlock only that row.
+    if (cur.stepped && cur.cfg && cur.cfg.kind === 'rows') {
+      var rows = cur.cfg.rows;
+      var bubble = cur.box.querySelector('.ix-say');
+      setActiveRow(cur.box, rows, cur.rowIdx || 0);
+      askRow(rows, cur.rowIdx || 0, bubble).then(function () {
+        cur.box.classList.remove('ix-wait');
+        root.classList.remove('ix-wait');
+        touch();
+      });
+      return;
+    }
     cur.box.classList.remove('ix-wait');
-    var root = cur.box.closest('.ix-sort') || cur.box; root.classList.remove('ix-wait');
+    root.classList.remove('ix-wait');
   }
   function settle(id, live) {
     if (!cur || !cur.cfg || !cur.engaged || cur.done) return Promise.resolve();
@@ -337,8 +405,15 @@
     '.ix-lab{font-weight:800;font-size:clamp(16px,min(2vw,3.4vh),24px);color:#3C4656;flex:1 1 100%;}',
     '.ix-choices.is-rows .ix-row{flex-wrap:nowrap;}',
     '.ix-choices.is-rows .ix-lab{flex:1 1 40%;min-width:0;font-size:clamp(14px,min(1.7vw,3vh),20px);}',
-    '.ix-choices.is-rows .ix-opts{flex:0 1 auto;flex-wrap:nowrap;}',
-    '.ix-choices.is-rows .ix-opt{min-width:96px;flex:0 1 auto;}',
+    '.ix-choices.is-rows .ix-opts{flex:0 0 auto;flex-wrap:nowrap;gap:clamp(8px,1.2vw,14px);}',
+    '.ix-choices.is-rows .ix-opt{flex:0 0 var(--ix-btn-w,7.5em);width:var(--ix-btn-w,7.5em);min-width:var(--ix-btn-w,7.5em);box-sizing:border-box;}',
+    /* one blank at a time: dim locked lines; highlight the active row */
+    '.ix-choices.is-step .ix-row.is-ahead,.ix-choices.is-step .ix-row.is-locked{opacity:.38;pointer-events:none;}',
+    '.ix-choices.is-step .ix-row.is-active{opacity:1;position:relative;}',
+    '.ix-choices.is-step .ix-row.is-active .ix-lab{color:#1F2A44;}',
+    '.ix-choices.is-step .ix-row.is-done{opacity:.9;}',
+    '.ix-choices.is-step .ix-row.is-active .ix-opts{filter:none;}',
+    '.ix-say.ask{color:#2F5F8C;}',
     '.ix-qrow{display:flex;align-items:center;gap:clamp(8px,1.2vw,16px);flex-shrink:0;}',
     '.ix-qrow .q{flex:1 1 auto;min-width:0;}',
     '.ix-qrow .cd{flex:0 0 auto;}',

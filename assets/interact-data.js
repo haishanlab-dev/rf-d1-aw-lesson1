@@ -16,9 +16,9 @@ window.RF_IX = {
         why: "It's what the whole story is about.", hint: "Does it tell about the whole story?",
         explain: "It's the main idea. The whole story is about it." },
       26: { kind: 'rows', rows: [
-        { label: 'Cows know ___ it will rain.', options: ['how', 'when'], answer: 1, why: "When tells us the time.", hint: "Which word tells us the time?", explain: "When. Cows know when it will rain." },
-        { label: 'They stretch their ___.', options: ['necks', 'fat'], answer: 0, why: "Cows stretch their necks.", hint: "What can a cow stretch?", explain: "Necks. Cows stretch their necks." },
-        { label: 'They ___ the air.', options: ['know', 'smell'], answer: 1, why: "We smell with our noses.", hint: "What do you do with your nose?", explain: "Smell. They smell the air." } ] },
+        { label: 'Cows know ___ it will rain.', options: ['how', 'when'], answer: 1, ask: "Cows know blank it will rain. Tap how, or when.", why: "When tells us the time.", hint: "Which word tells us the time?", explain: "When. Cows know when it will rain." },
+        { label: 'They stretch their ___.', options: ['necks', 'fat'], answer: 0, ask: "They stretch their blank. Tap necks, or fat.", why: "Cows stretch their necks.", hint: "What can a cow stretch?", explain: "Necks. Cows stretch their necks." },
+        { label: 'They ___ the air.', options: ['know', 'smell'], answer: 1, ask: "They blank the air. Tap know, or smell.", why: "We smell with our noses.", hint: "What do you do with your nose?", explain: "Smell. They smell the air." } ] },
       30: { kind: 'sortIntro', ref: 31 },
       31: { kind: 'sort',
         prompt: "Drag each card to the right box.",
@@ -46,9 +46,9 @@ window.RF_IX = {
         why: "All means every one.", hint: "All the children means every child.",
         explain: "Every. All means every one." },
       21: { kind: 'rows', rows: [
-        { label: 'Not ___ clouds make rain.', options: ['all', 'some'], answer: 0, why: "Not all clouds make rain.", hint: "Every cloud? Not every cloud!", explain: "All. Not all clouds make rain." },
-        { label: 'Low clouds are white and ___.', options: ['dark', 'fluffy'], answer: 1, why: "Low clouds are white and fluffy.", hint: "Low clouds look soft, like cotton.", explain: "Fluffy. Low clouds are white and fluffy." },
-        { label: '___ clouds make rain!', options: ['High', 'Storm'], answer: 1, why: "Storm clouds make rain.", hint: "Which clouds are dark and tall?", explain: "Storm. Storm clouds make rain." } ] },
+        { label: 'Not ___ clouds make rain.', options: ['all', 'some'], answer: 0, ask: "Not blank clouds make rain. Tap all, or some.", why: "Not all clouds make rain.", hint: "Every cloud? Not every cloud!", explain: "All. Not all clouds make rain." },
+        { label: 'Low clouds are white and ___.', options: ['dark', 'fluffy'], answer: 1, ask: "Low clouds are white and blank. Tap dark, or fluffy.", why: "Low clouds are white and fluffy.", hint: "Low clouds look soft, like cotton.", explain: "Fluffy. Low clouds are white and fluffy." },
+        { label: '___ clouds make rain!', options: ['High', 'Storm'], answer: 1, ask: "Blank clouds make rain. Tap high, or storm.", why: "Storm clouds make rain.", hint: "Which clouds are dark and tall?", explain: "Storm. Storm clouds make rain." } ] },
       25: { kind: 'sort',
         prompt: "Drag each card to its cloud.",
         bins: [{ id: 'high', label: 'High clouds', tone: 'blue' }, { id: 'low', label: 'Low clouds', tone: 'green' }, { id: 'storm', label: 'Storm clouds', tone: 'gray' }],
@@ -74,13 +74,13 @@ window.RF_IX = {
         why: "The water gets cold and becomes hail.", hint: "The water goes up high, where it is very cold.",
         explain: "It becomes hail. Balls of ice!" },
       19: { kind: 'rows', rows: [
-        { label: 'Rain ___ when warm.', options: ['happens', 'freezes'], answer: 0, why: "Rain happens when it is warm.", hint: "Warm weather gives us rain. Which word fits?", explain: "Happens. Rain happens when warm." },
-        { label: '___ happens when cold.', options: ['Rain', 'Snow'], answer: 1, why: "Snow happens when it is cold.", hint: "Which one is cold and white?", explain: "Snow. Snow happens when cold." },
-        { label: 'Hail can be ___.', options: ['dangerous', 'fluffy'], answer: 0, why: "Hail can be dangerous.", hint: "Hail is hard balls of ice.", explain: "Dangerous. Hail can be dangerous." } ] },
+        { label: 'Rain ___ when warm.', options: ['happens', 'freezes'], answer: 0, ask: "Rain blank when warm. Tap happens, or freezes.", why: "Rain happens when it is warm.", hint: "Warm weather gives us rain. Which word fits?", explain: "Happens. Rain happens when warm." },
+        { label: '___ happens when cold.', options: ['Rain', 'Snow'], answer: 1, ask: "Blank happens when cold. Tap rain, or snow.", why: "Snow happens when it is cold.", hint: "Which one is cold and white?", explain: "Snow. Snow happens when cold." },
+        { label: 'Hail can be ___.', options: ['dangerous', 'fluffy'], answer: 0, ask: "Hail can be blank. Tap dangerous, or fluffy.", why: "Hail can be dangerous.", hint: "Hail is hard balls of ice.", explain: "Dangerous. Hail can be dangerous." } ] },
       20: { kind: 'rows', rows: [
-        { label: '', options: ['flakes', 'balls'], answer: 0, why: "Snow falls as flakes of ice.", hint: "Snow is soft and light.", explain: "Flakes. Snow falls as flakes of ice." },
-        { label: '', options: ['becomes', 'happens'], answer: 1, why: "Happens is the word.", hint: "Read the sentence in the book again.", explain: "Happens is the word." },
-        { label: '', options: ['snow', 'dangerous'], answer: 1, why: "Hail can be dangerous.", hint: "Hail is hard balls of ice.", explain: "Dangerous. Hail can be dangerous." } ] },
+        { label: '', options: ['flakes', 'balls'], answer: 0, ask: "Snow falls as blank of ice. Tap flakes, or balls.", why: "Snow falls as flakes of ice.", hint: "Snow is soft and light.", explain: "Flakes. Snow falls as flakes of ice." },
+        { label: '', options: ['becomes', 'happens'], answer: 1, ask: "Rain blank when it is warm. Tap becomes, or happens.", why: "Happens is the word.", hint: "Read the sentence in the book again.", explain: "Happens is the word." },
+        { label: '', options: ['snow', 'dangerous'], answer: 1, ask: "Hail can be blank. Tap snow, or dangerous.", why: "Hail can be dangerous.", hint: "Hail is hard balls of ice.", explain: "Dangerous. Hail can be dangerous." } ] },
       23: { kind: 'sort',
         prompt: "Look at the map. Where does each country go?",
         visual: { key: 'img/u3_weather_key.jpg', map: 'img/u3_europe_map.jpg' },
@@ -108,9 +108,9 @@ window.RF_IX = {
         why: "A tornado can carry things far.", hint: "A tornado is a very strong wind.",
         explain: "It can carry things far." },
       20: { kind: 'rows', rows: [
-        { label: 'A ___ picked up fish.', options: ['tornado', 'rabbit'], answer: 0, why: "A tornado picked up the fish.", hint: "Something with strong winds.", explain: "Tornado. A tornado picked up fish." },
-        { label: 'Moved them into the ___.', options: ['sea', 'sky'], answer: 1, why: "The fish went up into the sky.", hint: "The fish went up, up, up.", explain: "Sky. It moved them into the sky." },
-        { label: 'People were ___.', options: ['surprised', 'hungry'], answer: 0, why: "People were surprised.", hint: "How would you feel?", explain: "Surprised. People were surprised." } ] }
+        { label: 'A ___ picked up fish.', options: ['tornado', 'rabbit'], answer: 0, ask: "A blank picked up fish. Tap tornado, or rabbit.", why: "A tornado picked up the fish.", hint: "Something with strong winds.", explain: "Tornado. A tornado picked up fish." },
+        { label: 'Moved them into the ___.', options: ['sea', 'sky'], answer: 1, ask: "Moved them into the blank. Tap sea, or sky.", why: "The fish went up into the sky.", hint: "The fish went up, up, up.", explain: "Sky. It moved them into the sky." },
+        { label: 'People were ___.', options: ['surprised', 'hungry'], answer: 0, ask: "People were blank. Tap surprised, or hungry.", why: "People were surprised.", hint: "How would you feel?", explain: "Surprised. People were surprised." } ] }
     },
     scienceReview: {
       5: { kind: 'choice', options: ['High clouds', 'Storm clouds'], answer: 1,
