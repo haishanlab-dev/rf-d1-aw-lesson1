@@ -884,6 +884,8 @@
     '.dg-card{justify-content:flex-start;padding-top:clamp(8px,2.2cqmin,18px);padding-bottom:clamp(8px,2cqmin,16px);gap:1.2cqmin;}',
     '.dg-card .dg-card-ill{margin-top:auto;display:grid;place-items:center;width:100%;flex:0 0 auto;}',
     '.dg-card .ill-map{--s:clamp(36px,min(14cqh,9cqw),88px);}',
+    /* Map glyphs must stay visible: illIn+both with --b:3 left card 4 at opacity:0 during delay */
+    '.dg-card .ill,.dg-card .ill-map{animation:none!important;opacity:1!important;transform:none!important;}',
     '.dg-sess-lab{margin-top:1em;}',
     '.dg-map-glyphs{display:none!important;}',
     '#view .screen.is-end .dg-card .ill-map{--s:clamp(28px,min(10cqh,6cqw),64px);}',
