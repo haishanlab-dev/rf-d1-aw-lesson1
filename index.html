@@ -343,15 +343,44 @@ function activeVoice(){try{if(window.RFProgress&&RFProgress.getVoice)return RFPr
 function audioSrc(key){if(activeVoice()==='en-US')return AUD_US_BASE+key+'.mp3?v=vo2';return AUD[key];}
 function audioFallback(key,fallbackSec){if(activeVoice()==='en-US'&&DUR_US[key]!=null)return DUR_US[key];return fallbackSec;}
 function play(key,fallbackSec,id){return new Promise(res=>{
-  let done=false;const fin=(why)=>{if(done)return;done=true;au.onended=null;au.onerror=null;log({ev:'ended',key,why,voice:activeVoice()});res();};
+  /* Wait for canplay + force currentTime=0 before play(). Immediate play() after
+     assigning a (often huge base64) src was clipping the first ~100–300ms on iPad
+     Safari / WebKit — Miles heard every page's opening words "eaten". */
+  let done=false, kicked=false, readyTimer=0;
+  const fin=(why)=>{if(done)return;done=true;clearTimeout(readyTimer);au.onended=null;au.onerror=null;au.onloadeddata=null;au.oncanplay=null;log({ev:'ended',key,why,voice:activeVoice()});res();};
   const fb=audioFallback(key,fallbackSec);
   au.onended=()=>fin('ended');
   au.onerror=()=>{log({ev:'audioerror',key,voice:activeVoice()});wait(fb*1000/RATE,id).then(()=>fin('fallback'));};
-  au.src=audioSrc(key);au.playbackRate=RATE;au.defaultPlaybackRate=RATE;
-  const pr=au.play();if(pr&&pr.catch)pr.catch(err=>{log({ev:'playreject',key,msg:String(err)});wait(fb*1000/RATE,id).then(()=>fin('fallback'));});
-  log({ev:'play',key,voice:activeVoice()});
+  const src=audioSrc(key);
+  const kick=()=>{
+    if(kicked||done||id!==runId)return; kicked=true; clearTimeout(readyTimer);
+    au.onloadeddata=null; au.oncanplay=null;
+    try{au.pause();}catch(e){}
+    try{au.currentTime=0;}catch(e){}
+    au.playbackRate=RATE;au.defaultPlaybackRate=RATE;
+    const pr=au.play();
+    if(pr&&pr.catch)pr.catch(err=>{log({ev:'playreject',key,msg:String(err)});wait(fb*1000/RATE,id).then(()=>fin('fallback'));});
+    log({ev:'play',key,voice:activeVoice(),ct:+au.currentTime.toFixed(3),rs:au.readyState});
+  };
+  au.onloadeddata=()=>kick();
+  au.oncanplay=()=>kick();
+  au.src=src;
+  try{au.load();}catch(e){}
+  if(au.readyState>=2) kick();
+  else readyTimer=setTimeout(kick,700);
 });}
-function unlockAudioFor(sc){const k=String(sc.i).padStart(2,'0')+'_n';const src=audioSrc(k);if(src){au.src=src;const pr=au.play();if(pr&&pr.catch)pr.catch(()=>{});au.pause();}}
+function unlockAudioFor(sc){
+  /* Unlock HTMLAudioElement inside the Start gesture without priming the lesson
+     clip. The old play-then-pause on the real MP3 left currentTime past the
+     opening silence, so the first play() resumed mid-word. */
+  try{
+    const silent='data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAAAAA==';
+    au.src=silent;
+    const pr=au.play();
+    const stop=()=>{try{au.pause();au.currentTime=0;}catch(e){}};
+    if(pr&&pr.then) pr.then(stop,stop); else stop();
+  }catch(e){}
+});au.pause();}}
 
 function isFs(){return !!(document.fullscreenElement||document.webkitFullscreenElement);}
 function syncFsChrome(){document.body.classList.toggle('fs', isFs());}
