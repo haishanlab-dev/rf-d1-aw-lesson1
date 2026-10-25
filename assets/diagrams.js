@@ -240,7 +240,7 @@
 
     // ---- Textbook crop → HTML text + Noto/photo (no page scans) ----
     if (zh === 'Warm-Up' || /^warmup_/i.test(img)) {
-      return { html: textScene(warmBody(unit), { ills: warmIlls(unit), hero: true }), what: 'tx:warm', hint: warmHint(unit), scene: true };
+      return { html: textScene(warmBody(unit), { photo: warmPhoto(unit) }), what: 'tx:warm', hint: warmHint(unit), scene: true };
     }
     if (zh === 'Academic Objectives' || /^ao_/i.test(img)) {
       var ao = (sc.body && sc.body.length) ? sc.body : ['Common kinds of weather', 'Unusual kinds of weather', 'How weather affects the places we live'];
@@ -268,17 +268,15 @@
     // Lesson / unit title openers (and SR unit review cards that used title crops)
     if (/^title_p/i.test(img) || /^unit\d+_title_/i.test(img)) {
       if (sc.type === 'normal') {
-        var tIll = unit === 'unit2' ? ['cloud', 'cloud_rain', 'sun_cloud'] : (unit === 'unit3' ? ['cloud_snow', 'snowflake', 'cloud_rain'] : (unit === 'unit4' ? ['fish', 'tornado', 'cloud_rain'] : (unit === 'scienceReview' ? ['sun_cloud', 'storm', 'fish'] : ['sun', 'cow', 'horse'])));
-        // SR unit cards keep their body as the fact summary
         var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
-        return { html: textScene(tBody, { ills: tIll, hero: true }), what: 'tx:title', hint: '', scene: true };
+        // Lesson openers: real hero photo (image-led). SR unit review cards keep short body under photo.
+        return { html: textScene(tBody, { photo: titlePhoto(unit), hero: true }), what: 'tx:title', hint: '', scene: true };
       }
       // pause screens that used a title crop as decoration → soft Noto backdrop, keep Q in panel
-      var pIll2 = unit === 'unit2' ? ['cloud', 'question'] : (unit === 'unit3' ? ['snowflake', 'question'] : (unit === 'unit4' ? ['fish', 'question'] : ['sun_cloud', 'question']));
-      return { html: textScene([], { ills: pIll2, hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
+      return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
     }
     if (/^opener_/i.test(img) && sc.type !== 'normal') {
-      return { html: textScene([], { ills: ['sun', 'cloud_rain', 'question'], hero: true }), what: 'tx:opener', scene: true };
+      return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:opener', scene: true };
     }
     if (/^vocabreview_/i.test(img)) {
       return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'] }), what: 'tx:vocab', scene: true };
@@ -423,13 +421,21 @@
         return ill(n, hero ? 'ill-tx ill-hero' : 'ill-tx', i);
       }).join('') + '</div>';
     }
-    // Hero / title: stack art above text, centered full-bleed. Photo screens keep left|right.
+    // Title hero with photo: large centered photo + secondary text below.
+    if (hero && photo && !chips) {
+      return '<div class="dg sx tx-stage is-hero is-photo-hero"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+        '<div class="tx-hero">' +
+        '<div class="tx-side"><img class="tx-photo tx-photo-hero" src="' + imgSrc(photo) + '" alt=""></div>' +
+        body + '</div></div>';
+    }
+    // Noto hero (rare — prefer photos on inform screens)
     if (hero && !photo && !chips) {
       return '<div class="dg sx tx-stage is-hero"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
         '<div class="tx-hero">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
     }
-    return '<div class="dg sx tx-stage"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
-      '<div class="tx-row">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
+    // Warm-Up etc: left photo | right text (~50/50)
+    return '<div class="dg sx tx-stage' + (photo ? ' has-photo' : '') + '"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+      '<div class="tx-row' + (photo ? ' has-photo' : '') + '">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
   }
   function warmBody(unit) {
     // Full useful book wording (kid-friendly). Answer-question lives on the next Big Question screen.
@@ -438,11 +444,18 @@
     if (unit === 'unit4') return ['Rain, snow, and ice fall from the sky.', 'Did you know fish can fall too?'];
     return ['The weather changes often.', 'It can be sunny one day and rainy the next.', 'People use technology to guess the weather.', 'But animals can guess the weather, too.'];
   }
-  function warmIlls(unit) {
-    if (unit === 'unit2') return ['cloud', 'cloud_rain', 'sun_cloud'];
-    if (unit === 'unit3') return ['cloud_rain', 'cloud_snow', 'snowflake'];
-    if (unit === 'unit4') return ['cloud_rain', 'fish', 'tornado'];
-    return ['sun', 'cloud_rain', 'farmer'];
+  function warmPhoto(unit) {
+    if (unit === 'unit2') return 'warm_u2.jpg';
+    if (unit === 'unit3') return 'warm_u3.jpg';
+    if (unit === 'unit4') return 'warm_u4.jpg';
+    return 'warm_l1.jpg';
+  }
+  function titlePhoto(unit) {
+    if (unit === 'unit2') return 'title_u2.jpg';
+    if (unit === 'unit3') return 'title_u3.jpg';
+    if (unit === 'unit4') return 'title_u4.jpg';
+    if (unit === 'scienceReview') return 'title_u2.jpg';
+    return 'title_l1.jpg';
   }
   function warmHint(unit) {
     if (unit === 'unit2') return 'Next: How do you know when it will rain?';
@@ -917,6 +930,15 @@
     '.tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(6px,1.5cqmin,14px);max-width:min(42cqw,340px);}',
     '.ill-tx{--s:clamp(52px,min(16cqh,12cqw),120px);}',
     '.tx-photo{width:min(42cqw,380px);height:min(78cqh,520px);max-height:min(78cqh,520px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 10px 24px rgba(31,42,68,.14);}',
+    '.tx-stage.has-photo .tx-row.has-photo{gap:clamp(16px,3cqw,40px);align-items:stretch;height:100%;}',
+    '.tx-row.has-photo .tx-side{flex:0 0 48%;max-width:48%;display:flex;}',
+    '.tx-row.has-photo .tx-photo{width:100%;height:100%;max-height:min(82cqh,560px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 10px 24px rgba(31,42,68,.14);}',
+    '.tx-row.has-photo .tx-lines{flex:1 1 0;justify-content:center;text-align:left;}',
+    '.tx-row.has-photo .tx-line{font-size:clamp(18px,min(3.2cqw,5.4cqh),38px);}',
+    '.tx-photo-hero{width:min(72cqw,720px);height:min(52cqh,420px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 12px 28px rgba(31,42,68,.16);}',
+    '.tx-stage.is-photo-hero .tx-hero{gap:clamp(12px,2.8cqh,28px);}',
+    '@container (max-aspect-ratio:5/4){.tx-row.has-photo{flex-direction:column;}.tx-row.has-photo .tx-side{flex:0 0 auto;max-width:100%;width:100%;height:min(36cqh,260px);}.tx-row.has-photo .tx-photo{max-height:36cqh;}.tx-photo-hero{width:min(90cqw,560px);height:min(34cqh,280px);}}',
+
     '@container (max-aspect-ratio:5/4){.tx-row{flex-direction:column;gap:clamp(8px,2cqh,18px);}.tx-ills{max-width:90%;}.ill-tx{--s:clamp(40px,min(12cqh,14cqw),88px);}.tx-photo{width:min(78cqw,320px);max-height:32cqh;}.tx-chips{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}.tx-line{font-size:clamp(16px,min(4.2cqw,5cqh),28px);}}',
     '.tip-stage{justify-content:center;}',
     '.tip-prop{position:relative;z-index:1;width:min(78cqw,520px);transform:rotate(-3.5deg);filter:drop-shadow(0 14px 22px rgba(31,42,68,.18));}',
