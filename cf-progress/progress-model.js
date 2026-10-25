@@ -27,8 +27,25 @@ export function emptyFootprint() {
     sessionBDone: false,
     mapParts: [false, false, false, false],
     retellDone: false,
+    goodAnswers: [],
+    firstTry: [],
   };
 }
+
+/** Screen-id sets (parent 👍 "good answer", closed question right first try). Union-merged, capped. */
+export const MAX_IDS = 120;
+const ID_RE = /^[A-Za-z0-9_-]{1,24}$/;
+export function normalizeIds(raw) {
+  const out = [];
+  if (!Array.isArray(raw)) return out;
+  for (const v of raw) {
+    const s = String(v);
+    if (ID_RE.test(s) && out.indexOf(s) < 0) out.push(s);
+    if (out.length >= MAX_IDS) break;
+  }
+  return out;
+}
+function unionIds(a, b) { return normalizeIds(normalizeIds(a).concat(normalizeIds(b))); }
 
 export function baseType(contentType) {
   return String(contentType || '').split(';')[0].trim().toLowerCase();
@@ -107,6 +124,8 @@ export function normalizeFootprint(raw) {
   base.sessionBDone = !!raw.sessionBDone;
   base.retellDone = !!raw.retellDone;
   base.mapParts = normalizeParts(raw.mapParts);
+  base.goodAnswers = normalizeIds(raw.goodAnswers);
+  base.firstTry = normalizeIds(raw.firstTry);
   return base;
 }
 
@@ -119,6 +138,8 @@ function orFootprint(prev, incoming) {
     sessionBDone: a.sessionBDone || b.sessionBDone,
     retellDone: a.retellDone || b.retellDone,
     mapParts: a.mapParts.map((v, i) => !!(v || b.mapParts[i])),
+    goodAnswers: unionIds(a.goodAnswers, b.goodAnswers),
+    firstTry: unionIds(a.firstTry, b.firstTry),
   };
 }
 

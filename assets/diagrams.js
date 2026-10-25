@@ -255,10 +255,9 @@
     /* stacked pause screens: question + countdown / answer in one centred row */
     '#view .screen.stack .panel .q,#view .screen.stack .panel .rev{padding:clamp(6px,1.2vh,14px) clamp(12px,1.6vw,22px);}',
     '#view .screen.stack .panel .q .line,#view .screen.stack .panel .rev .line{display:inline;margin-right:.35em;}',
-    '#view .screen.stack .panel .q .line[style*="font-size"]{font-size:clamp(16px,min(2vw,3.4vh),26px) !important;}',
+    '#view .screen.stack .panel .q.qecho .line{font-size:clamp(15px,min(1.9vw,3.2vh),24px);}',
     '#view .screen.stack .panel .cd{width:clamp(48px,9vh,84px);height:clamp(48px,9vh,84px);font-size:clamp(28px,6vh,52px);border-width:4px;margin:0;}',
     '#view .screen.stack .panel .pagehint{align-self:center;}',
-    '#view .screen.stack .panel .q[style*="border-color"]{display:none;}',
     '#view .screen.stack .content:has(.cd) > .imgbox{max-height:none;}',
     'body:has(#pausebtn.is-paused) .dg,body:has(#pausebtn.is-paused) .dg *{animation-play-state:paused !important;}'
   ].join('\n');

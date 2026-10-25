@@ -131,6 +131,8 @@
     if (patch.sessionADone) one.sessionADone = true;
     if (patch.sessionBDone) one.sessionBDone = true;
     if (patch.retellDone) one.retellDone = true;
+    if (Array.isArray(patch.goodAnswers) && patch.goodAnswers.length) one.goodAnswers = patch.goodAnswers.map(String);
+    if (Array.isArray(patch.firstTry) && patch.firstTry.length) one.firstTry = patch.firstTry.map(String);
     var part = +patch.part;
     if (part >= 1 && part <= 4) {
       var parts = [false, false, false, false];
@@ -182,6 +184,25 @@
     if (unitId === 'scienceReview') patch.completed = true;
     return markFootprint(unitId, patch);
   }
+
+  /** Local tally so the star count shows even before/without sync. */
+  function localIds(k) { try { var v = JSON.parse(localStorage.getItem(k) || '{}'); return v && typeof v === 'object' ? v : {}; } catch (e) { return {}; } }
+  function addLocalId(k, unitId, sid) {
+    try { var v = localIds(k); var arr = Array.isArray(v[unitId]) ? v[unitId] : []; if (arr.indexOf(sid) < 0) arr.push(sid); v[unitId] = arr.slice(-120); localStorage.setItem(k, JSON.stringify(v)); } catch (e) {}
+  }
+  /** Parent tapped 👍 "good answer" on an open question (screen id like "s15"). */
+  function noteGoodAnswer(unitId, sid) {
+    if (!isUnit(unitId) || !sid) return Promise.resolve(null);
+    addLocalId('rfGoodAnswers', unitId, String(sid));
+    return markFootprint(unitId, { goodAnswers: [String(sid)] });
+  }
+  /** Closed question answered right on the first tap. */
+  function noteFirstTry(unitId, sid) {
+    if (!isUnit(unitId) || !sid) return Promise.resolve(null);
+    addLocalId('rfFirstTry', unitId, String(sid));
+    return markFootprint(unitId, { firstTry: [String(sid)] });
+  }
+  function localGoodAnswers() { return localIds('rfGoodAnswers'); }
 
   /** Child advanced past a retell (reveal + continue). Boolean only. */
   function noteRetell(unitId) {
@@ -267,6 +288,8 @@
         sessionBDone: !!(raw && raw.sessionBDone),
         retellDone: !!(raw && raw.retellDone),
         mapParts: parts,
+        goodAnswers: Array.isArray(raw && raw.goodAnswers) ? raw.goodAnswers.slice() : [],
+        firstTry: Array.isArray(raw && raw.firstTry) ? raw.firstTry.slice() : [],
       };
       var done = !!(src.completed && src.completed[id]);
       if (id === 'scienceReview') done = done || fp.sessionADone;
@@ -458,6 +481,9 @@
     markSessionDone: markSessionDone,
     notePart: notePart,
     noteRetell: noteRetell,
+    noteGoodAnswer: noteGoodAnswer,
+    noteFirstTry: noteFirstTry,
+    localGoodAnswers: localGoodAnswers,
     uploadRetell: uploadRetell,
     fetchRetellBlob: fetchRetellBlob,
     retellFilename: retellFilename,

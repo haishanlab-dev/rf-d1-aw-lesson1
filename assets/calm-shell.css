@@ -808,3 +808,29 @@ body.playing:not(.fs) #pausebtn {
   border-bottom-width: 6px;
 }
 body.playing:not(.fs) .screen { padding-bottom: calc(var(--pause) + 16px); }
+
+/* Reveal: the question stays visible (all lines), quieter than the answer */
+.q.qecho { padding: clamp(8px, 1.2vh, 16px) clamp(12px, 1.4vw, 20px); border-width: 3px; }
+.q.qecho .line { font-size: clamp(18px, min(2.3vw, 4vh), 30px); color: #6b7785; line-height: 1.2; }
+
+/* Retell on short landscape (toolbar + tabs): everything fits without scrolling */
+@media (orientation: landscape) and (max-height: 760px) {
+  #view .content > .panel:has(.retell-box) { min-width: 46%; max-width: 58%; }
+  .q.qecho .line { display: inline; margin-right: .3em; }
+  .panel:has(.retell-box) .q .line,
+  .panel:has(.retell-box) .rev .line { font-size: clamp(17px, 3.7vh, 27px); }
+  .panel:has(.retell-box) .q, .panel:has(.retell-box) .rev { padding: clamp(6px, 1.2vh, 12px) clamp(10px, 1.4vw, 18px); }
+  .panel:has(.retell-box) .cd { width: clamp(48px, 9vh, 72px); height: clamp(48px, 9vh, 72px); font-size: clamp(26px, 5.4vh, 44px); border-width: 4px; margin: 2px auto; }
+  .panel:has(.retell-box) .pagehint { font-size: clamp(14px, 2.6vh, 18px); }
+  .retell-box { flex-direction: row !important; flex-wrap: wrap; align-items: center; gap: 6px 10px !important; padding: 6px 10px !important; }
+  .retell-box .rt-status { flex: 1 0 100%; }
+  .retell-box .contbtn { margin-top: 0 !important; height: 46px; }
+}
+
+/* iPadOS element fullscreen draws a system "X" (~44px) at the top-left.
+   Start the title row to its right; non-fullscreen layout is unchanged. */
+body.fs #view .titles,
+#wrap:fullscreen #view .titles,
+#wrap:-webkit-full-screen #view .titles {
+  padding-left: calc(max(68px, env(safe-area-inset-left, 0px) + 64px) - var(--pad));
+}

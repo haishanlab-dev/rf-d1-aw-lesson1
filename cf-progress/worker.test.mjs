@@ -305,3 +305,24 @@ test('options preflight allows the pages origin', async () => {
   assert.equal(res.headers.get('Access-Control-Allow-Origin'), 'https://haishanlab-dev.github.io');
   assert.match(res.headers.get('Access-Control-Allow-Headers'), /X-Duration-Ms/);
 });
+
+test('goodAnswers and firstTry union-merge, sanitize, and old records read as empty', async () => {
+  const env = envWith();
+  // old record without the new fields
+  await env.PROGRESS_KV.put('miles:progress', JSON.stringify({ footprints: { unit1: { sessionADone: true } } }));
+  let res = await authed(env, 'GET', '/progress');
+  let j = await res.json();
+  assert.deepEqual(j.footprints.unit1.goodAnswers, []);
+  assert.deepEqual(j.footprints.unit1.firstTry, []);
+  assert.equal(j.footprints.unit1.sessionADone, true);
+  await authed(env, 'PUT', '/progress', { body: { footprints: { unit1: { goodAnswers: ['s3', 's15', 'bad id!'] } } } });
+  await authed(env, 'PUT', '/progress', { body: { footprints: { unit1: { goodAnswers: ['s15', 's32'], firstTry: ['s22'] } } } });
+  // a PUT that omits them must not wipe them
+  await authed(env, 'PUT', '/progress', { body: { footprints: { unit1: { retellDone: true } } } });
+  res = await authed(env, 'GET', '/progress');
+  j = await res.json();
+  assert.deepEqual(j.footprints.unit1.goodAnswers, ['s3', 's15', 's32']);
+  assert.deepEqual(j.footprints.unit1.firstTry, ['s22']);
+  assert.equal(j.footprints.unit1.sessionADone, true);
+  assert.equal(j.footprints.unit1.retellDone, true);
+});

@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <title>Reading Future Discover 1 · Miles’s progress</title>
-<link rel="stylesheet" href="../assets/calm-shell.css?v=fit1">
+<link rel="stylesheet" href="../assets/calm-shell.css?v=fit2">
 <link rel="stylesheet" href="../assets/prefs.css">
 <script src="../assets/prefs-boot.js"></script>
 <script src="../assets/progress-api.js"></script>
@@ -309,6 +309,11 @@
     return '<span class="pip' + (on ? ' on' : '') + '">' + text + '</span>';
   }
 
+  function goodCount(flag, fp) {
+    var ids = (fp && Array.isArray(fp.goodAnswers)) ? fp.goodAnswers.slice() : [];
+    try { var loc = RF.localGoodAnswers ? RF.localGoodAnswers()[flag] : null; (loc || []).forEach(function (x) { if (ids.indexOf(x) < 0) ids.push(x); }); } catch (e) {}
+    return ids.length;
+  }
   function footprintHtml(flag, fp) {
     fp = fp || { sessionADone: false, sessionBDone: false, mapParts: [false, false, false, false], retellDone: false };
     var parts = fp.mapParts || [];
@@ -323,6 +328,8 @@
     }
     html += '<span class="part-pips" aria-label="Map parts">' + dots + '</span>';
     html += pip(fp.retellDone ? 'Spoke' : 'Speaking', fp.retellDone);
+    var ga = goodCount(flag, fp);
+    if (ga > 0) html += pip('\u2B50 ' + ga + ' good answer' + (ga === 1 ? '' : 's'), true);
     return html;
   }
 
@@ -404,6 +411,8 @@
     cheer.hidden = false;
     var line = CHEERS[Math.min(n, CHEERS.length - 1)];
     if (anySpoke(view.footprints, view.retells)) line += ' You spoke — wonderful.';
+    var totalGood = FLAGS.reduce(function (t, id) { return t + goodCount(id, view.footprints[id]); }, 0);
+    if (totalGood > 0) line += ' \u2B50 ' + totalGood + ' good answer' + (totalGood === 1 ? '' : 's') + '.';
     cheer.textContent = line;
   }
 
