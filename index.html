@@ -220,7 +220,9 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <audio id="au" preload="auto" playsinline></audio>
 <script src="assets/progress-api.js"></script>
 <script src="assets/retell-recorder.js?v=mic2"></script>
-<script src="assets/diagrams.js?v=dg3"></script>
+<script src="assets/diagrams.js?v=dg4"></script>
+<script src="assets/interact-data.js?v=ix1"></script>
+<script src="assets/interact.js?v=ix2"></script>
 <script>
 function activeAUD(){
   try{
@@ -298,10 +300,11 @@ function render(sc,state){ // state: 'show' | 'ask' | 'reveal'
   h+='</div></div></div>';
   view.innerHTML=h;
   try{ if(window.RFDiagram) RFDiagram.apply(view, sc, state, RF_UNIT); }catch(_e){}
+  try{ if(window.RFInteract) RFInteract.mount(view, sc, state, RF_UNIT); }catch(_e){}
   if(sc.type==='normal'&&!sc.map&&(sc.body||[]).length<=2){const scr=view.querySelector('.screen');if(scr)scr.classList.add('stack');}
   bindNav();
 }
-function wait(ms,id){return new Promise(res=>{let left=ms;const t=setInterval(()=>{if(id!==runId){clearInterval(t);return;}if(!paused){left-=50;if(left<=0){clearInterval(t);res();}}},50);});}
+function wait(ms,id){return new Promise(res=>{let left=ms;const t=setInterval(()=>{if(id!==runId){clearInterval(t);return;}if(!paused&&!(window.RFInteract&&RFInteract.holding())){left-=50;if(left<=0){clearInterval(t);res();}}},50);});}
 
 function tick(){try{if(!actx)return;const o=actx.createOscillator(),g=actx.createGain();o.frequency.value=880;o.type='sine';g.gain.setValueAtTime(0.0001,actx.currentTime);g.gain.exponentialRampToValueAtTime(0.18,actx.currentTime+0.02);g.gain.exponentialRampToValueAtTime(0.0001,actx.currentTime+0.18);o.connect(g);g.connect(actx.destination);o.start();o.stop(actx.currentTime+0.2);}catch(e){}}
 let holdResolve=null;
@@ -310,6 +313,7 @@ async function countdownN(id,nStart){
   cd.style.visibility='visible';
   for(let n=nStart;n>=1;n--){
     if(id!==runId)return;
+    if(window.RFInteract&&RFInteract.resolved())break;
     cd.textContent=n; cd.classList.remove('pop'); void cd.offsetWidth; cd.classList.add('pop');
     tick(); log({ev:'cd',n}); await wait(CDSTEP,id);
   }
@@ -365,7 +369,10 @@ async function runFromIndex(startIdx){
     try{ if(window.RFProgress&&RFProgress.notePart) RFProgress.notePart(RF_UNIT, sc.part); }catch(_e){}
     if(sc.type==='pause'){
       render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;
+      try{ if(window.RFInteract) RFInteract.begin(id); }catch(_e){}
       await wait(400/ (QA?4:1),id);await countdownN(id,5);if(id!==runId)return;
+      try{ if(window.RFInteract) await RFInteract.settle(id); }catch(_e){}
+      if(id!==runId)return;
       render(sc,'reveal');log({ev:'reveal',i:sc.i});await play(k+'_rn',sc.dr,id);
     } else if(sc.type==='retell'){
       render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;

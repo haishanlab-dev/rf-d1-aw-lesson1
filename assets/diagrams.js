@@ -38,9 +38,9 @@
     for (var i = 0; i < 4; i++) {
       var m = marks[i] || '';
       h += (i ? '<div class="dg-arrow" aria-hidden="true">▸</div>' : '') +
-        '<div class="dg-card dg-c' + i + (m ? ' is-' + m : '') + '" style="--c:' + MAP_COLORS[i] + ';--d:' + (marks.seqDelay ? marks.seqDelay(i) : 0) + 's">' +
+        '<' + (marks.tap ? 'button type="button" data-part="' + (i + 1) + '" aria-label="Go to part ' + (i + 1) + '"' : 'div') + ' class="dg-card dg-c' + i + (m ? ' is-' + m : '') + '" style="--c:' + MAP_COLORS[i] + ';--d:' + (marks.seqDelay ? marks.seqDelay(i) : 0) + 's">' +
         '<div class="dg-num">' + (i + 1) + '</div><div class="dg-lab">' + esc(labels[i]) + '</div>' +
-        (m === 'done' ? '<div class="dg-check" aria-label="done">✓</div>' : '') + '</div>';
+        (m === 'done' ? '<div class="dg-check" aria-label="done">✓</div>' : '') + '</' + (marks.tap ? 'button' : 'div') + '>';
     }
     h += '</div>' + (foot ? '<div class="dg-foot">' + esc(foot) + '</div>' : '') + '</div>';
     return h;
@@ -103,7 +103,8 @@
       else if (zh === 'Lesson Map' || zh === 'Weather Review') { marks = ['seq', 'seq', 'seq', 'seq']; marks.seqDelay = function (i) { return 0.6 + i * 1.1; }; }
       else if (zh === 'Great job!') { marks = ['done', 'done', 'done', 'done']; marks.seqDelay = function (i) { return 0.4 + i * 0.6; }; }
       else { marks = ['seq', 'seq', 'seq', 'seq']; marks.seqDelay = function (i) { return (sc.type === 'retell' && state === 'reveal' ? 0.3 : 0.8) + i * 1.3; }; }
-      return { html: mapDg(labels, foot, marks), what: 'map' };
+      marks.tap = !!sc.map;
+      return { html: mapDg(labels, foot, marks), what: 'map', map: !!sc.map };
     }
     if (img === 'table_blank.png' || img === 'table_filled.png') {
       var mode = 'topLegs';
@@ -144,13 +145,25 @@
       box.classList.add('has-dg');
       box.innerHTML = r.html;
       var scr = view.querySelector('.screen');
-      if (scr && !sc.map && isShort(sc)) scr.classList.add('stack');
+      if (scr && r.map) {
+        // The big map cards ARE the part buttons: drop the duplicate list, full-width row.
+        var nav = view.querySelector('.panel .mapnav'); if (nav) nav.remove();
+        scr.classList.add('stack', 'is-map');
+        box.querySelectorAll('.dg-card[data-part]').forEach(function (b) {
+          b.addEventListener('click', function (e) { e.stopPropagation(); try { if (window.jumpToPart) jumpToPart(+b.getAttribute('data-part')); } catch (_e) {} });
+        });
+      } else if (scr && !sc.map && isShort(sc)) scr.classList.add('stack');
       return r.what;
     } catch (e) { return null; }
   }
 
   var CSS = [
-    '.imgbox.has-dg{padding:clamp(8px,1.4vw,18px);background:#F7FBFF;container-type:size;}',
+    '#view .imgbox.has-dg,#view .imgbox.has-ix{padding:0;background:transparent;border:0;box-shadow:none;border-radius:0;container-type:size;overflow:visible;}',
+    '#view .screen.stack.is-map .content > .panel{order:1;}',
+    '#view .screen.stack.is-map .content > .panel:empty{display:none;}',
+    '.dg-card[data-part]{cursor:pointer;touch-action:manipulation;border:0;font-family:inherit;}',
+    '.dg-card[data-part]:active{transform:translateY(3px) scale(.98);}',
+    '.dg-art{display:contents;}',
     '.dg{width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2.6cqh;',
     ' font-family:inherit;color:#1F2A44;text-align:center;-webkit-user-select:none;user-select:none;}',
     '.dg-title{font-weight:800;font-size:clamp(14px,min(3cqw,8cqh),36px);color:#2B3445;}',
