@@ -1,8 +1,10 @@
 #!/usr/bin/env python3
-"""Subset Material Symbols Rounded to the icons this site uses (5.4 MB -> ~215 KB).
+"""Subset Material Symbols Rounded to the icons this site uses.
 
-Scans every .html/.js/.css in the repo for tokens that are icon ligature names, keeps
-those glyphs (+ their FILL twins) + a-z/0-9/_. All axes and GSUB features stay, so
+Keeps the text of every class="ms" element in the repo's .html/.js files, plus the names
+in DYNAMIC below (icons set from code, not written inside a class="ms" tag), and their
+FILL twins + a-z/0-9/_. A new icon written as <span class="ms">name</span> is picked up
+automatically; one set from code (textContent, data-icon, a variable) must go in DYNAMIC. All axes and GSUB features stay, so
 outlines are byte-for-byte the original ones. RE-RUN THIS after adding a new icon name anywhere,
 otherwise the new icon shows as plain text. Bump ?v= in assets/fonts/material-symbols.css
 and the preload links (grep MaterialSymbolsRounded-sub) when the output changes.
@@ -21,14 +23,27 @@ for lk in f['GSUB'].table.LookupList.Lookup:
         if st.LookupType == 7: st = st.ExtSubTable
         for first, ligs in getattr(st, 'ligatures', {}).items():
             for lg in ligs: names[''.join(rev.get(g, '?') for g in [first] + lg.Component)] = lg.LigGlyph
-toks = set()
+# Icons put into a .ms element from code. Keep in sync when adding one.
+DYNAMIC = {
+    'face',                                   # prefs-boot.js splash, progress-api.js name chip
+    'play_arrow', 'pause',                    # lesson pause FAB (setPauseIcon)
+    'arrow_forward', 'insights', 'home', 'replay',  # end-actions.js
+    'mic', 'stop',                            # retell-recorder.js
+    'star', 'star_half', 'star_border',       # progress/ star row
+    'check_circle', 'play_circle', 'brightness_5',  # progress/ stop badges
+    'pets', 'umbrella', 'ac_unit', 'water_drop',    # progress/ data-icon
+}
+SPAN = re.compile(r"""class=\\?["'][^"']*\bms\b[^"']*\\?["'][^>]*>\s*([a-z0-9_]+)\s*<""")
+toks = set(DYNAMIC)
 for dp, dn, fs in os.walk(ROOT):
     if '.git' in dp: continue
     for fn in fs:
-        if fn.endswith(('.html', '.js', '.css')):
+        if fn.endswith(('.html', '.js')):
             s = open(os.path.join(dp, fn), encoding='utf-8', errors='ignore').read()
-            toks |= set(re.findall(r'[a-z0-9_]+', re.sub(r'base64,[A-Za-z0-9+/=]+', '', s)))
-used = sorted(t for t in toks if t in names)
+            toks |= set(SPAN.findall(s))
+missing = sorted(t for t in toks if t not in names)
+if missing: sys.exit('not icon names (typo?): ' + ', '.join(missing))
+used = sorted(toks)
 chars = 'abcdefghijklmnopqrstuvwxyz0123456789_'
 glyphs = {names[t] for t in used} | {cmap[ord(c)] for c in chars if ord(c) in cmap}
 # FILL>=0.99 swaps each icon for its filled twin through a FeatureVariations 'rclt'
@@ -43,3 +58,4 @@ opts.notdef_outline = True; opts.name_IDs = ['*']; opts.glyph_names = True
 sub = subset.Subsetter(opts); sub.populate(glyphs=sorted(glyphs), unicodes=[ord(c) for c in chars]); sub.subset(f)
 f.flavor = 'woff2'; f.save(OUT)
 print(len(used), 'icons ->', OUT, os.path.getsize(OUT), 'bytes')
+print(' '.join(used))
