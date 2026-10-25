@@ -1,4 +1,4 @@
-/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens.
+/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens. (ix18)
    Hooks used by the lesson page:
      RFInteract.mount(view, sc, state, unit)  – after every render()
      RFInteract.begin(id)                     – question narration finished; enable taps
@@ -86,6 +86,13 @@
     return '<span class="ix-ill2">' + v.map(function (n, j) { return RFIllus.html(n, cls + (j ? ' ill-2b' : ' ill-2a'), j); }).join('') + '</span>';
   }
   var dragAbort = null;
+  /* One document-level pointer pipeline for sort-drag (avoids re-binding on every remount). */
+  var sortDrag = null; /* { id, onMove, onEnd } while a sort board is live */
+  function sortDocMove(e) { if (sortDrag && sortDrag.onMove) sortDrag.onMove(e); }
+  function sortDocEnd(e) { if (sortDrag && sortDrag.onEnd) sortDrag.onEnd(e); }
+  document.addEventListener('pointermove', sortDocMove, true);
+  document.addEventListener('pointerup', sortDocEnd, true);
+  document.addEventListener('pointercancel', sortDocEnd, true);
   var cur = null; // { sc, unit, cfg, state, live, engagedAt, done, tries, ... }
   function now() { return Date.now(); }
   function touch() { if (cur) cur.lastTouch = now(); }
@@ -283,47 +290,68 @@
       return lines;
     };
     // pointer drag
+    // Root cause (iPad): ghost used to append to document.body, but play mode
+    // fullscreens #wrap — nodes outside the fullscreen element never paint.
     var drag = null;
+    function ghostHost() {
+      return document.fullscreenElement || document.webkitFullscreenElement
+        || document.getElementById('wrap') || document.body;
+    }
+    function makeGhost(d) {
+      if (d.ghost) return d.ghost;
+      var g = d.el.cloneNode(true);
+      g.classList.remove('is-dragging', 'is-lifted', 'ix-sel');
+      g.classList.add('ix-ghost');
+      g.style.width = d.w + 'px'; g.style.height = d.h + 'px';
+      var cs = getComputedStyle(d.el);
+      ['fontSize', 'fontFamily', 'fontWeight', 'lineHeight', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft', 'borderRadius', 'background', 'color'].forEach(function (k) { g.style[k] = cs[k]; });
+      g.style.boxSizing = 'border-box';
+      ghostHost().appendChild(g);
+      d.ghost = g;
+      d.el.classList.add('is-lifted');
+      d.el.classList.remove('is-dragging');
+      return g;
+    }
+    function placeGhost(d, x, y) {
+      var g = makeGhost(d);
+      g.style.transform = 'translate(' + (x - d.dx) + 'px,' + (y - d.dy) + 'px) rotate(-5deg) scale(1.06)';
+      var over = binAt(x, y);
+      board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.toggle('ix-over', b === over); });
+    }
+    function clearDragChrome(d) {
+      if (!d) return;
+      try { if (d.el.hasPointerCapture && d.el.hasPointerCapture(d.id)) d.el.releasePointerCapture(d.id); } catch (_e) {}
+      if (d.ghost) { try { d.ghost.remove(); } catch (_e) {} }
+      d.el.classList.remove('is-lifted', 'is-dragging');
+      if (board.isConnected) board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.remove('ix-over'); });
+    }
     /* F7: lets cancel() drop an in-flight drag (ghost + pointer capture) when the lesson skips screens */
     dragAbort = function () {
       var d = drag; drag = null; if (!d) return;
-      try { if (d.el.hasPointerCapture && d.el.hasPointerCapture(d.id)) d.el.releasePointerCapture(d.id); } catch (_e) {}
-      if (d.ghost) { try { d.ghost.remove(); } catch (_e) {} }
-      d.el.classList.remove('is-lifted');
-      board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.remove('ix-over'); });
+      if (cur) cur.dragging = false;
+      clearDragChrome(d);
     };
-    board.addEventListener('pointerdown', function (e) {
-      var el = e.target.closest && e.target.closest('.ix-card');
-      if (!el || el.classList.contains('is-placed') || board.classList.contains('ix-wait')) return;
-      e.preventDefault();
-      var r = el.getBoundingClientRect();
-      drag = { el: el, id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false, ghost: null, w: r.width, h: r.height };
-      try { el.setPointerCapture(e.pointerId); } catch (_e) {}
-      cur.dragging = true; touch();
-    });
-    board.addEventListener('pointermove', function (e) {
+    function onMove(e) {
       if (!drag || e.pointerId !== drag.id) return;
+      if (e.cancelable) e.preventDefault();
       var mx = e.clientX - drag.x0, my = e.clientY - drag.y0;
-      if (!drag.moved && Math.abs(mx) + Math.abs(my) > 8) {
+      if (!drag.moved && Math.abs(mx) + Math.abs(my) > 3) {
         drag.moved = true;
-        var g = drag.el.cloneNode(true); g.classList.add('ix-ghost'); g.style.width = drag.w + 'px'; g.style.height = drag.h + 'px'; var cs = getComputedStyle(drag.el); ['fontSize','fontFamily','fontWeight','lineHeight','paddingTop','paddingRight','paddingBottom','paddingLeft'].forEach(function (k) { g.style[k] = cs[k]; }); g.style.boxSizing = 'border-box';
-        document.body.appendChild(g); drag.ghost = g; drag.el.classList.add('is-lifted');
-      }
-      if (drag.ghost) {
-        drag.ghost.style.transform = 'translate(' + (e.clientX - drag.dx) + 'px,' + (e.clientY - drag.dy) + 'px) rotate(-5deg)';
-        var over = binAt(e.clientX, e.clientY);
-        board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.toggle('ix-over', b === over); });
+        placeGhost(drag, e.clientX, e.clientY);
+      } else if (drag.ghost) {
+        placeGhost(drag, e.clientX, e.clientY);
       }
       touch();
-    });
+    }
     function end(e) {
       if (!drag || (e && e.pointerId !== drag.id)) return;
       var d = drag; drag = null; if (cur) cur.dragging = false;
-      if (!board.isConnected) { if (d.ghost) d.ghost.remove(); return; }
-      board.querySelectorAll('.ix-bin').forEach(function (b) { b.classList.remove('ix-over'); });
-      if (d.ghost) {
-        var bin = e && e.type === 'pointerup' ? binAt(e.clientX, e.clientY) : null;
-        d.ghost.remove(); d.el.classList.remove('is-lifted');
+      if (e && e.cancelable) e.preventDefault();
+      if (!board.isConnected) { clearDragChrome(d); return; }
+      var hadGhost = !!d.ghost;
+      var bin = hadGhost && e && e.type === 'pointerup' ? binAt(e.clientX, e.clientY) : null;
+      clearDragChrome(d);
+      if (hadGhost) {
         if (bin) attempt(d.el, bin);
       } else if (e && e.type === 'pointerup') {
         // tap: select / deselect
@@ -333,8 +361,18 @@
       }
       touch();
     }
-    board.addEventListener('pointerup', end);
-    board.addEventListener('pointercancel', end);
+    board.addEventListener('pointerdown', function (e) {
+      var el = e.target.closest && e.target.closest('.ix-card');
+      if (!el || el.classList.contains('is-placed') || board.classList.contains('ix-wait')) return;
+      if (e.cancelable) e.preventDefault();
+      var r = el.getBoundingClientRect();
+      drag = { el: el, id: e.pointerId, x0: e.clientX, y0: e.clientY, dx: e.clientX - r.left, dy: e.clientY - r.top, moved: false, ghost: null, w: r.width, h: r.height };
+      el.classList.add('is-dragging');
+      try { el.setPointerCapture(e.pointerId); } catch (_e) {}
+      cur.dragging = true; touch();
+    }, { passive: false });
+    // Document capture pipeline (module-level) so ghost tracks even if element capture is lost.
+    sortDrag = { onMove: onMove, onEnd: end };
     board.addEventListener('click', function (e) {
       var bin = e.target.closest && e.target.closest('.ix-bin');
       if (bin && sel && !sel.classList.contains('is-placed')) { var s = sel; sel = null; board.classList.remove('has-sel'); attempt(s, bin); }
@@ -495,8 +533,9 @@
     '.ix-card .ill-card{--s:2.1em;position:absolute;right:.45em;bottom:.35em;}',
     '.ix-k0{--kc:#E35D6A;} .ix-k1{--kc:#3D7AB5;} .ix-k2{--kc:#4F9A6B;} .ix-k3{--kc:#D9A23A;}',
     '.ix-card.ix-sel{transform:translateY(-6px) rotate(-2deg);box-shadow:0 0 0 4px #FFF4C2,0 0 0 8px #E8C04A,0 12px 22px rgba(43,52,64,.2);z-index:2;}',
-    '.ix-card.is-lifted{opacity:.12!important;}',
-    '.ix-card.ix-ghost{position:fixed;inset:auto;left:0;top:0;z-index:90;pointer-events:none;box-shadow:0 18px 30px rgba(43,52,64,.25);transition:none;margin:0;max-width:none!important;}',
+    '.ix-card.is-dragging{cursor:grabbing;transform:scale(1.04) rotate(-2deg);box-shadow:0 14px 28px rgba(43,52,64,.28);z-index:3;}',
+    '.ix-card.is-lifted{opacity:.18!important;transform:none!important;box-shadow:none!important;}',
+    '.ix-card.ix-ghost{position:fixed;inset:auto;left:0;top:0;z-index:10000;pointer-events:none;opacity:1!important;box-shadow:0 22px 40px rgba(43,52,64,.38),0 0 0 3px rgba(255,255,255,.55);transition:none!important;margin:0;max-width:none!important;will-change:transform;}',
     '.ix-wait .ix-opt,.ix-sort.ix-wait .ix-card{opacity:.8;pointer-events:none;}',
     '.ix-sort.is-intro .ix-card{cursor:default;}',
     '.ix-bins{flex:1 1 auto;min-height:0;display:grid;grid-template-columns:repeat(2,1fr);gap:0 1.4cqw;}',
@@ -570,9 +609,10 @@
     speaking = 0;
     try { if (dragAbort) dragAbort(); } catch (e) {}
     dragAbort = null;
+    sortDrag = null;
     try {
       document.querySelectorAll('.ix-ghost').forEach(function (g) { g.remove(); });
-      document.querySelectorAll('.ix-card.is-lifted').forEach(function (el) { el.classList.remove('is-lifted'); });
+      document.querySelectorAll('.ix-card.is-lifted,.ix-card.is-dragging').forEach(function (el) { el.classList.remove('is-lifted', 'is-dragging'); });
       document.querySelectorAll('.ix-bin.ix-over').forEach(function (b) { b.classList.remove('ix-over'); });
     } catch (e) {}
     cur = null;

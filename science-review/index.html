@@ -233,7 +233,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 <script src="../assets/diagrams.js?v=dg38"></script>
 <script src="../assets/reading.js?v=rd8"></script>
 <script src="../assets/interact-data.js?v=ix6"></script>
-<script src="../assets/interact.js?v=ix17"></script>
+<script src="../assets/interact.js?v=ix18"></script>
 <script>
 function activeAUD(){
   try{
@@ -567,6 +567,8 @@ if(wantPart>=1&&wantPart<=4){const sc=partFirst(wantPart); if(sc){session=sc.s; 
 // static frame mode for export/QA: ?frame=N&state=show|ask|reveal
 if(P.has('frame')){$('start').style.display='none';setPlaying(true);setPauseIcon(false);const sc=SCREENS[+P.get('frame')];playIdx=sc.i;const st=P.get('state')||(sc.type==='pause'||sc.type==='retell'?'reveal':'show');render(sc,st);if(st==='ask'){const cd=$('cd');cd.style.visibility='visible';cd.textContent='3';}}
 setPauseIcon(false); // init
+/* perf: fetch the chosen session's first picture + clip right away (not after load), so Start → first words is not stuck behind them */
+try{if(window.RFAssets&&!P.has('frame')){const s0=SCREENS.find(x=>x.s===session);if(s0)rfPrefetch(s0.i,0);}}catch(_e){}
 addEventListener('load',()=>{if(!window.RFAssets)return;RFAssets.idle(()=>{
   const firsts=[0];for(let p=1;p<=4;p++){const f=partFirst(p);if(f&&firsts.indexOf(f.i)<0)firsts.push(f.i);}
   const sel=SCREENS.find(x=>x.s===session); if(sel&&firsts.indexOf(sel.i)<0)firsts.unshift(sel.i);
