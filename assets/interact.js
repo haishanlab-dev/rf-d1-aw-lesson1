@@ -16,6 +16,26 @@
   function fnv(t) { var h = 0x811c9dc5; for (var i = 0; i < t.length; i++) { h ^= t.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; } return ('0000000' + h.toString(16)).slice(-8); }
   function voice() { try { return (window.RFProgress && RFProgress.getVoice && RFProgress.getVoice()) === 'en-US' ? 'en-US' : 'en-GB'; } catch (e) { return 'en-GB'; } }
   function clipUrl(t) { return BASE + 'voice/' + voice() + '/fb/' + fnv(t) + '.mp3'; }
+  /* perf: play feedback from memory when it was prefetched on mount (no gap after a tap) */
+  function playUrl(t) { var u = clipUrl(t); try { return window.RFAssets ? RFAssets.media(u) : u; } catch (e) { return u; } }
+  var warmedLeads = {};
+  function warmClips(cfg) {
+    if (!window.RFAssets || !cfg) return;
+    var texts = [];
+    (cfg.rows || [cfg]).forEach(function (r) {
+      ['why', 'hint', 'explain', 'ask'].forEach(function (k) { if (r[k]) texts.push(r[k]); });
+      if (cfg.kind === 'rows' && !r.ask && r.options) texts.push((r.label ? r.label.replace(/___/g, 'blank') + ' ' : '') + 'Tap ' + r.options.join(', or ') + '.'); /* = askRow() line */
+    });
+    (cfg.cards || []).forEach(function (c) { if (c.why) texts.push(c.why); if (c.hint) texts.push(c.hint); });
+    var v = voice(), first = [];
+    if (!warmedLeads[v]) {
+      warmedLeads[v] = 1;
+      first = (D.praise || []).slice(); /* said first after a right tap */
+      ['hintLead', 'explainLead', 'parentPraise', 'sortDone'].forEach(function (k) { (D[k] || []).forEach(function (t) { texts.push(t); }); });
+    }
+    texts.forEach(function (t) { RFAssets.queue('media', clipUrl(t)); });
+    first.reverse().forEach(function (t) { RFAssets.queue('media', clipUrl(t), true); });
+  }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]; }); }
   var rot = { praise: 0, hintLead: 0, explainLead: 0, parentPraise: 0, sortDone: 0 };
   function next(k) { var a = D[k] || ['']; var v = a[rot[k] % a.length]; rot[k]++; return v; }
@@ -33,7 +53,7 @@
       var est = Math.max(900, text.length * 70) / rate() + 600;
       t = setTimeout(fin, est + 2500);
       a.onended = fin; a.onerror = function () { clearTimeout(t); t = setTimeout(fin, est); };
-      try { a.src = clipUrl(text); a.playbackRate = rate(); var p = a.play(); if (p && p.catch) p.catch(function () { clearTimeout(t); t = setTimeout(fin, est); }); } catch (e) { clearTimeout(t); t = setTimeout(fin, est); }
+      try { a.src = playUrl(text); a.playbackRate = rate(); var p = a.play(); if (p && p.catch) p.catch(function () { clearTimeout(t); t = setTimeout(fin, est); }); } catch (e) { clearTimeout(t); t = setTimeout(fin, est); }
     });
   }
   /** Stop whatever feedback is talking (a new tap always wins). */
@@ -340,6 +360,7 @@
       var screen = view.querySelector('.screen'), panel = view.querySelector('#panel'), box = view.querySelector('.imgbox');
       if (!screen) return;
       var cfg = cur.cfg;
+      if (cfg && state !== 'reveal') { try { warmClips(cfg); } catch (e) {} }
       if (cfg && cfg.kind === 'sortIntro' && box) {
         var ref = cfgFor(unit, { i: cfg.ref });
         if (ref) {

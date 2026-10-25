@@ -84,3 +84,14 @@ Session 1, the parts that were opened, and **I spoke** should show. Play should 
 - Limits: clearing website data or moving the device clock forward ends it early; it is per browser/device (not synced through the Worker).
 
 QA only: add `?restTest=1` to any page → 20 s learn / 15 s break, using separate `rfRestTest.*` keys (a real break still shows). It sticks for that tab; `?restTest=0` turns it off.
+
+## Performance notes (as1, Oct 2026)
+
+Lesson pages no longer inline photos or narration. Keep it that way — a single inline clip set made each HTML 4–9 MB and the splash/icons wait for it.
+
+- **Photos** `assets/lesson-img/<slug>/` and **en-GB narration** `assets/voice/en-GB/<slug>/` (en-US stays in `assets/voice/en-US/<slug>/`). `IMGS` / `AUD` in each lesson HTML hold relative URLs with `?v=<sha8>` of the file, so a changed file gets a new URL.
+  Any script that writes `data:…;base64,` back into `IMGS`/`AUD` (e.g. `/workspace/rf/clipcheck/patch_html.py`) must be followed by `python3 tools/externalize_lesson_media.py` (idempotent).
+- **`assets/rf-assets.js`** prefetches the next 3 screens' pictures + clips, plays narration/feedback from in-memory blobs (same start-at-0 pipeline), and the player waits ≤1.5 s for a screen's pictures to decode before swapping, so nothing pops in.
+- **`PRE`** (per screen/state image list) is generated: `/workspace/pwv/bin/python tools/build_preload_manifest.py`. Re-run after changing which images a screen shows (diagrams.js, interact-data, IMGS). Stale lists only cost prefetching.
+- **Icon font** `assets/fonts/MaterialSymbolsRounded-sub.woff2` is a 260 KB subset of the 5.4 MB original (same outlines). **After using a new icon name anywhere, run `/workspace/pwv/bin/python tools/subset_icon_font.py` and bump `?v=ms…`** in `assets/fonts/material-symbols.css` and the `<link rel="preload">` lines, otherwise the new icon shows as text.
+- The `<img>` that `render()` writes into `.imgbox` uses `data-rfsrc` and only gets its `src` if diagrams/interact did not replace it (most screens do), so unused photos are never downloaded.
