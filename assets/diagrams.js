@@ -67,19 +67,19 @@
     return k ? t.replace(new RegExp('\\b(' + k + ')\\b', 'i'), '<em>$1</em>') : t;
   }
   function alwaysScene(sx, mode) {
-    return '<div class="dg sx sx-always m-' + mode + '"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+    return '<div class="dg sx sx-always m-' + mode + '">' +
       '<div class="sx-row">' + sxCluster(sx.l, 0, 'l') + '<div class="sx-ar" aria-hidden="true"></div>' +
       '<div class="sx-side sx-m"><div class="sx-cl sx-clm">' + sxEl(['thinking', 0, 6, 100], 4) + sxEl(['question', 66, -30, 44, 14], 5) + '</div></div>' +
       '<div class="sx-ar" aria-hidden="true"></div>' + sxCluster(sx.r, 6, 'r') + '</div></div>';
   }
 
   function tableScene(u, mode, unit) {
-    // Drawn wooden table on the hill: the farmer & cow stand on the top (main idea), each leg is a post
+    // Drawn wooden table: the farmer & cow stand on the top (main idea), each leg is a post
     // with a white-pill label (Detail ? / the detail).
     var filled = mode === 'fill' || mode === 'filledSeq';
     var legs = u.legs || [['', ''], ['', ''], ['', ''], ['', '']];
     var tops = u.topIll || ['farmer', 'cow'];
-    var h = '<div class="dg sx sx-table m-' + mode + '"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div><div class="sx-tb">' +
+    var h = '<div class="dg sx sx-table m-' + mode + '"><div class="sx-tb">' +
       '<div class="sx-tb-ill">' + tops.map(function (n, k) { return '<span class="sx-tb-i sx-tb-i' + k + '">' + ill(n, 'ill-sx', k) + '</span>'; }).join('') + '</div>' +
       '<div class="sx-top"><span class="sx-tag">Main idea</span><span class="sx-top-s">' + esc(u.main) + '</span></div><div class="sx-legs">';
     for (var i = 0; i < 4; i++) {
@@ -95,7 +95,7 @@
     }
     var ct = grp('sx-sk1', [['thinking', 14, 6, 66], ['question', 70, -6, 30, 14]], 'Critical Thinking', ['Ask questions.', 'Do not just believe.', 'Check the facts.'], 0);
     var cm = grp('sx-sk2', [['speaking', 0, 8, 58], ['child', 56, 26, 44]], 'Communication', ['Share your ideas.', 'Listen to others.', 'Say it clearly.'], mode === 'both' ? 4 : 0);
-    return '<div class="dg sx sx-skills m-' + mode + '"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div><div class="sx-sk-row">' + (mode === 'comm' ? cm : ct + cm) + '</div></div>';
+    return '<div class="dg sx sx-skills m-' + mode + '"><div class="sx-sk-row">' + (mode === 'comm' ? cm : ct + cm) + '</div></div>';
   }
 
   function fishRainScene() {
@@ -105,7 +105,7 @@
     falls.forEach(function (f, i) {
       fish += '<span class="fr-fish fr-fall" style="left:' + f[0] + '%;--d:' + f[1] + '%;--s:' + f[2] + ';--w:' + f[3] + 's">' + ill('fish', 'ill-sx', i) + '</span>';
     });
-    return '<div class="dg sx sx-fish"><div class="sx-hill fr-ground" aria-hidden="true"></div>' +
+    return '<div class="dg sx sx-fish">' +
       '<div class="fr-sky" aria-hidden="true"></div><div class="fr-sea" aria-hidden="true"></div>' +
       '<div class="fr-spout" aria-hidden="true"><span class="fr-spout-core"></span></div>' +
       '<div class="fr-lift">' +
@@ -345,7 +345,7 @@
 
     // ---- Textbook crop → HTML text + Noto/photo (no page scans) ----
     if (zh === 'Warm-Up' || /^warmup_/i.test(img)) {
-      return { html: textScene(warmBody(unit), { photo: warmPhoto(unit) }), what: 'tx:warm', hint: warmHint(unit), scene: true };
+      return { html: textScene(warmBody(unit), { photo: warmPhoto(unit), tip: warmHint(unit) }), what: 'tx:warm', hint: '', scene: true };
     }
     if (zh === 'Academic Objectives' || /^ao_/i.test(img)) {
       var ao = (sc.body && sc.body.length) ? sc.body : ['Common kinds of weather', 'Unusual kinds of weather', 'How weather affects the places we live'];
@@ -515,6 +515,7 @@
     var photo = opts.photo || null;
     var chips = opts.chips || null; // [{w,ill}] for New Words
     var hero = !!opts.hero; // image-led: big centered glyphs, text secondary below
+    var tip = opts.tip || ''; // inline tip in the text column (Warm-Up "Next: …")
     var body;
     if (chips && chips.length) {
       body = '<div class="tx-chips">' + chips.map(function (c, i) {
@@ -524,7 +525,7 @@
     } else {
       body = '<div class="tx-lines">' + (lines || []).map(function (l) {
         return '<div class="tx-line">' + esc(l) + '</div>';
-      }).join('') + '</div>';
+      }).join('') + (tip ? '<div class="tx-tip">' + esc(tip) + '</div>' : '') + '</div>';
     }
     var side = '';
     if (photo) {
@@ -536,18 +537,18 @@
     }
     // Title hero with photo: large centered photo + secondary text below.
     if (hero && photo && !chips) {
-      return '<div class="dg sx tx-stage is-hero is-photo-hero"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+      return '<div class="dg sx tx-stage is-hero is-photo-hero">' +
         '<div class="tx-hero">' +
         '<div class="tx-side"><img class="tx-photo tx-photo-hero" src="' + imgSrc(photo) + '" alt=""></div>' +
         body + '</div></div>';
     }
     // Noto hero (rare — prefer photos on inform screens)
     if (hero && !photo && !chips) {
-      return '<div class="dg sx tx-stage is-hero"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+      return '<div class="dg sx tx-stage is-hero">' +
         '<div class="tx-hero">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
     }
     // Warm-Up etc: left photo | right text (~50/50)
-    return '<div class="dg sx tx-stage' + (photo ? ' has-photo' : '') + '"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+    return '<div class="dg sx tx-stage' + (photo ? ' has-photo' : '') + '">' +
       '<div class="tx-row' + (photo ? ' has-photo' : '') + '">' + (side ? '<div class="tx-side">' + side + '</div>' : '') + body + '</div></div>';
   }
   function warmBody(unit) {
@@ -612,7 +613,7 @@
   function tipProp(lines, tone) {
     // Neon sticky + red binder clip. Short tip text only.
     var body = (lines || []).map(function (l) { return '<div class="tip-line">' + esc(l) + '</div>'; }).join('');
-    return '<div class="dg sx tip-stage"><div class="sx-hill" aria-hidden="true"></div><div class="sx-hill2" aria-hidden="true"></div>' +
+    return '<div class="dg sx tip-stage">' +
       '<div class="tip-prop tip-' + (tone || 'yellow') + '">' +
       '<div class="tip-clip" aria-hidden="true"><span class="tip-clip-bar"></span><span class="tip-clip-wire"></span></div>' +
       '<div class="tip-note">' + body + '</div></div></div>';
@@ -925,8 +926,8 @@
     '@container (max-aspect-ratio:1/1){.dg-table .ill-top{--s:clamp(64px,min(20cqh,34cqw),200px);}.dg-always .dg-al-b br{display:none;}.ill-sc{--s:clamp(64px,min(20cqh,38cqw),230px);}.ill-mid{--s:clamp(64px,min(16cqh,30cqw),190px);}.ill-sc.ill-sm{--s:clamp(56px,min(15cqh,28cqw),170px);}}',
     '@container (max-aspect-ratio:1/1){.dg-skills.m-both .dg-sk2{border-top:0!important;padding-top:0!important;}.dg-map .dg-row{flex-wrap:wrap;gap:3cqw;}.dg-map .dg-arrow{display:none;}.dg-map .dg-card{flex:0 0 44cqw;max-width:44cqw;aspect-ratio:1.15;max-height:none;}.dg-map .dg-num{font-size:clamp(28px,min(12cqw,9cqh),80px);}.dg-map .dg-lab{font-size:clamp(14px,min(4.4cqw,3.4cqh),26px);}}',
     '.sx{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:visible;}',
-    '.sx-hill{position:absolute;left:0;right:0;bottom:0;height:min(40%,26cqw);background:linear-gradient(rgba(79,154,107,.16),rgba(79,154,107,0));border-radius:50% 50% 0 0/100% 100% 0 0;pointer-events:none;}',
-    '.sx-hill2{position:absolute;right:0;width:46%;bottom:0;height:min(52%,34cqw);background:linear-gradient(rgba(61,122,181,.11),rgba(61,122,181,0));border-radius:50% 50% 0 0/100% 100% 0 0;pointer-events:none;}',
+    /* Decorative half-circle hills removed per Haishan — keep cream page only */
+    '.sx-hill,.sx-hill2,.fr-ground{display:none!important;}',
     '.sx-always{--u:min(1.02cqw,2.7cqh);}',
     '.sx-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:calc(var(--u) * 1.4);}',
     '.sx-side{display:flex;flex-direction:column;align-items:center;gap:calc(var(--u) * 1.4);flex:0 0 auto;}',
@@ -983,11 +984,9 @@
     '.sx-skills.m-comm{--u:min(1.3cqw,2.4cqh);}',
     '@container (max-aspect-ratio:1/1){.sx-skills{--u:min(1.25cqw,1.3cqh);}.sx-sk-row{gap:calc(var(--u) * 4);}.sx-skills.m-comm{--u:min(2cqw,1.8cqh);}}',
     '#view .screen.scene .panel .sx-qline.sx-qsm{font-size:clamp(18px,min(2.6vw,4.4vh),32px);}',
-    '@container (max-aspect-ratio:1/1){.sx-hill{top:58%;bottom:auto;height:22cqw;}.sx-hill2{top:52%;bottom:auto;height:30cqw;}}',
     '.sx-fish{--u:min(1cqw,2.2cqh);overflow:hidden;}',
     '.fr-sky{position:absolute;inset:0 0 38% 0;background:linear-gradient(#9EC9E8 0%,#D6EAF7 55%,#FBF6EC 100%);pointer-events:none;}',
     '.fr-sea{position:absolute;left:0;right:48%;bottom:0;height:32%;background:linear-gradient(#4AA8E8,#2F7FC0);border-radius:40% 60% 0 0/30% 40% 0 0;pointer-events:none;}',
-    '.fr-ground{left:40%;right:-10%;height:36%;background:linear-gradient(rgba(79,154,107,.35),rgba(79,154,107,.08));}',
     '.fr-town{position:absolute;right:4%;bottom:14%;display:flex;align-items:flex-end;gap:calc(var(--u)*1.4);z-index:2;}',
     '.fr-roof{display:block;background:#C97B5A;border-radius:calc(var(--u)*.4) calc(var(--u)*.4) 0 0;position:relative;}',
     '.fr-roof::after{content:"";position:absolute;left:-8%;right:-8%;top:calc(var(--u)*-1.6);height:calc(var(--u)*2.2);background:#8B3A2A;clip-path:polygon(50% 0,100% 100%,0 100%);}',
@@ -1049,11 +1048,11 @@
     '.tx-stage.is-hero{justify-content:center;align-items:center;}',
     '.tx-hero{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(14px,3.2cqh,36px);width:100%;height:100%;max-height:100%;padding:clamp(4px,1cqh,12px) clamp(8px,2cqw,24px);box-sizing:border-box;}',
     '.tx-hero .tx-side{flex:0 0 auto;width:100%;display:flex;justify-content:center;}',
-    '.tx-hero .tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(12px,3cqmin,36px);max-width:min(96cqw,1100px);}',
-    '.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(120px,min(38cqh,30cqw),280px);}',
+    '.tx-hero .tx-ills{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:clamp(8px,2cqmin,24px);max-width:min(96cqw,1100px);width:100%;}',
+    '.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(56px,min(24cqh,calc((92cqw - 72px)/4)),180px);flex:0 0 auto;width:var(--s);height:var(--s);min-width:0;}',
     '.tx-hero .tx-lines{flex:0 0 auto;width:min(92cqw,820px);text-align:center;align-items:center;gap:clamp(4px,1cqh,10px);}',
     '.tx-hero .tx-line{font-size:clamp(18px,min(3cqw,4.6cqh),34px);text-align:center;}',
-    '@container (max-aspect-ratio:5/4){.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(88px,min(26cqh,32cqw),180px);}.tx-hero{gap:clamp(10px,2.4cqh,24px);}}',
+    '@container (max-aspect-ratio:5/4){.tx-hero .ill-hero,.ill-tx.ill-hero{--s:clamp(48px,min(18cqh,calc((90cqw - 60px)/4)),140px);}.tx-hero{gap:clamp(10px,2.4cqh,24px);}}',
 
     '.tx-row{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:clamp(12px,2.4cqw,32px);width:100%;max-width:none;max-height:100%;padding:0 clamp(4px,1cqw,12px);}',
     '.tx-lines{flex:1 1 0;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(6px,1.4cqh,14px);text-align:left;}',
@@ -1062,7 +1061,7 @@
     '.tx-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,1cqh,10px);background:#fff;border-radius:clamp(14px,2cqmin,22px);padding:clamp(10px,2cqh,18px) clamp(8px,1.5cqw,14px);box-shadow:0 6px 16px rgba(31,42,68,.10);}',
     '.tx-chip-w{font-weight:800;font-size:clamp(16px,min(2.8cqw,4.8cqh),28px);color:#1F2A44;}',
     '.tx-side{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}',
-    '.tx-ills{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:clamp(6px,1.5cqmin,14px);max-width:min(42cqw,340px);}',
+    '.tx-ills{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:clamp(6px,1.5cqmin,14px);max-width:min(42cqw,340px);}',
     '.ill-tx{--s:clamp(52px,min(16cqh,12cqw),120px);}',
     '.tx-photo{width:min(42cqw,380px);height:min(78cqh,520px);max-height:min(78cqh,520px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 10px 24px rgba(31,42,68,.14);}',
     '.tx-stage.has-photo .tx-row.has-photo{display:grid;grid-template-columns:1fr 1fr;gap:clamp(16px,3cqw,40px);align-items:stretch;height:100%;}',
@@ -1072,6 +1071,18 @@
     '.tx-row.has-photo .tx-line{font-size:clamp(18px,min(3.2cqw,5.4cqh),38px);}',
     '.tx-photo-hero{width:min(72cqw,720px);height:min(52cqh,420px);object-fit:cover;object-position:center;border-radius:var(--r-photo, clamp(16px,2.2vw,24px));box-shadow:0 12px 28px rgba(31,42,68,.16);}',
     '.tx-stage.is-photo-hero .tx-hero{gap:clamp(12px,2.8cqh,28px);}',
+    /* Photo-hero (title / Big Question): caption under centered photo is centered */
+    '.tx-stage.is-photo-hero .tx-lines{text-align:center;align-items:center;}',
+    '.tx-stage.is-photo-hero .tx-line{text-align:center;}',
+    /* Big Question / titlebg: panel caption under centered photo is centered (not flush-left to photo) */
+    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .content > .panel,#view .screen.stack:has(.tx-stage.is-photo-hero) .content > .panel{align-items:center;justify-content:flex-start;text-align:center;padding-left:clamp(12px,3.6vw,48px);padding-right:clamp(12px,3.6vw,48px);}',
+    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .rev,#view .screen.stack:has(.tx-stage.is-photo-hero) .panel .q,#view .screen.stack:has(.tx-stage.is-photo-hero) .panel .rev{text-align:center;align-self:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q .line,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .rev .line{text-align:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .pagehint{text-align:center;align-self:center;}',
+    '#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .sx-qline,#view .screen.scene.stack:has(.tx-stage.is-photo-hero) .panel .q.qecho .sx-qline{text-align:center;}',
+    /* Warm-Up tip: sits in right text column, same left edge as body */
+    '.tx-tip{margin-top:clamp(10px,2.2cqh,22px);font-weight:800;font-size:clamp(16px,min(2.8cqw,4.6cqh),28px);line-height:1.35;color:#2F5F8C;text-align:left;align-self:stretch;}',
+    '.tx-row.has-photo .tx-tip{text-align:left;}',
     '@container (max-aspect-ratio:5/4){.tx-row.has-photo{display:flex;flex-direction:column;}.tx-row.has-photo .tx-side{width:100%;height:min(36cqh,260px);}.tx-row.has-photo .tx-photo{max-height:36cqh;height:100%;}.tx-photo-hero{width:min(90cqw,560px);height:min(34cqh,280px);}}',
 
     '@container (max-aspect-ratio:5/4){.tx-row{flex-direction:column;gap:clamp(8px,2cqh,18px);}.tx-ills{max-width:90%;}.ill-tx{--s:clamp(40px,min(12cqh,14cqw),88px);}.tx-photo{width:min(78cqw,320px);max-height:32cqh;}.tx-chips{grid-template-columns:repeat(2,minmax(0,1fr));width:100%;}.tx-line{font-size:clamp(16px,min(4.2cqw,5cqh),28px);}}',
