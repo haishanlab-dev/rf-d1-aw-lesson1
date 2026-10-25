@@ -5,7 +5,7 @@
     var ts = (localStorage.getItem('rfTextSize') || 'large').trim();
     if (['medium', 'large', 'xl'].indexOf(ts) < 0) ts = 'large';
     var fh = localStorage.getItem('rfFontHarmony');
-    var font = (fh === '0' || fh === 'false') ? 'system' : 'harmony';
+    var font = (fh === '0' || fh === 'false') ? 'system' : 'nunito';
     var voice = (localStorage.getItem('rfVoice') || 'en-GB').trim();
     if (voice !== 'en-US' && voice !== 'en-GB') voice = 'en-GB';
     root.setAttribute('data-text-size', ts);
@@ -27,7 +27,7 @@
       '#milesSplash{position:fixed;inset:0;z-index:99999;display:flex;align-items:center;justify-content:center;',
       'background:#FBF6E9;transition:opacity .28s ease}',
       '#milesSplash .miles-splash-mark{display:inline-flex;align-items:center;gap:14px;',
-      'font-family:var(--font-harmony),system-ui,-apple-system,"Segoe UI",sans-serif;',
+      'font-family:var(--font-nunito,var(--font-harmony)),system-ui,-apple-system,"Segoe UI",sans-serif;',
       'font-weight:800;font-size:clamp(28px,5vw,44px);color:#1F2A44;line-height:1}',
       '#milesSplash .miles-splash-mark .ms{font-size:clamp(40px,7vw,56px);color:#3D7AB5;',
       'font-family:"Material Symbols Rounded",sans-serif;font-variation-settings:"FILL" 1,"wght" 500,"GRAD" 0,"opsz" 48;',

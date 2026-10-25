@@ -1,0 +1,39 @@
+/* Nunito — bundled for Reading Future kid UI (matches Noto mockups).
+   SIL Open Font License 1.1 — see ./Nunito-OFL.txt
+   https://github.com/googlefonts/nunito — files unmodified. */
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-400.woff2") format("woff2");
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-600.woff2") format("woff2");
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-700.woff2") format("woff2");
+  font-weight: 700; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-800.woff2") format("woff2");
+  font-weight: 800; font-style: normal; font-display: swap;
+}
+/* Map 500/900 requests onto nearest bundled weights */
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-600.woff2") format("woff2");
+  font-weight: 500; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: "Nunito";
+  src: url("./Nunito-800.woff2") format("woff2");
+  font-weight: 900; font-style: normal; font-display: swap;
+}
+:root {
+  --font-nunito: "Nunito", "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* legacy alias: older data-font=harmony / --font-harmony now resolve to Nunito */
+  --font-harmony: var(--font-nunito);
+}

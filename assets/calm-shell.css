@@ -1,7 +1,7 @@
 /* Marvilo + Calm Classroom shell for live Reading Future lessons.
-   Uses HarmonyOS Sans + Material Symbols FILL. No Duo branding. */
+   Uses Nunito (SIL OFL) + Material Symbols FILL. No Duo branding. */
 
-@import url("./fonts/harmony-font.css");
+@import url("./fonts/nunito-font.css");
 @import url("./fonts/material-symbols.css");
 
 :root {
@@ -31,6 +31,7 @@
   --success: var(--green);
   --r-btn: 16px;
   --r-card: 20px;
+  --r-photo: clamp(16px, 2.2vw, 24px);
   --r-pill: 999px;
   --h-btn: 58px;
   --h-cta: 64px;
@@ -44,7 +45,7 @@
   --body-big: clamp(28px, 3.2vw, 52px);
   --pad: clamp(12px, 2vw, 40px);
   --gap: clamp(10px, 1.6vw, 28px);
-  --font: var(--font-harmony);
+  --font: var(--font-nunito, var(--font-harmony));
 }
 
 html, body {
@@ -190,7 +191,7 @@ body.playing #pausebtn { display: grid !important; }
 }
 .imgbox img {
   width: 100%; height: 100%; object-fit: contain;
-  border-radius: clamp(10px, 1.5vw, 20px);
+  border-radius: var(--r-photo);
   -webkit-user-drag: none; pointer-events: none;
   max-width: 100%; max-height: 100%;
 }
@@ -840,9 +841,15 @@ body.fs #view .titles,
    letterbox), giving edge definition on cream. */
 #view .content > .imgbox:not(.has-dg):not(.has-ix) {
   background: transparent; border: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
+  display: flex; align-items: center; justify-content: center;
 }
+/* Lesson photos: round the picture itself (kid-friendly), no white frame.
+   Shrink-wrap so border-radius follows the photo, not the letterbox. */
 #view .content > .imgbox:not(.has-dg):not(.has-ix) > img {
-  border-radius: 0;
+  width: auto !important; height: auto !important;
+  max-width: 100%; max-height: 100%;
+  object-fit: contain;
+  border-radius: var(--r-photo);
   filter: drop-shadow(0 2px 3px rgba(31,42,68,.16)) drop-shadow(0 6px 14px rgba(31,42,68,.10));
 }
 

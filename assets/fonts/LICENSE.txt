@@ -30,3 +30,10 @@ Copyright Google Inc.
 Licensed under the Apache License, Version 2.0
 https://github.com/google/material-design-icons
 Style used in samples: Rounded · opsz 24 (40 on large FAB/CTA) · wght 500 · FILL 0 (FILL 1 on play CTA)
+
+
+--------------------------------------------------------------------------------
+Nunito (Nunito-400/600/700/800.woff2)
+Copyright 2014 The Nunito Project Authors (https://github.com/googlefonts/nunito)
+Licensed under the SIL Open Font License, Version 1.1 — see Nunito-OFL.txt
+Latin woff2 files self-hosted unmodified for offline/Safari reliability.

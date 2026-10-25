@@ -412,7 +412,7 @@
     if (!root) return getPrefs();
     var prefs = getPrefs();
     root.setAttribute('data-text-size', prefs.textSize);
-    root.setAttribute('data-font', prefs.fontHarmony ? 'harmony' : 'system');
+    root.setAttribute('data-font', prefs.fontHarmony ? 'nunito' : 'system');
     root.setAttribute('data-voice', prefs.voice);
 
     var name = prefs.learnerName;
@@ -449,7 +449,7 @@
       if (!root) return;
       var prefs = getPrefs();
       root.setAttribute('data-text-size', prefs.textSize);
-      root.setAttribute('data-font', prefs.fontHarmony ? 'harmony' : 'system');
+      root.setAttribute('data-font', prefs.fontHarmony ? 'nunito' : 'system');
       root.setAttribute('data-voice', prefs.voice);
     } catch (e) {}
   }
