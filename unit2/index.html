@@ -219,7 +219,7 @@ img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max
 </div>
 <audio id="au" preload="auto" playsinline></audio>
 <script src="../assets/progress-api.js"></script>
-<script src="../assets/retell-recorder.js?v=mic2"></script>
+<script src="../assets/retell-recorder.js?v=mic3"></script>
 <script src="../assets/diagrams.js?v=dg20"></script>
 <script src="../assets/reading.js?v=rd6"></script>
 <script src="../assets/interact-data.js?v=ix5"></script>
@@ -378,7 +378,8 @@ async function runFromIndex(startIdx){
     } else if(sc.type==='retell'){
       render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;
       try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT); }catch(_e){}
-      await wait(400/ (QA?4:1),id);await countdownN(id, QA?3:10);if(id!==runId)return;
+      // No 3-2-1 / timed countdown: Miles taps Record to start immediately, then Continue when done.
+      await waitForContinue(id, {retell:true}); if(id!==runId)return;
       try{ if(window.RFRetell&&RFRetell.stopIfRecording) await RFRetell.stopIfRecording(); }catch(_e){}
       if(id!==runId)return;
       render(sc,'reveal');log({ev:'reveal',i:sc.i});
