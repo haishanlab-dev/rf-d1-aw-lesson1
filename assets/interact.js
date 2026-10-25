@@ -57,6 +57,7 @@
   function isPaused() { try { return typeof paused !== 'undefined' && paused; } catch (e) { return false; } }
 
   /* ---------- state per render ---------- */
+  var BIN_ILL = { rain: 'cloud_rain', winter: 'snowman', high: 'sun_cloud', low: 'cloud', storm: 'storm', rs: 'cloud_snow', snow: 'snowflake', cloudy: 'cloud', sunny: 'sun' };
   var cur = null; // { sc, unit, cfg, state, live, engagedAt, done, tries, ... }
   function now() { return Date.now(); }
   function touch() { if (cur) cur.lastTouch = now(); }
@@ -118,7 +119,7 @@
     var h = '<div class="ix-sort' + (interactive ? ' is-live ix-wait' : ' is-intro') + ' n' + cfg.bins.length + '"><div class="ix-tray">';
     cfg.cards.forEach(function (c, k) { h += '<div class="ix-card ix-k' + (k % 4) + '" data-k="' + k + '" role="button" tabindex="0">' + esc(c.t) + '</div>'; });
     h += '</div><div class="ix-bins">';
-    cfg.bins.forEach(function (b) { h += '<div class="ix-bin t-' + b.tone + '" data-bin="' + b.id + '"><div class="ix-bin-t">' + esc(b.label) + '</div><div class="ix-bin-in"></div></div>'; });
+    cfg.bins.forEach(function (b) { h += '<div class="ix-bin t-' + b.tone + '" data-bin="' + b.id + '"><div class="ix-bin-h">' + (BIN_ILL[b.id] && window.RFIllus ? RFIllus.html(BIN_ILL[b.id], 'ill-ixbin', 0) : '') + '<div class="ix-bin-t">' + esc(b.label) + '</div></div><div class="ix-bin-in"></div></div>'; });
     return h + '</div><div class="ix-say" aria-live="polite"></div></div>';
   }
   function mountSort(box, cfg) {
@@ -334,7 +335,11 @@
     '.ix-ghost{position:fixed;left:0;top:0;z-index:90;pointer-events:none;box-shadow:0 12px 24px rgba(0,0,0,.18);transition:none;margin:0;max-width:none !important;}',
     '.ix-bins{flex:1 1 auto;min-height:0;display:flex;gap:2cqw;}',
     '.ix-bin{flex:1 1 0;min-width:0;border-radius:20px;border:4px dashed var(--bc);background:var(--bb);display:flex;flex-direction:column;align-items:center;gap:1.4cqh;padding:1.6cqh 1cqw;transition:box-shadow .3s ease,transform .3s ease;}',
-    '.ix-bin.t-blue{--bc:#3D7AB5;--bb:#E4F1FB;} .ix-bin.t-gold{--bc:#C9A63A;--bb:#FFF3D6;} .ix-bin.t-green{--bc:#4F9A6B;--bb:#E7F4EC;} .ix-bin.t-gray{--bc:#6B7785;--bb:#ECEFF3;}',
+    '.ix-bin.t-blue{--bc:#3D7AB5;--bb:#F3F8FC;} .ix-bin.t-gold{--bc:#C9A63A;--bb:#FFF8E6;} .ix-bin.t-green{--bc:#4F9A6B;--bb:#F1F9F3;} .ix-bin.t-gray{--bc:#6B7785;--bb:#F6F6F4;}',
+    '.ix-bin-h{display:flex;align-items:center;justify-content:center;gap:1.2cqw;flex:0 0 auto;max-width:100%;}',
+    '.ill-ixbin{--s:clamp(56px,min(16cqh,8cqw),120px);}',
+    '.ix-sort.n3 .ix-bin-h,.ix-sort.n4 .ix-bin-h{flex-direction:column;gap:.6cqh;text-align:center;}',
+    '.ix-sort.n4 .ill-ixbin{--s:clamp(56px,min(14cqh,7cqw),110px);}',
     '.ix-bin-t{font-weight:900;font-size:clamp(16px,min(2.8cqw,7cqh),32px);color:var(--bc);}',
     '.ix-bin-in{display:flex;flex-direction:column;gap:1cqh;align-items:stretch;width:100%;min-height:0;}',
     '.ix-bin-in .ix-card{max-width:none;min-height:0;font-size:clamp(15px,min(2.2cqw,5.4cqh),22px);line-height:1.2;padding:6px 12px;border-radius:999px;border-width:2px;border-bottom-width:2px;border-left-width:8px;background:#fff;cursor:default;justify-content:flex-start;text-align:left;box-shadow:0 2px 0 rgba(0,0,0,.06);}',

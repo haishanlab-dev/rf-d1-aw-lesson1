@@ -834,3 +834,14 @@ body.fs #view .titles,
 #wrap:-webkit-full-screen #view .titles {
   padding-left: calc(max(68px, env(safe-area-inset-left, 0px) + 64px) - var(--pad));
 }
+
+/* Book photos / textbook illustrations sit straight on the page background
+   (no white card). A soft drop-shadow follows the picture itself (not the
+   letterbox), giving edge definition on cream. */
+#view .content > .imgbox:not(.has-dg):not(.has-ix) {
+  background: transparent; border: 0; box-shadow: none; border-radius: 0; padding: 0; overflow: visible;
+}
+#view .content > .imgbox:not(.has-dg):not(.has-ix) > img {
+  border-radius: 0;
+  filter: drop-shadow(0 2px 3px rgba(31,42,68,.16)) drop-shadow(0 6px 14px rgba(31,42,68,.10));
+}
