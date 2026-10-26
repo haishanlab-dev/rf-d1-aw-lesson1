@@ -2,8 +2,8 @@
 <!-- neck: Noto Emoji boy (Apache 2.0) on simple shoulders, with a red arrow at the neck -->
 <path d="M14 128 C14 104 34 96 64 96 C94 96 114 104 114 128 Z" fill="#26A69A"/>
 <path d="M50 96 Q64 108 78 96 L78 98 Q64 112 50 98 Z" fill="#00897B"/>
-<rect x="52" y="76" width="24" height="26" rx="6" fill="#E59600"/>
-<g transform="translate(22 0) scale(0.66)">
+<rect x="52" y="84" width="24" height="18" rx="6" fill="#E59600"/>
+<g transform="translate(22 10) scale(0.66)">
 <path id="b_ears" style="fill:#E59600;" d="M26.28,94.88c-7.33,0-13.29-5.71-13.29-12.73s5.96-12.73,13.29-12.73h75.43
 	c7.33,0,13.29,5.71,13.29,12.73s-5.96,12.73-13.29,12.73L26.28,94.88z"/>
 <path id="b_head" style="fill:#FFCA28;" d="M64,122.47c-21.41,0-44.46-16.31-44.46-52.12c0-16.64,4.87-31.97,13.71-43.17
@@ -44,5 +44,5 @@
 </g>
 </g>
 <g stroke="#E53935" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none">
-<path d="M118 70 L86 88"/><path d="M86 74 L84 89 L99 91"/></g>
+<path d="M118 76 L88 92"/><path d="M88 78 L86 93 L101 95"/></g>
 </svg>
