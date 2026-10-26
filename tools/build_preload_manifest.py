@@ -11,11 +11,11 @@ records the <img> URLs left in #view.
 RE-RUN after changing which images a screen uses (diagrams.js, IMGS, interact-data).
 A stale list only costs prefetching; the lesson still works.
 Run: /workspace/pwv/bin/python tools/build_preload_manifest.py   (needs playwright)"""
-import asyncio, functools, http.server, json, os, posixpath, re, threading
+import sys, asyncio, functools, http.server, json, os, posixpath, re, threading
 from urllib.parse import urlparse, unquote
 from playwright.async_api import async_playwright
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-LESSONS = ['index.html', 'unit2/index.html', 'unit3/index.html', 'unit4/index.html', 'science-review/index.html']
+LESSONS = sys.argv[1:] or ['index.html', 'unit1-v2/index.html', 'unit2/index.html', 'unit3/index.html', 'unit4/index.html', 'science-review/index.html']
 
 def serve():
     class Quiet(http.server.SimpleHTTPRequestHandler):

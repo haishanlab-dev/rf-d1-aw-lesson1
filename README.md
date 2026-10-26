@@ -2,6 +2,7 @@
 
 ## Live
 - [Unit 1 · Animals' Weather](./) — Learn
+- [Unit 1 · new version (pilot)](./unit1-v2/)
 - [Unit 2 · A Rainy Day](./unit2/)
 - [Unit 3 · Rain, Snow, and Ice](./unit3/)
 - [Unit 4 · Fish from the Sky](./unit4/)
@@ -95,3 +96,13 @@ Lesson pages no longer inline photos or narration. Keep it that way — a single
 - **`PRE`** (per screen/state image list) is generated: `/workspace/pwv/bin/python tools/build_preload_manifest.py`. Re-run after changing which images a screen shows (diagrams.js, interact-data, IMGS). Stale lists only cost prefetching.
 - **Icon font** `assets/fonts/MaterialSymbolsRounded-sub.woff2` is a 260 KB subset of the 5.4 MB original (same outlines). **After using a new icon name anywhere, run `/workspace/pwv/bin/python tools/subset_icon_font.py` and bump `?v=ms…`** in `assets/fonts/material-symbols.css` and the `<link rel="preload">` lines, otherwise the new icon shows as text.
 - The `<img>` that `render()` writes into `.imgbox` uses `data-rfsrc` and only gets its `src` if diagrams/interact did not replace it (most screens do), so unused photos are never downloaded.
+
+## Unit 1 new version (pilot, Oct 2026)
+
+`/unit1-v2/` is a second Unit 1 lesson built on three strands: read closely, say it like the book (one sentence pattern), and think about it (proof / fact or saying / how could we check). The old `/` lesson stays as it is for comparison. Both save progress as `unit1`.
+
+- Content lives in `content/unit1-v2.json` (screens, narration text, parent tips `tip`, interactions `ix`).
+- Build: `python3 tools/build_lesson.py content/unit1-v2.json` — records only new or changed clips (edge-tts, en-GB Sonia + en-US Jenny, -20%), writes SCREENS/AUD/DUR_US/IMGS into the page and `assets/interact-data-unit1v2.js`.
+- Then: `python3 tools/build_preload_manifest.py unit1-v2/index.html`.
+- Screens with `practice: true` let the child record and play back, but nothing is saved or uploaded.
+- Parent tips (Chinese, grey line under the question) show by default; `localStorage.rfParentTips='0'` hides them.

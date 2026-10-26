@@ -21,6 +21,7 @@
   var saving = false;
   var saved = false;
   var mime = '';
+  var practice = false; /* practice screens (echo, own sentence): no Save, nothing uploaded */
 
   var CSS = [
     /* No yellow frame — prompt + equal-width Record|Continue side by side */
@@ -116,7 +117,7 @@
     box.querySelector('.rt-stop').hidden = !recording;
     box.querySelector('.rt-play').hidden = !hasBlob || recording;
     box.querySelector('.rt-again').hidden = !hasBlob || recording;
-    box.querySelector('.rt-save').hidden = !hasBlob || recording;
+    box.querySelector('.rt-save').hidden = practice || !hasBlob || recording;
     box.querySelector('.rt-save').disabled = saving || saved;
     box.querySelector('.rt-save').textContent = saved ? 'Saved' : (saving ? 'Saving…' : 'Save');
     var timer = box.querySelector('.rt-timer');
@@ -149,7 +150,7 @@
     chunks = [];
     saved = false;
     revokeUrl();
-    setStatus('Tap Play to hear you. Save keeps it for your other iPad.');
+    setStatus(practice ? 'Tap Play to hear you.' : 'Tap Play to hear you. Save keeps it for your other iPad.');
     syncUi();
   }
 
@@ -338,10 +339,11 @@
     }
   }
 
-  function mount(panel, id) {
+  function mount(panel, id, opts) {
     if (!panel) return;
     injectCss();
     if (id) unitId = id;
+    practice = !!(opts && opts.practice);
     var cont = panel.querySelector('.contbtn');
     var existing = panel.querySelector('.retell-box');
     if (existing) {
@@ -376,7 +378,8 @@
     try { box.scrollIntoView({ block: 'nearest', inline: 'nearest' }); } catch (e) {}
     if (rec && rec.state === 'recording') setStatus('Listening… tap Stop when you are done.');
     else if (saved) setStatus('Saved. Your other iPad can play this.');
-    else if (blob) setStatus('Tap Play to hear you. Save keeps it for your other iPad.');
+    else if (blob) setStatus(practice ? 'Tap Play to hear you.' : 'Tap Play to hear you. Save keeps it for your other iPad.');
+    else if (practice) setStatus('Tap Record and say it.');
     syncUi();
   }
 

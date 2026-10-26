@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<script src="../assets/prefs-boot.js?v=63863053"></script>
+<script src="../assets/rest-break.js?v=rb2"></script>
+<title>Reading Future Discover 1 · Animals' Weather · Lesson 1 (new)</title>
+<!--
+VOICE=en-GB-SoniaNeural RATE=-20%
+Parent note
+- Learner English name: Miles. Eva speaks to Miles throughout.
+- Open: download this file from Google Drive, double-click to open in a browser (on iPad use Files or Safari). Works offline, no login.
+- Two sessions, about 6 minutes each (not counting thinking time). Choose Session 1 or Session 2, tap Start, then it plays by itself.
+- Book: Discover 1 Student Book pp.8–13. Small pause button at bottom right.
+- Answers derived from the text (not the official key): Read and Think has no fixed answers; RC: b / b / c; chart: know / stretch / fat; vocab review: when / necks / smell; project: rain = b,d ; long winter = a,c.
+- Free official MP3: https://contents.compasspub.com/mp3/Reading%20Future%20Discover%201.zip
+- Free e-book preview: https://eb.compasspub.com/v2/?uri=books/RF_Discover_1/work/&prev=13
+- Voice: Microsoft Edge TTS, British English Sonia Neural, embedded offline.
+-->
+<style>
+:root{
+  --blue:#3D7AB5;--yellow:#E8C04A;--green:#4F9A6B;--text:#1F2A44;--bg:#FBF6E9;
+  --title: clamp(36px, 5.5vw, 84px);
+  --sub: clamp(28px, 4vw, 62px);
+  --body: clamp(28px, 3.6vw, 58px);
+  --body-big: clamp(32px, 4.5vw, 72px);
+  --pad: clamp(12px, 2.5vw, 56px);
+  --gap: clamp(12px, 2vw, 40px);
+  --pause: clamp(96px, 14vw, 112px);
+}
+*{box-sizing:border-box;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-tap-highlight-color:transparent;}
+html,body{margin:0;height:100%;width:100%;background:var(--bg);overflow:hidden;
+  font-family:var(--font-harmony),system-ui,sans-serif;color:var(--text);}
+#wrap{position:fixed;inset:0;width:100%;height:100%;height:100dvh;overflow:hidden;background:var(--bg);
+  display:flex;flex-direction:column;}
+#wrap:fullscreen,#wrap:-webkit-full-screen,
+html:fullscreen,html:-webkit-full-screen,body:fullscreen{background:var(--bg);width:100%;height:100%;}
+#stage{flex:1;min-height:0;width:100%;height:100%;background:var(--bg);position:relative;overflow:hidden;}
+#view{position:absolute;inset:0;width:100%;height:100%;}
+img{-webkit-user-drag:none;user-drag:none;pointer-events:none;max-width:100%;max-height:100%;}
+.screen{position:absolute;inset:0;padding:var(--pad);padding-bottom:calc(var(--pad) + var(--pause) * 0.65);
+  display:flex;flex-direction:column;gap:var(--gap);overflow:hidden;}
+.titles{display:flex;align-items:baseline;gap:clamp(10px,2vw,28px);flex-wrap:wrap;
+  min-height:0;padding-left:clamp(52px,12vw,88px);padding-right:clamp(100px,22vw,280px);}
+.zh{font-size:var(--title);font-weight:800;line-height:1.15;}
+.en{font-size:var(--sub);font-weight:700;color:var(--blue);line-height:1.15;}
+.content{flex:1;display:flex;flex-direction:row;gap:var(--gap);min-height:0;overflow:hidden;}
+.imgbox{flex:1 1 48%;min-width:0;min-height:0;background:#fff;border-radius:clamp(16px,2vw,36px);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 6px 0 rgba(74,168,232,.25);overflow:hidden;padding:clamp(8px,1.2vw,20px);}
+.imgbox img{width:100%;height:100%;object-fit:contain;border-radius:clamp(10px,1.5vw,20px);}
+.panel{flex:1 1 48%;min-width:0;min-height:0;display:flex;flex-direction:column;justify-content:center;
+  gap:clamp(8px,1.5vh,22px);overflow:auto;-webkit-overflow-scrolling:touch;}
+.line{font-size:var(--body);font-weight:700;line-height:1.25;}
+.line.big{font-size:var(--body-big);}
+.q{background:#fff;border:clamp(4px,.5vw,8px) solid var(--blue);border-radius:clamp(16px,2vw,36px);padding:clamp(12px,1.5vw,26px);}
+.q .line{font-size:var(--body);}
+.rev{background:var(--green);color:#fff;border-radius:clamp(16px,2vw,36px);padding:clamp(12px,1.5vw,26px);}
+.rev .line{font-size:var(--body);}
+.cd{width:clamp(80px,min(22vw,18vh),180px);height:clamp(80px,min(22vw,18vh),180px);border-radius:50%;background:var(--yellow);
+  display:flex;align-items:center;justify-content:center;font-size:clamp(48px,min(12vw,12vh),120px);font-weight:900;
+  align-self:center;box-shadow:0 8px 0 rgba(0,0,0,.08);flex-shrink:0;
+  margin:clamp(6px,1.5vh,16px) auto;transform-origin:center center;}
+.cd.pop{animation:pop .85s ease-out;}
+@keyframes pop{0%{transform:scale(1.1)}100%{transform:scale(1)}}
+/* Keep countdown fully visible: don't clip circle or soft pop */
+.panel:has(.cd){overflow:visible;padding-bottom:clamp(8px,2vh,20px);}
+.content:has(.cd){overflow:visible;}
+.content:has(.cd) .imgbox{flex:0 1 36%;max-height:40%;}
+.prog{position:absolute;top:clamp(8px,1.5vh,44px);right:clamp(8px,2vw,60px);display:flex;gap:clamp(6px,1vw,16px);z-index:5;}
+.prog button{width:clamp(36px,6vw,76px);height:clamp(36px,6vw,76px);border-radius:50%;background:#E4E8EC;color:#9AA3AD;
+  font-size:clamp(20px,3.5vw,44px);font-weight:800;display:flex;align-items:center;justify-content:center;
+  border:none;cursor:pointer;touch-action:manipulation;padding:0;font-family:inherit;box-shadow:0 3px 0 rgba(0,0,0,.08);}
+.prog button.on{background:var(--blue);color:#fff;}
+.prog button.done{background:var(--green);color:#fff;}
+.prog button:active{transform:scale(.94);}
+.mapnav{display:flex;flex-direction:column;gap:clamp(8px,1.2vh,16px);margin-top:clamp(4px,1vh,12px);}
+.mapnav button{font-size:clamp(22px,3.2vw,44px);font-weight:800;text-align:left;padding:clamp(10px,1.4vh,18px) clamp(14px,2vw,28px);
+  border-radius:clamp(12px,1.5vw,24px);border:clamp(3px,.35vw,5px) solid var(--blue);background:#fff;color:var(--text);
+  cursor:pointer;touch-action:manipulation;font-family:inherit;box-shadow:0 4px 0 rgba(74,168,232,.2);}
+.mapnav button:active{transform:translateY(2px);box-shadow:0 2px 0 rgba(74,168,232,.2);}
+.mapnav button .n{display:inline-flex;width:clamp(28px,4vw,48px);height:clamp(28px,4vw,48px);border-radius:50%;
+  background:var(--blue);color:#fff;align-items:center;justify-content:center;margin-right:clamp(8px,1.5vw,16px);font-size:clamp(18px,2.8vw,32px);}
+#start .hint{font-size:clamp(18px,2.8vw,36px);color:#5a6a7a;font-weight:700;max-width:42em;line-height:1.35;margin:0;}
+.pagehint{font-size:clamp(20px,2.5vw,40px);color:#6b7785;font-weight:700;}
+#pausebtn{position:fixed;right:clamp(12px,3vw,36px);bottom:clamp(12px,3vw,36px);
+  width:var(--pause);height:var(--pause);border-radius:50%;border:clamp(4px,.6vw,8px) solid rgba(60,60,60,.18);
+  background:rgba(255,216,77,.95);font-size:calc(var(--pause)*0.48);color:#3C3C3C;cursor:pointer;z-index:20;
+  display:none;box-shadow:0 8px 0 rgba(0,0,0,.12);line-height:1;touch-action:manipulation;}
+
+#tocbtn{position:fixed;left:clamp(8px,1.5vw,16px);top:clamp(8px,1.5vh,16px);z-index:25;
+  width:clamp(40px,8vw,56px);height:clamp(40px,8vw,56px);border-radius:14px;border:clamp(2px,.35vw,4px) solid rgba(60,60,60,.15);
+  background:rgba(255,255,255,.96);font-size:clamp(22px,4.2vw,32px);cursor:pointer;touch-action:manipulation;
+  box-shadow:0 3px 0 rgba(0,0,0,.08);line-height:1;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+#tocmask{position:fixed;inset:0;background:rgba(30,40,50,.35);z-index:40;display:none;}
+#toc{position:fixed;left:0;top:0;bottom:0;width:min(92vw,420px);background:#fff;z-index:41;display:none;
+  flex-direction:column;padding:clamp(16px,3vw,32px);box-shadow:8px 0 32px rgba(0,0,0,.18);
+  overflow:auto;-webkit-overflow-scrolling:touch;}
+#toc.open,#tocmask.open{display:flex;}
+#toc h3{margin:0 0 clamp(12px,2vh,20px);font-size:clamp(26px,4vw,40px);font-weight:800;}
+#toc .x{position:absolute;right:clamp(10px,2vw,24px);top:clamp(8px,1.5vh,20px);font-size:clamp(32px,5vw,48px);
+  border:none;background:none;cursor:pointer;color:#3C3C3C;line-height:1;}
+#toc a,#toc .soon{display:block;font-size:clamp(20px,3.2vw,32px);font-weight:700;padding:clamp(12px,1.6vh,18px) clamp(12px,2vw,18px);
+  margin:0 0 8px;border-radius:14px;border:3px solid #e4e8ec;text-decoration:none;color:var(--text);background:#f7fbff;}
+#toc a.here{border-color:var(--blue);background:#e8f4fc;}
+#toc a:active{transform:scale(.98);}
+#toc .soon{color:#9AA3AD;border-style:dashed;cursor:default;}
+#toc .sec{font-size:clamp(16px,2.4vw,24px);color:#6b7785;font-weight:800;margin:clamp(12px,2vh,20px) 0 8px;text-transform:uppercase;letter-spacing:.04em;}
+#start{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:clamp(16px,3vh,40px);background:var(--bg);z-index:10;padding:var(--pad);text-align:center;}
+#start{padding-top:clamp(64px,12vh,100px);}
+#start h1{font-size:clamp(40px,7vw,96px);margin:0;font-weight:800;line-height:1.15;}
+#start h2{font-size:clamp(22px,3.5vw,60px);margin:0;color:var(--blue);font-weight:700;}
+#go{font-size:clamp(40px,8vw,110px);font-weight:900;padding:clamp(16px,2.5vh,40px) clamp(36px,8vw,140px);
+  border-radius:999px;border:none;background:var(--yellow);color:var(--text);box-shadow:0 10px 0 #e0b92c;
+  cursor:pointer;touch-action:manipulation;}
+.sess{display:flex;gap:clamp(12px,2vw,30px);flex-wrap:wrap;justify-content:center;}
+.sess button{font-size:clamp(24px,4vw,52px);font-weight:800;padding:clamp(10px,1.5vh,20px) clamp(20px,4vw,50px);
+  border-radius:999px;border:clamp(3px,.4vw,6px) solid var(--blue);background:#fff;color:var(--blue);cursor:pointer;touch-action:manipulation;}
+.sess button.sel{background:var(--blue);color:#fff;}
+#plink{position:absolute;left:clamp(12px,2vw,40px);bottom:clamp(12px,2vh,30px);
+  font-size:clamp(18px,2.5vw,34px);color:#7a8794;background:none;border:none;text-decoration:underline;cursor:pointer;}
+#pnote{position:absolute;inset:clamp(24px,4vh,60px) clamp(16px,6vw,120px);background:#fff;border-radius:clamp(16px,2vw,36px);
+  box-shadow:0 10px 40px rgba(0,0,0,.2);padding:clamp(20px,3vw,50px) clamp(20px,4vw,70px);z-index:30;display:none;
+  font-size:clamp(18px,2.4vw,36px);line-height:1.5;overflow:auto;-webkit-overflow-scrolling:touch;}
+#pnote h3{font-size:clamp(28px,4vw,54px);margin:0 0 16px;}
+#pnote .x{position:absolute;right:clamp(12px,2vw,30px);top:clamp(8px,1.5vh,24px);font-size:clamp(36px,5vw,60px);border:none;background:none;cursor:pointer;color:#3C3C3C;}
+#pnote .u{font-size:clamp(14px,2vw,28px);color:#4a6c8c;word-break:break-all;}
+.contbtn{font-size:clamp(28px,4vw,56px);font-weight:900;padding:clamp(12px,1.8vh,24px) clamp(28px,5vw,72px);
+  border-radius:999px;border:none;background:var(--yellow);margin-top:clamp(8px,1.5vh,20px);cursor:pointer;
+  align-self:flex-start;touch-action:manipulation;box-shadow:0 6px 0 #e0b92c;font-family:inherit;}
+.endbtn{font-size:clamp(24px,3.5vw,52px);font-weight:800;padding:clamp(10px,1.5vh,20px) clamp(24px,4vw,60px);
+  border-radius:999px;border:none;background:var(--yellow);margin-top:10px;cursor:pointer;align-self:flex-start;touch-action:manipulation;}
+/* Phone / narrow: stack image above text */
+@media (max-width:700px),(orientation:portrait) and (max-width:920px){
+  .content{flex-direction:column;}
+  .imgbox{flex:0 1 38%;max-height:42%;}
+  .panel{flex:1 1 auto;justify-content:flex-start;}
+  .titles{padding-left:clamp(48px,14vw,72px);padding-right:clamp(80px,20vw,160px);}
+  .cd{width:clamp(72px,min(28vw,16vh),140px);height:clamp(72px,min(28vw,16vh),140px);font-size:clamp(44px,min(18vw,11vh),96px);}
+  .content:has(.cd) .imgbox{flex:0 1 28%;max-height:30%;}
+}
+@media (max-height:500px) and (orientation:landscape){
+  .imgbox{flex:0 1 40%;}
+  .titles{min-height:0;}
+  .line{font-size:clamp(22px,4.2vh,40px);}
+  .zh{font-size:clamp(28px,5.5vh,48px);}
+  .en{font-size:clamp(22px,4.5vh,36px);}
+  .cd{width:clamp(64px,min(16vw,22vh),96px);height:clamp(64px,min(16vw,22vh),96px);font-size:clamp(36px,min(10vw,14vh),64px);margin:4px auto;}
+  .content:has(.cd) .imgbox{flex:0 1 32%;max-height:36%;}
+}
+</style>
+<!-- perf: start icon + text fonts with the HTML (not after calm-shell.css @import) -->
+<link rel="preload" href="../assets/fonts/MaterialSymbolsRounded-sub.woff2?v=ms4" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/Nunito-800.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/Nunito-700.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/Nunito-600.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="../assets/fonts/Nunito-400.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="../assets/fonts/nunito-font.css?v=05add169">
+<link rel="stylesheet" href="../assets/fonts/material-symbols.css?v=ms4">
+<link rel="stylesheet" href="../assets/calm-shell.css?v=fit14">
+<link rel="stylesheet" href="../assets/prefs.css?v=7e26b330">
+<!-- Fonts: HarmonyOS Sans (see assets/fonts/LICENSE.txt) + Material Symbols Rounded (Apache-2.0) -->
+</head>
+<body oncontextmenu="return false">
+<div id="wrap">
+  <header class="shell-stats" id="shellstats" aria-label="Top bar">
+    <a class="stat miles" href="../" aria-label="Home"><span class="ms">face</span> Miles</a>
+    <button type="button" class="course-chip" id="coursechip" aria-label="Open course list" aria-expanded="false">
+      <span class="ms">science</span>
+      Science · Weather
+      <span class="ms">expand_more</span>
+    </button>
+    <div class="stat last"><span class="ms">schedule</span> Animals' Weather</div>
+  </header>
+  <div class="shell-main">
+  <button id="tocbtn" aria-label="Units menu" title="Units" hidden>☰</button>
+  <button id="pausebtn" aria-label="pause" type="button"><span class="ms">pause</span></button>
+  <div id="tocmask"></div>
+  <nav id="toc" aria-label="Unit directory">
+    <div class="course-panel-head">
+      <div class="book-icon"><span class="ms">auto_stories</span></div>
+      <div><h2>Courses</h2><p>Reading Future · Discover 1</p></div>
+      <button class="x" id="tocx" aria-label="Close"><span class="ms">close</span></button>
+    </div>
+    <div class="course-scroll">
+    <div class="sec">Science · Weather</div>
+    <a href="../">1 · Animals' Weather</a>
+    <a class="here" href="./">1 · Animals' Weather (new)</a>
+    <a href="../unit2/">2 · A Rainy Day</a>
+    <a href="../unit3/">3 · Rain, Snow, and Ice</a>
+    <a href="../unit4/">4 · Fish from the Sky</a>
+    <a href="../science-review/">Weather review</a>
+    <div class="sec">Extras</div>
+    <a href="../voice/">Voice practice demo</a>
+  </div>
+  </nav>
+  <div id="stage">
+  <div id="view"></div>
+  <div id="start">
+    <div class="start-card">
+      <div class="start-hero">
+        <div>
+          <div class="unit-pill">Unit 1 · Science · New version</div>
+          <h1>Animals' Weather</h1>
+          <p>Reading Future · Discover 1 · Lesson 1 · for Miles</p>
+        </div>
+        <div class="hero-illu" aria-hidden="true"><span class="ms">cloud</span></div>
+      </div>
+      <div class="start-body">
+        <h2>Ready to start?</h2>
+        <p class="meta">for Miles · voice from Parent settings</p>
+        <div class="sess"><button id="sA" class="sel">Session 1</button><button id="sB">Session 2</button></div>
+        <p class="hint">New: look and wonder, echo reading, find the proof, fact or saying, be the teacher. Tap map parts 1–4 anytime to jump.</p>
+        <button id="go" type="button" aria-label="Start"><span class="ms">play_arrow</span> Start</button>
+</div>
+    </div>
+  </div>
+  </div>
+  </div>
+  <nav class="shell-tabs" id="shelltabs" aria-label="Bottom tabs">
+    <a class="tab on" href="../"><span class="ms">home</span> Learn</a>
+    <a class="tab" href="../science-review/"><span class="ms">replay</span> Review</a>
+    <a class="tab" href="../book/"><span class="ms">auto_stories</span> Book</a>
+    <a class="tab" href="../progress/"><span class="ms">insights</span> Progress</a>
+  </nav>
+</div>
+<audio id="au" preload="auto" playsinline></audio>
+<script src="../assets/rf-assets.js?v=as1"></script>
+<script src="../assets/progress-api.js?v=e6db2030"></script>
+<script src="../assets/retell-recorder.js?v=mic7"></script>
+<script src="../assets/diagrams.js?v=dg41"></script>
+<script src="../assets/reading.js?v=rd8"></script>
+<script src="../assets/interact-data.js?v=ix6"></script>
+<script src="../assets/interact-data-unit1v2.js?v=1"></script>
+<script src="../assets/interact.js?v=ix19"></script>
+<script src="../assets/end-actions.js?v=ea1"></script>
+<script>
+function activeAUD(){
+  try{
+    var v=(window.RFProgress&&RFProgress.getVoice)?RFProgress.getVoice():'en-GB';
+    if(v==='en-US'&&typeof AUD_US!=='undefined'&&AUD_US) return AUD_US;
+  }catch(e){}
+  return AUD;
+}
+</script>
+<script>
+const SCREENS=[{"i": 0, "s": "A", "part": 1, "zh": "Animals' Weather", "en": "Lesson 1", "img": "unit1_title_p10.jpg", "rimg": null, "type": "normal", "body": ["Session 1 for Miles", "Reading Future · Discover 1"], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.928, "dr": 0}, {"i": 1, "s": "A", "part": 1, "zh": "Lesson Map", "en": "Four parts — tap to jump", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Use it & 21st skills"], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.648, "dr": 0}, {"i": 2, "s": "A", "part": 1, "zh": "Look and Wonder", "en": "I see · I think · I wonder", "img": "unit1_title_p10.jpg", "rimg": null, "type": "retell", "body": [], "q": ["I see a ___.", "I think ___.", "I wonder ___."], "reveal": ["I see a wet dog.", "I think it is rainy.", "I wonder: does the dog know about rain?"], "page": 10, "map": false, "dn": 17.304, "dr": 14.136, "tip": "给家长：他说中文也可以，你帮他换成英文句子，不用纠错。", "practice": true}, {"i": 3, "s": "A", "part": 1, "zh": "Warm-Up", "en": "Page 10", "img": "warmup_p10.jpg", "rimg": null, "type": "normal", "body": ["The weather changes often.", "People use technology", "to guess the weather.", "Animals can guess it too!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 16.68, "dr": 0}, {"i": 4, "s": "A", "part": 1, "zh": "Make a Guess", "en": "Big Question", "img": "unit1_title_p10.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How can animals", "guess the weather?", "What is your guess?"], "reveal": ["Good guess!", "Let's read and check."], "page": 10, "map": false, "dn": 13.272, "dr": 8.376, "tip": "给家长：记住他的猜测，读完课文后会回来对照。"}, {"i": 5, "s": "A", "part": 2, "zh": "New Words", "en": "Page 10", "img": "newwords_p10.jpg", "rimg": null, "type": "normal", "body": ["neck · air", "rabbit · fat", "know · when"], "q": [], "reveal": [], "page": null, "map": false, "dn": 22.992, "dr": 0}, {"i": 6, "s": "A", "part": 2, "zh": "stretch", "en": "New word", "img": "stretch_big.jpg", "rimg": null, "type": "normal", "body": ["stretch", "Stand up and stretch!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.696, "dr": 0}, {"i": 7, "s": "A", "part": 2, "zh": "smell", "en": "New word", "img": "smell_big.jpg", "rimg": null, "type": "normal", "body": ["smell", "Smell the air!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 10.392, "dr": 0}, {"i": 8, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 1", "img": "reading_p11.jpg", "rimg": null, "type": "normal", "body": ["Farmers need to know", "about the weather.", "Animals can help."], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.264, "dr": 0}, {"i": 9, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 2", "img": "horse_p11.jpg", "rimg": null, "type": "normal", "body": ["Cows and horses know", "when it will rain.", "They stretch their necks.", "They smell the air."], "q": [], "reveal": [], "page": null, "map": false, "dn": 10.344, "dr": 0}, {"i": 10, "s": "A", "part": 2, "zh": "Listen and Read", "en": "Part 3", "img": "rabbit_big.jpg", "rimg": null, "type": "normal", "body": ["Winter is coming.", "The rabbits are eating a lot.", "They are getting very fat."], "q": [], "reveal": [], "page": null, "map": false, "dn": 13.776, "dr": 0}, {"i": 11, "s": "A", "part": 2, "zh": "Echo Read", "en": "Listen, then say it", "img": "horse_p11.jpg", "rimg": null, "type": "retell", "body": [], "q": ["Cows and horses know", "when it will rain."], "reveal": ["Cows and horses know", "when it will rain."], "page": 11, "map": false, "dn": 13.368, "dr": 11.52, "tip": "给家长：注意 know when 连在一起读；不用追求完美，读两遍就好。", "practice": true}, {"i": 12, "s": "A", "part": 2, "zh": "Echo Read", "en": "Listen, then say it", "img": "rabbit_big.jpg", "rimg": null, "type": "retell", "body": [], "q": ["The rabbits are eating a lot.", "They are getting very fat."], "reveal": ["The rabbits are eating a lot.", "They are getting very fat."], "page": 11, "map": false, "dn": 12.6, "dr": 12.432, "tip": "给家长：可以夸张地读 very fat，让他模仿语气。", "practice": true}, {"i": 13, "s": "A", "part": 2, "zh": "Find the Proof", "en": "Which sentence tells you?", "img": "reading_p11.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How does the farmer know", "it will rain?"], "reveal": ["They smell the air."], "page": 11, "map": false, "dn": 10.512, "dr": 9.528}, {"i": 14, "s": "A", "part": 2, "zh": "Find the Proof", "en": "Which sentence tells you?", "img": "reading_p11.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How does the farmer know", "winter will be long and cold?"], "reveal": ["They are getting very fat."], "page": 11, "map": false, "dn": 9.552, "dr": 9.696}, {"i": 15, "s": "A", "part": 2, "zh": "Check Your Guess", "en": "Were you right?", "img": "horse_p11.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Remember your guess?", "How can animals", "guess the weather?"], "reveal": ["Animals use their bodies!", "Cows and horses smell the air.", "Rabbits eat and get fat."], "page": 11, "map": false, "dn": 10.704, "dr": 12.6, "tip": "给家长：问他：你刚才猜的和课文一样吗？哪里一样，哪里不一样？"}, {"i": 16, "s": "A", "part": 2, "zh": "Think", "en": "How do the animals know?", "img": "reading_p11.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How do the", "animals know?"], "reveal": ["The book does not say!", "Maybe they feel the air change.", "How could we check?"], "page": 11, "map": false, "dn": 10.488, "dr": 17.88, "tip": "给家长：这题没有标准答案。他答了就追问 Why do you think so?"}, {"i": 17, "s": "A", "part": 2, "zh": "Retell", "en": "First · Then · So", "img": "reading_p11.jpg", "rimg": null, "type": "retell", "body": [], "q": ["First, cows and horses ___.", "Then, the rabbits ___.", "So, animals help ___."], "reveal": ["First, cows and horses smell the air.", "Then, the rabbits get very fat.", "So, animals help farmers."], "page": 11, "map": false, "dn": 14.328, "dr": 15.816, "tip": "给家长：看着句子框说；说不完整没关系，你把完整的句子再说一遍给他听。"}, {"i": 18, "s": "A", "part": 2, "zh": "Session 1 done", "en": "Great job, Miles!", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic ✓", "2 Read the story ✓", "Next: 3 & 4", "(with 21st Century Skills)"], "q": [], "reveal": [], "page": null, "map": false, "dn": 17.544, "dr": 0}, {"i": 19, "s": "B", "part": 3, "zh": "Lesson Map", "en": "Session 2 — tap a part", "img": "map_all.png", "rimg": null, "type": "normal", "body": ["1 Open the topic", "2 Read the story", "3 Main idea & details", "4 Use it & 21st skills"], "q": [], "reveal": [], "page": null, "map": false, "dn": 12.6, "dr": 0}, {"i": 20, "s": "B", "part": 3, "zh": "Story Recap", "en": "Remember page 11", "img": "reading_p11.jpg", "rimg": null, "type": "normal", "body": ["Cows and horses → rain", "Rabbits get fat → long winter"], "q": [], "reveal": [], "page": null, "map": false, "dn": 13.464, "dr": 0}, {"i": 21, "s": "B", "part": 3, "zh": "Main Idea", "en": "What is a main idea?", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Main idea = what the WHOLE story is about", "One big idea for the whole page"], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.072, "dr": 0}, {"i": 22, "s": "B", "part": 3, "zh": "Details", "en": "What is a detail?", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Detail = one little fact", "It helps the main idea"], "q": [], "reveal": [], "page": null, "map": false, "dn": 10.56, "dr": 0}, {"i": 23, "s": "B", "part": 3, "zh": "Try it", "en": "Main idea or detail?", "img": "rabbit_big.jpg", "rimg": null, "type": "pause", "body": [], "q": ["The rabbits get very fat.", "Main idea, or detail?"], "reveal": ["Detail!", "One little fact"], "page": 12, "map": false, "dn": 11.88, "dr": 9.096}, {"i": 24, "s": "B", "part": 3, "zh": "Try it", "en": "Main idea or detail?", "img": "rc_p12.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Animals can help farmers", "know about the weather.", "Main idea, or detail?"], "reveal": ["Main idea!", "What the whole story is about"], "page": 12, "map": false, "dn": 10.728, "dr": 10.464}, {"i": 25, "s": "B", "part": 3, "zh": "Table Top & Legs", "en": "A picture for your brain", "img": "table_blank.png", "rimg": null, "type": "normal", "body": ["Table top = main idea", "Legs = details", "Legs hold up the top!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 18.696, "dr": 0}, {"i": 26, "s": "B", "part": 3, "zh": "Find the Legs", "en": "Which details?", "img": "table_blank.png", "rimg": "table_filled.png", "type": "pause", "body": [], "q": ["What are the legs?", "Which details", "hold up the table?"], "reveal": ["stretch their necks", "smell the air", "eat a lot · get very fat"], "page": 12, "map": false, "dn": 8.856, "dr": 12.912}, {"i": 27, "s": "B", "part": 3, "zh": "Say It Like the Book", "en": "know when …", "img": "horse_p11.jpg", "rimg": null, "type": "normal", "body": ["Cows and horses know when it will rain.", "I know when …", "My dog knows when …"], "q": [], "reveal": [], "page": null, "map": false, "dn": 15.96, "dr": 0}, {"i": 28, "s": "B", "part": 3, "zh": "Your Turn", "en": "I know when …", "img": "horse_p11.jpg", "rimg": null, "type": "retell", "body": [], "q": ["I know when ___."], "reveal": ["I know when it is bedtime.", "I know when Dad is home.", "I know when it will rain: the sky is dark!"], "page": null, "map": false, "dn": 10.152, "dr": 12.6, "tip": "给家长：帮他用 I know when… 说一句自己的事；能说两句更好。", "practice": true}, {"i": 29, "s": "B", "part": 4, "zh": "Vocabulary Review", "en": "Page 13", "img": "vocabreview_p13.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Tap the right word.", "how / when?", "necks / fat?", "know / smell?"], "reveal": ["when", "necks", "smell"], "page": 13, "map": false, "dn": 6.672, "dr": 8.04}, {"i": 30, "s": "B", "part": 4, "zh": "Weather & Animals", "en": "Sort the sentences", "img": "project_p13.jpg", "rimg": null, "type": "normal", "body": ["Book page 13 project", "Rain, or long cold winter?"], "q": [], "reveal": [], "page": null, "map": false, "dn": 14.16, "dr": 0}, {"i": 31, "s": "B", "part": 4, "zh": "Ready to sort?", "en": "Four sentences", "img": "bins_empty.jpg", "rimg": null, "type": "normal", "body": ["a. Rabbits get very fat.", "b. Smell the air.", "c. Rabbits eat a lot.", "d. Stretch their necks."], "q": [], "reveal": [], "page": null, "map": false, "dn": 18.528, "dr": 0}, {"i": 32, "s": "B", "part": 4, "zh": "Your turn", "en": "Where does it go?", "img": "bins_empty.jpg", "rimg": "bins_filled.jpg", "type": "pause", "body": [], "q": ["Sort the sentences.", "Rain, or long cold winter?"], "reveal": ["Rain: smell the air,", "stretch their necks", "Winter: get very fat,", "eat a lot"], "page": 13, "map": false, "dn": 12.072, "dr": 16.392}, {"i": 33, "s": "B", "part": 4, "zh": "Fact or Saying?", "en": "Critical Thinking", "img": "rabbit_big.jpg", "rimg": null, "type": "pause", "body": [], "q": ["Fat rabbits mean", "a long, cold winter.", "A fact, or a saying?"], "reveal": ["A farmer's saying!", "Maybe true — not always.", "Maybe they are just hungry."], "page": 11, "map": false, "dn": 19.56, "dr": 14.832}, {"i": 34, "s": "B", "part": 4, "zh": "How Could We Check?", "en": "Think like a scientist", "img": "rabbit_big.jpg", "rimg": null, "type": "pause", "body": [], "q": ["How could we check", "if it is true?"], "reveal": ["Watch the rabbits.", "Write it down.", "See if winter is long!"], "page": null, "map": false, "dn": 8.256, "dr": 14.064, "tip": "给家长：任何合理的办法都夸他（观察、记录、对比、问专家）。"}, {"i": 35, "s": "B", "part": 4, "zh": "Be the Teacher", "en": "Teach Mum or Dad", "img": "reading_p11.jpg", "rimg": null, "type": "retell", "body": [], "q": ["Animals can help farmers.", "Cows and horses ___.", "Rabbits ___."], "reveal": ["Animals can help farmers.", "Cows and horses smell the air.", "Rabbits get very fat."], "page": null, "map": false, "dn": 17.208, "dr": 15.504, "tip": "给家长：让他讲给你听，你问一个问题：How do they know? 让他再解释一次。", "practice": true}, {"i": 36, "s": "B", "part": 4, "zh": "Look Outside", "en": "Weather where you live", "img": "cloudy.jpg", "rimg": null, "type": "normal", "body": ["Look outside today.", "Is it sunny or cloudy?", "What do the birds do?"], "q": [], "reveal": [], "page": null, "map": false, "dn": 19.032, "dr": 0, "tip": "给家长：今天出门一起观察；下雨前小鸟、猫或蚂蚁有什么不同？用英语说一句。"}, {"i": 37, "s": "B", "part": 4, "zh": "Great job!", "en": "Well done, Miles!", "img": "bins_filled.jpg", "rimg": null, "type": "normal", "body": ["Main idea & details ✓", "Critical Thinking ✓", "Communication ✓", "Bye bye, Miles!"], "q": [], "reveal": [], "page": null, "map": false, "dn": 19.896, "dr": 0}];
+const IMGS={"unit1_title_p10.jpg":"../assets/lesson-img/lesson1/unit1_title_p10.jpg?v=6ec35d8f","map_all.png":"../assets/lesson-img/lesson1/map_all.jpg?v=0c610beb","ao_rt_p9.jpg":"../assets/lesson-img/lesson1/ao_rt_p9.jpg?v=8beebf63","opener_p8-9.jpg":"../assets/lesson-img/lesson1/opener_p8-9.jpg?v=cedf70b0","warmup_p10.jpg":"../assets/lesson-img/lesson1/warmup_p10.jpg?v=0e3271f4","newwords_p10.jpg":"../assets/lesson-img/lesson1/newwords_p10.jpg?v=da76a23d","stretch_big.jpg":"../assets/lesson-img/lesson1/stretch_big.jpg?v=9fd6cf04","smell_big.jpg":"../assets/lesson-img/lesson1/smell_big.jpg?v=73b38362","reading_p11.jpg":"../assets/lesson-img/lesson1/reading_p11.jpg?v=5a420a5e","horse_p11.jpg":"../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587","rabbit_big.jpg":"../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671","table_blank.png":"../assets/lesson-img/lesson1/table_blank.jpg?v=89552c61","rc_p12.jpg":"../assets/lesson-img/lesson1/rc_p12.jpg?v=01f195ea","table_filled.png":"../assets/lesson-img/lesson1/table_filled.jpg?v=84e29245","vocabreview_p13.jpg":"../assets/lesson-img/lesson1/vocabreview_p13.jpg?v=e08673fc","two_skills.jpg":"../assets/lesson-img/lesson1/two_skills.jpg?v=052a13b2","always.jpg":"../assets/lesson-img/lesson1/always.jpg?v=4ff0d890","project_p13.jpg":"../assets/lesson-img/lesson1/project_p13.jpg?v=35ce7a31","bins_empty.jpg":"../assets/lesson-img/lesson1/bins_empty.jpg?v=51f17595","bins_filled.jpg":"../assets/lesson-img/lesson1/bins_filled.jpg?v=d0941505","cloudy.jpg":"../assets/img/cloudy.jpg?v=2dad53f3"};
+const AUD={"00_n":"../assets/voice/en-GB/unit1v2/00_n.mp3?v=4226aa75","01_n":"../assets/voice/en-GB/unit1v2/01_n.mp3?v=a5869236","02_n":"../assets/voice/en-GB/unit1v2/02_n.mp3?v=96560150","02_rn":"../assets/voice/en-GB/unit1v2/02_rn.mp3?v=10e71720","03_n":"../assets/voice/en-GB/unit1v2/03_n.mp3?v=b8fe5b59","04_n":"../assets/voice/en-GB/unit1v2/04_n.mp3?v=0bc2db3a","04_rn":"../assets/voice/en-GB/unit1v2/04_rn.mp3?v=5c363e04","05_n":"../assets/voice/en-GB/unit1v2/05_n.mp3?v=af8f56ff","06_n":"../assets/voice/en-GB/unit1v2/06_n.mp3?v=0e4d6841","07_n":"../assets/voice/en-GB/unit1v2/07_n.mp3?v=5d7c7d06","08_n":"../assets/voice/en-GB/unit1v2/08_n.mp3?v=fc57575f","09_n":"../assets/voice/en-GB/unit1v2/09_n.mp3?v=9c9b6109","10_n":"../assets/voice/en-GB/unit1v2/10_n.mp3?v=f6824028","11_n":"../assets/voice/en-GB/unit1v2/11_n.mp3?v=cb19a30a","11_rn":"../assets/voice/en-GB/unit1v2/11_rn.mp3?v=95937dd1","12_n":"../assets/voice/en-GB/unit1v2/12_n.mp3?v=da3dc523","12_rn":"../assets/voice/en-GB/unit1v2/12_rn.mp3?v=da8f19a9","13_n":"../assets/voice/en-GB/unit1v2/13_n.mp3?v=8244d401","13_rn":"../assets/voice/en-GB/unit1v2/13_rn.mp3?v=25aad2ac","14_n":"../assets/voice/en-GB/unit1v2/14_n.mp3?v=1c2efa4c","14_rn":"../assets/voice/en-GB/unit1v2/14_rn.mp3?v=59ffe078","15_n":"../assets/voice/en-GB/unit1v2/15_n.mp3?v=fe60c670","15_rn":"../assets/voice/en-GB/unit1v2/15_rn.mp3?v=83c5c031","16_n":"../assets/voice/en-GB/unit1v2/16_n.mp3?v=987e197e","16_rn":"../assets/voice/en-GB/unit1v2/16_rn.mp3?v=31a411b5","17_n":"../assets/voice/en-GB/unit1v2/17_n.mp3?v=be14b6e5","17_rn":"../assets/voice/en-GB/unit1v2/17_rn.mp3?v=b83f2475","18_n":"../assets/voice/en-GB/unit1v2/18_n.mp3?v=9bf3cbbb","19_n":"../assets/voice/en-GB/unit1v2/19_n.mp3?v=c6165ebb","20_n":"../assets/voice/en-GB/unit1v2/20_n.mp3?v=a39c448c","21_n":"../assets/voice/en-GB/unit1v2/21_n.mp3?v=016bcd0a","22_n":"../assets/voice/en-GB/unit1v2/22_n.mp3?v=f841d828","23_n":"../assets/voice/en-GB/unit1v2/23_n.mp3?v=748d07ac","23_rn":"../assets/voice/en-GB/unit1v2/23_rn.mp3?v=77a5bf1c","24_n":"../assets/voice/en-GB/unit1v2/24_n.mp3?v=c0f87065","24_rn":"../assets/voice/en-GB/unit1v2/24_rn.mp3?v=3e97ae1c","25_n":"../assets/voice/en-GB/unit1v2/25_n.mp3?v=14b22a46","26_n":"../assets/voice/en-GB/unit1v2/26_n.mp3?v=b9215582","26_rn":"../assets/voice/en-GB/unit1v2/26_rn.mp3?v=be1a3288","27_n":"../assets/voice/en-GB/unit1v2/27_n.mp3?v=436c38d6","28_n":"../assets/voice/en-GB/unit1v2/28_n.mp3?v=bfe14620","28_rn":"../assets/voice/en-GB/unit1v2/28_rn.mp3?v=b1f3b5e2","29_n":"../assets/voice/en-GB/unit1v2/29_n.mp3?v=60037bc4","29_rn":"../assets/voice/en-GB/unit1v2/29_rn.mp3?v=93b1f9a0","30_n":"../assets/voice/en-GB/unit1v2/30_n.mp3?v=a302064d","31_n":"../assets/voice/en-GB/unit1v2/31_n.mp3?v=3c0e7703","32_n":"../assets/voice/en-GB/unit1v2/32_n.mp3?v=385c3df4","32_rn":"../assets/voice/en-GB/unit1v2/32_rn.mp3?v=79c2733c","33_n":"../assets/voice/en-GB/unit1v2/33_n.mp3?v=4748ffcc","33_rn":"../assets/voice/en-GB/unit1v2/33_rn.mp3?v=1b5c7adf","34_n":"../assets/voice/en-GB/unit1v2/34_n.mp3?v=c3ff200a","34_rn":"../assets/voice/en-GB/unit1v2/34_rn.mp3?v=e87d77f3","35_n":"../assets/voice/en-GB/unit1v2/35_n.mp3?v=c6a93d7a","35_rn":"../assets/voice/en-GB/unit1v2/35_rn.mp3?v=108c40bd","36_n":"../assets/voice/en-GB/unit1v2/36_n.mp3?v=d9ef6aa1","37_n":"../assets/voice/en-GB/unit1v2/37_n.mp3?v=cec994dc"};
+const PRE={"0|show":["../assets/img/title_l1.jpg"],"1|show":["../assets/illus/noto/sun_cloud.svg","../assets/illus/noto/speaking.svg","../assets/illus/noto/thinking.svg","../assets/illus/noto/child.svg"],"2|ask":["../assets/img/title_l1.jpg"],"2|reveal":["../assets/img/title_l1.jpg"],"3|show":["../assets/img/warm_l1.jpg"],"4|ask":["../assets/img/title_l1.jpg"],"4|reveal":["../assets/img/title_l1.jpg"],"5|show":["../assets/illus/noto/giraffe.svg","../assets/illus/noto/wind_face.svg","../assets/illus/noto/rabbit.svg","../assets/illus/noto/carrot.svg","../assets/illus/noto/light_bulb.svg","../assets/illus/noto/alarm_clock.svg"],"6|show":["../assets/lesson-img/lesson1/stretch_big.jpg?v=9fd6cf04"],"7|show":["../assets/lesson-img/lesson1/smell_big.jpg?v=73b38362"],"8|show":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"9|show":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"10|show":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"11|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"11|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"12|ask":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"12|reveal":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"13|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"13|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"14|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"14|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"15|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"15|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"16|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"16|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"17|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"17|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"18|show":["../assets/illus/noto/sun_cloud.svg","../assets/illus/noto/check.svg","../assets/illus/noto/speaking.svg","../assets/illus/noto/thinking.svg","../assets/illus/noto/child.svg"],"19|show":["../assets/illus/noto/sun_cloud.svg","../assets/illus/noto/check.svg","../assets/illus/noto/speaking.svg","../assets/illus/noto/thinking.svg","../assets/illus/noto/child.svg"],"20|show":["../assets/illus/noto/cow.svg","../assets/illus/noto/horse.svg","../assets/illus/noto/farmer.svg"],"21|show":[],"22|show":[],"23|ask":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"23|reveal":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"24|ask":["../assets/illus/noto/thinking.svg","../assets/illus/noto/check.svg"],"24|reveal":["../assets/illus/noto/thinking.svg","../assets/illus/noto/check.svg"],"25|show":["../assets/illus/noto/farmer.svg","../assets/illus/noto/cow.svg","../assets/illus/noto/giraffe.svg","../assets/illus/noto/wind_face.svg","../assets/illus/noto/carrot.svg","../assets/illus/noto/rabbit.svg"],"26|ask":["../assets/illus/noto/farmer.svg","../assets/illus/noto/cow.svg","../assets/illus/noto/giraffe.svg","../assets/illus/noto/wind_face.svg","../assets/illus/noto/carrot.svg","../assets/illus/noto/rabbit.svg"],"26|reveal":["../assets/illus/noto/farmer.svg","../assets/illus/noto/cow.svg","../assets/illus/noto/giraffe.svg","../assets/illus/noto/wind_face.svg","../assets/illus/noto/carrot.svg","../assets/illus/noto/rabbit.svg"],"27|show":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"28|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"28|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"29|ask":["../assets/illus/noto/thinking.svg","../assets/illus/noto/check.svg","../assets/illus/noto/rabbit.svg"],"29|reveal":["../assets/illus/noto/thinking.svg","../assets/illus/noto/check.svg","../assets/illus/noto/rabbit.svg"],"30|show":["../assets/illus/noto/cow.svg","../assets/illus/noto/horse.svg","../assets/illus/noto/farmer.svg"],"31|show":["../assets/illus/noto/rabbit.svg","../assets/illus/noto/cow.svg","../assets/illus/noto/horse.svg","../assets/illus/noto/cloud_rain.svg","../assets/illus/noto/snowman.svg"],"32|ask":["../assets/illus/noto/rabbit.svg","../assets/illus/noto/cow.svg","../assets/illus/noto/horse.svg","../assets/illus/noto/cloud_rain.svg","../assets/illus/noto/snowman.svg"],"32|reveal":["../assets/illus/noto/cloud_rain.svg","../assets/illus/noto/snowman.svg"],"33|ask":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"33|reveal":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"34|ask":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"34|reveal":["../assets/lesson-img/lesson1/rabbit_big.jpg?v=23808671"],"35|ask":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"35|reveal":["../assets/lesson-img/lesson1/horse_p11.jpg?v=dcafd587"],"36|show":["../assets/img/cloudy.jpg?v=2dad53f3"],"37|show":["../assets/illus/noto/cloud_rain.svg","../assets/illus/noto/snowman.svg"]};
+var RF_UNIT='unit1';
+const PART_LABELS={1:'Open the topic',2:'Read the story',3:'Main idea & details',4:'Use it & 21st skills'};
+const VOICE_PACK="unit1v2";
+var RF_IX_UNIT='unit1v2';
+const AUD_US_BASE="../assets/voice/en-US/unit1v2/";
+const DUR_US={"00_n":17.544,"01_n":17.136,"02_n":20.208,"02_rn":16.824,"03_n":18.504,"04_n":14.808,"04_rn":9.648,"05_n":30.336,"06_n":15.192,"07_n":12.6,"08_n":13.92,"09_n":11.712,"10_n":15.456,"11_n":14.808,"11_rn":13.272,"12_n":15.336,"12_rn":15.24,"13_n":11.784,"13_rn":10.44,"14_n":10.344,"14_rn":10.728,"15_n":12.984,"15_rn":13.896,"16_n":11.592,"16_rn":20.04,"17_n":16.656,"17_rn":17.304,"18_n":18.792,"19_n":13.872,"20_n":14.4,"21_n":15.912,"22_n":11.16,"23_n":13.224,"23_rn":10.752,"24_n":12.0,"24_rn":11.04,"25_n":19.728,"26_n":9.6,"26_rn":15.576,"27_n":16.872,"28_n":11.328,"28_rn":14.664,"29_n":7.008,"29_rn":10.512,"30_n":14.4,"31_n":20.544,"32_n":13.272,"32_rn":17.784,"33_n":22.632,"33_rn":16.248,"34_n":9.072,"34_rn":16.704,"35_n":18.816,"35_rn":17.064,"36_n":21.072,"37_n":21.72};
+</script>
+<script src="../assets/lesson-player.js?v=f5d511d4"></script>
+</body>
+</html>
