@@ -1,4 +1,4 @@
-/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens. (ix18)
+/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens. (ix19)
    Hooks used by the lesson page:
      RFInteract.mount(view, sc, state, unit)  – after every render()
      RFInteract.begin(id)                     – question narration finished; enable taps
@@ -409,7 +409,8 @@
   }
 
   /* ---------- public ---------- */
-  function cfgFor(unit, sc) { var u = (D.units || {})[unit] || {}; return u[sc.i] || null; }
+  /* A page may keep its own interaction set (RF_IX_UNIT), e.g. a new lesson version sharing the same progress unit. */
+  function cfgFor(unit, sc) { var u = (D.units || {})[window.RF_IX_UNIT || unit] || {}; return u[sc.i] || null; }
   function mount(view, sc, state, unit) {
     try {
       var prev = cur;

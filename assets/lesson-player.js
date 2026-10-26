@@ -30,6 +30,9 @@ $('sA').onclick=()=>{session='A';$('sA').classList.add('sel');$('sB').classList.
 $('sB').onclick=()=>{session='B';$('sB').classList.add('sel');$('sA').classList.remove('sel');};
 
 
+/* Parent tip line (sc.tip, Chinese). Hidden when localStorage rfParentTips === '0'. */
+function rfTipsOn(){try{return localStorage.getItem('rfParentTips')!=='0';}catch(e){return true;}}
+(function(){const st=document.createElement('style');st.textContent='.ptip{display:flex;gap:8px;align-items:flex-start;margin-top:auto;padding:8px 12px;border-radius:14px;background:rgba(61,122,181,.08);color:#4a5d73;font-size:clamp(14px,1.6vw,18px);font-weight:600;line-height:1.4;font-family:var(--font-harmony),system-ui,sans-serif}';document.head.appendChild(st);})();
 function esc(t){return String(t??'').replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));}
 function partFirst(part){return SCREENS.find(s=>s.part===part);}
 function partLabel(p){return PART_LABELS[p]||('Part '+p);}
@@ -61,6 +64,7 @@ function render(sc,state){ // state: 'show' | 'ask' | 'reveal'
       h+=sc.body.map((l,k)=>'<div class="line'+(k===0&&sc.body.length<=3&&l.length<=10?' big':'')+'">'+esc(l)+'</div>').join('');
     }
   }
+  if(sc.tip&&rfTipsOn())h+='<div class="ptip">'+esc(sc.tip)+'</div>';
   h+='</div></div></div>';
   view.innerHTML=h;
   try{ if(window.RFDiagram) RFDiagram.apply(view, sc, state, RF_UNIT); }catch(_e){}
@@ -94,7 +98,7 @@ function waitForContinue(id, opts){
       b.onclick=()=>{ if(holdResolve){ paused=false; setPauseIcon(false); holdResolve(); } };
       panel.appendChild(b);
     }
-    if(panel && opts && opts.retell && window.RFRetell){ try{ RFRetell.mount(panel, RF_UNIT); }catch(_e){} }
+    if(panel && opts && opts.retell && window.RFRetell){ try{ RFRetell.mount(panel, RF_UNIT, opts); }catch(_e){} }
     log({ev:'hold'});
   });
 }
@@ -219,17 +223,19 @@ async function runFromIndex(startIdx){
       if(id!==runId)return;
       await rfReady(i,'reveal');if(id!==runId)return;render(sc,'reveal');log({ev:'reveal',i:sc.i});await play(k+'_rn',sc.dr,id);
     } else if(sc.type==='retell'){
+      try{ if(window.RFRetell&&RFRetell.discard) RFRetell.discard(); }catch(_e){}
+      const ro={retell:true,practice:!!sc.practice};
       await rfReady(i,'ask');if(id!==runId)return;render(sc,'ask');await play(k+'_n',sc.dn,id);if(id!==runId)return;
-      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT); }catch(_e){}
+      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT, ro); }catch(_e){}
       // No 3-2-1 / timed countdown: Miles taps Record to start immediately, then Continue when done.
-      await waitForContinue(id, {retell:true}); if(id!==runId)return;
+      await waitForContinue(id, ro); if(id!==runId)return;
       try{ if(window.RFRetell&&RFRetell.stopIfRecording) await RFRetell.stopIfRecording(); }catch(_e){}
       if(id!==runId)return;
       await rfReady(i,'reveal');if(id!==runId)return;render(sc,'reveal');log({ev:'reveal',i:sc.i});
-      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT); }catch(_e){}
+      try{ if(window.RFRetell) RFRetell.mount($('panel'), RF_UNIT, ro); }catch(_e){}
       await play(k+'_rn',sc.dr,id);if(id!==runId)return;
-      await waitForContinue(id, {retell:true}); if(id!==runId)return;
-      try{ if(window.RFProgress&&RFProgress.noteRetell) RFProgress.noteRetell(RF_UNIT); }catch(_e){}
+      await waitForContinue(id, ro); if(id!==runId)return;
+      try{ if(!sc.practice&&window.RFProgress&&RFProgress.noteRetell) RFProgress.noteRetell(RF_UNIT); }catch(_e){}
     } else {await rfReady(i,'show');if(id!==runId)return;render(sc,'show');await play(k+'_n',sc.dn,id);}
     if(id!==runId)return;await wait(GAP,id);
   }
