@@ -107,3 +107,7 @@ Lesson pages no longer inline photos or narration. Keep it that way — a single
 - Screens with `practice: true` let the child record and play back, but nothing is saved or uploaded.
 - Parent tips (Chinese, grey line under the question) show by default; `localStorage.rfParentTips='0'` hides them.
 - Per-screen photo: a screen can set `photo` (a name in `IMGS`) to choose the photo on a title or reading screen; Unit 1 uses it so no photo shows twice. Photo credits: `assets/lesson-img/lesson1/CREDITS.md`.
+
+## Read-along word grow (Oct 2026)
+
+On Listen and Read screens the word being read grows like the Mac Dock (neighbours a little), and the line slides apart so no word touches another. Timings come from `assets/voice/<voice>/<slug>/words.json`, made by `python3 tools/build_word_times.py` (faster-whisper word timestamps on the clips; re-run after re-recording a Listen and Read clip). Without the file the old sentence highlight is used. Reduced-motion turns it off.

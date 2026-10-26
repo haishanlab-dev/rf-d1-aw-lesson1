@@ -66,6 +66,15 @@
     return esc(text).replace(re, '<span class="rd-v">$1</span>');
   }
 
+  /* Each word in its own span so read-along can grow the word being read. */
+  function wordsHtml(text, vocab) {
+    var vs = (vocab || []).map(function (w) { return w.toLowerCase(); });
+    return String(text).split(/\s+/).filter(Boolean).map(function (tok) {
+      var core = tok.toLowerCase().replace(/[^a-z0-9']/g, '');
+      return '<span class="rd-w' + (vs.indexOf(core) >= 0 ? ' rd-v' : '') + '">' + esc(tok) + '</span>';
+    }).join(' ');
+  }
+
   function buildHtml(pass, focus, photoName) {
     var h = '<div class="rd-box' + (photoName ? ' has-photo' : '') + '" role="document">';
     if (photoName) h += '<div class="rd-media"><img class="rd-photo" src="' + imgSrc(photoName) + '" alt=""></div>';
@@ -75,7 +84,7 @@
       var on = !focus || focus.indexOf(p.id) >= 0;
       h += '<p class="rd-p' + (on ? ' is-focus' : ' is-dim') + '" data-pid="' + p.id + '">';
       p.sents.forEach(function (s) {
-        h += '<span class="rd-s" data-si="' + (si++) + '">' + markVocab(s, pass.vocab) + '</span> ';
+        h += '<span class="rd-s" data-si="' + (si++) + '">' + wordsHtml(s, pass.vocab) + '</span> ';
       });
       h += '</p>';
     });
@@ -93,10 +102,88 @@
 
   var alongTok = 0, alongTimer = null;
 
+  function clearDock(root) {
+    try { (root || document).querySelectorAll('.rd-w.is-dock').forEach(function (el) { el.classList.remove('is-dock', 'is-now'); el.style.transform = ''; }); } catch (e) {}
+  }
   function stopAlong() {
     alongTok++;
     if (alongTimer) { clearInterval(alongTimer); alongTimer = null; }
     try { document.querySelectorAll('.rd-s.is-on').forEach(function (el) { el.classList.remove('is-on'); }); } catch (e) {}
+    clearDock();
+  }
+
+  /* ---- word timings (assets/voice/<voice>/<slug>/words.json, built by tools/build_word_times.py) ---- */
+  var wordsCache = {};
+  function loadWords(url) {
+    if (!wordsCache[url]) {
+      wordsCache[url] = fetch(url, { cache: 'force-cache' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; });
+    }
+    return wordsCache[url];
+  }
+  function norm(w) { return String(w).toLowerCase().replace(/[^a-z0-9]/g, ''); }
+  /* Match each word on screen to a spoken word (in order); fill gaps by spreading time evenly. */
+  function alignTimes(disp, spoken) {
+    var n = disp.length, out = new Array(n), j = 0;
+    for (var i = 0; i < n; i++) {
+      var want = norm(disp[i]), win = i === 0 ? 60 : 6;
+      for (var k = j; k < Math.min(spoken.length, j + win); k++) {
+        if (norm(spoken[k][2]) === want) { out[i] = [spoken[k][0], spoken[k][1]]; j = k + 1; break; }
+      }
+    }
+    var first = -1;
+    for (i = 0; i < n; i++) if (out[i]) { first = i; break; }
+    if (first < 0) return null;
+    for (i = 0; i < n; i++) {
+      if (out[i]) continue;
+      var a = i - 1; while (a >= 0 && !out[a]) a--;
+      var b = i + 1; while (b < n && !out[b]) b++;
+      var t0 = a >= 0 ? out[a][1] : Math.max(0, out[first][0] - 0.4 * (first - i));
+      var t1 = b < n ? out[b][0] : t0 + 0.4 * (b - a);
+      var steps = (b < n ? b : n) - a;
+      var s = t0 + (t1 - t0) * (i - a) / Math.max(1, steps);
+      out[i] = [s, s + Math.max(0.15, (t1 - t0) / Math.max(1, steps))];
+    }
+    return out;
+  }
+
+  /* Dock-style grow: the word being read grows most, its neighbours a little.
+     Words on the same line slide apart by exactly the extra width, so nothing overlaps;
+     the line is nudged back inside the box if it would spill over an edge. */
+  var DOCK = [1.42, 1.16, 1.05];
+  /* ?rdmode=color (or localStorage rfReadMode='color'): the word only changes colour, no grow. */
+  function paintDock(words, cur, body) {
+    words.forEach(function (el) { if (el.classList.contains('is-dock')) { el.classList.remove('is-dock', 'is-now'); el.style.transform = ''; } });
+    if (cur < 0) return;
+    var top = words[cur].offsetTop, line = [];
+    for (var i = 0; i < words.length; i++) if (Math.abs(words[i].offsetTop - top) < 4) line.push(i);
+    var base = {};
+    line.forEach(function (k) { var d = Math.abs(k - cur); base[k] = d < DOCK.length ? DOCK[d] - 1 : 0; });
+    // room = space left/right of the line inside the text box (the box has side padding for this)
+    var first = words[line[0]], last = words[line[line.length - 1]];
+    var room = (first.offsetLeft) + (body.clientWidth - (last.offsetLeft + last.offsetWidth));
+    var need = 0; line.forEach(function (k) { need += base[k] * words[k].offsetWidth; });
+    var f = need > room && need > 0 ? Math.max(0, room / need) : 1;  // shrink the grow if a full line cannot make room
+    var sc = {}, ex = {};
+    line.forEach(function (k) { sc[k] = 1 + base[k] * f; ex[k] = (sc[k] - 1) * words[k].offsetWidth; });
+    var sh = {}; sh[cur] = 0;
+    var ci = line.indexOf(cur), acc = ex[cur] / 2;
+    for (i = ci + 1; i < line.length; i++) { var k2 = line[i]; sh[k2] = acc + ex[k2] / 2; acc += ex[k2]; }
+    acc = ex[cur] / 2;
+    for (i = ci - 1; i >= 0; i--) { var k3 = line[i]; sh[k3] = -(acc + ex[k3] / 2); acc += ex[k3]; }
+    var lo = Infinity, hi = -Infinity;
+    line.forEach(function (k) {
+      var l = words[k].offsetLeft + sh[k] - ex[k] / 2, r = words[k].offsetLeft + words[k].offsetWidth + sh[k] + ex[k] / 2;
+      if (l < lo) lo = l; if (r > hi) hi = r;
+    });
+    var nudge = 0;
+    if (hi > body.clientWidth) nudge = body.clientWidth - hi;
+    if (lo + nudge < 0) nudge = -lo;
+    line.forEach(function (k) {
+      if (sc[k] === 1 && Math.abs(sh[k] + nudge) < 0.5) return;
+      words[k].classList.add('is-dock');
+      if (k === cur) words[k].classList.add('is-now');
+      words[k].style.transform = 'translateX(' + (sh[k] + nudge).toFixed(1) + 'px) scale(' + sc[k].toFixed(3) + ')';
+    });
   }
 
   function startAlong(box, sc, sents) {
@@ -112,29 +199,41 @@
     // leave a short lead-in for "Miles, turn to page…" on Part 1 screens
     var lead = /part\s*1/i.test(sc.en || '') ? Math.min(3.2, dur * 0.28) : 0.35;
     var speak = Math.max(1.5, dur - lead);
-    var spans = box.querySelectorAll('.rd-s');
-    // map local sentence index → global data-si among focused
     var map = [];
-    spans.forEach(function (el) {
-      if (el.closest('.rd-p.is-dim')) return;
-      map.push(el);
-    });
+    box.querySelectorAll('.rd-s').forEach(function (el) { if (!el.closest('.rd-p.is-dim')) map.push(el); });
+    var words = [], wordSent = [];
+    map.forEach(function (el, si) { el.querySelectorAll('.rd-w').forEach(function (w) { words.push(w); wordSent.push(si); }); });
+    var body = box.querySelector('.rd-body');
+    var key = '%02d_n'.replace('%02d', (sc.i < 10 ? '0' : '') + sc.i);
+    var times = null, timesFor = '', lastWord = -2;
     function paint(i) {
       map.forEach(function (el, k) { el.classList.toggle('is-on', k === i); });
     }
     var au = document.getElementById('au');
-    var t0 = null;
     alongTimer = setInterval(function () {
       if (my !== alongTok) return;
-      var t;
       if (au && !au.paused && isFinite(au.currentTime) && au.currentTime > 0.05) {
-        if (t0 == null) t0 = au.currentTime;
-        // use wall clock from first audible moment; fallback to audio clock delta
-        t = au.currentTime;
-        // Prefer elapsed since play started for this clip
-        var elapsed = t; // from start of clip
-        if (elapsed < lead) { paint(-1); return; }
-        var u = Math.min(1, (elapsed - lead) / speak);
+        var src = (au.currentSrc || au.src || '').split('?')[0];
+        var dir = src.replace(/[^\/]*$/, '');
+        if (dir && timesFor !== dir) {
+          timesFor = dir; times = null;
+          loadWords(dir + 'words.json').then(function (d) {
+            if (my !== alongTok || timesFor !== dir || !d || !d[key]) return;
+            times = alignTimes(words.map(function (w) { return w.textContent; }), d[key]);
+          });
+        }
+        var t = au.currentTime;
+        if (times) {
+          var cw = -1;
+          if (t >= times[0][0] - 0.05 && t <= times[times.length - 1][1] + 0.35) {
+            for (var w = 0; w < times.length; w++) { if (times[w][0] - 0.05 <= t) cw = w; else break; }
+          }
+          if (cw !== lastWord) { lastWord = cw; paintDock(words, cw, body); paint(cw >= 0 ? wordSent[cw] : -1); }
+          return;
+        }
+        // no timings: sentence highlight from text length
+        if (t < lead) { paint(-1); return; }
+        var u = Math.min(1, (t - lead) / speak);
         var acc = 0, idx = map.length - 1;
         for (var i = 0; i < weights.length; i++) {
           acc += weights[i] / sum;
@@ -142,9 +241,9 @@
         }
         paint(idx);
       } else if (au && au.ended) {
-        paint(-1); stopAlong();
+        paint(-1); clearDock(box); stopAlong();
       }
-    }, 80);
+    }, 50);
   }
 
   function shouldHandle(sc) {
@@ -216,14 +315,18 @@
     '.rd-p{margin:0 0 0.75em;} .rd-p:last-child{margin-bottom:0;}',
     '.rd-p.is-dim{opacity:.34;}.rd-p.is-dim .rd-v{opacity:.85;}',
     '.rd-p.is-focus{opacity:1;}',
-    '.rd-s{border-radius:6px;padding:0 2px;transition:background .25s ease,box-shadow .25s ease;}',
-    '.rd-s.is-on{background:#FFF4C2;box-shadow:0 0 0 3px rgba(232,192,74,.35);}',
+    '.rd-s{padding:0;}',
+    /* Sentence being read: no box; its words get a coloured outline (moves and grows with each word). */
+    '.rd-s.is-on .rd-w{text-shadow:-2px -2px 0 #FFD54A,2px -2px 0 #FFD54A,-2px 2px 0 #FFD54A,2px 2px 0 #FFD54A,0 -2px 0 #FFD54A,0 2px 0 #FFD54A,-2px 0 0 #FFD54A,2px 0 0 #FFD54A;}',
     '.rd-v{color:#2F7FC0;font-weight:900;}',
+    '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease,text-shadow .22s ease;will-change:transform;}',
+    '.rd-w.is-now{color:#C2410C;}',
+    '.rd-body{position:relative;line-height:1.7;overflow-x:hidden;padding-inline:1em;}',
     '#view .screen.is-read .content > .panel .line.hint{color:#2F5F8C;font-weight:800;}',
     /* narrow / portrait: stack only when two columns would crush text */
     '@container (max-width:520px){.rd-box.has-photo{display:flex;flex-direction:column;}.rd-media{flex:0 0 auto;width:100%;height:min(34cqh,240px);}.rd-photo{min-height:0!important;}.rd-body{font-size:clamp(16px,min(4.4cqw,5.2cqh),28px);justify-content:flex-start;}}',
     '@container (max-aspect-ratio:4/5){.rd-box.has-photo{display:flex;flex-direction:column;}.rd-media{flex:0 0 auto;width:100%;height:min(32cqh,220px);}.rd-photo{min-height:0!important;}}',
-    '@media (prefers-reduced-motion:reduce){.rd-s{transition:none}}'
+    '@media (prefers-reduced-motion:reduce){.rd-s,.rd-w{transition:none}}'
   ].join('\n');
   var st = document.createElement('style'); st.id = 'rf-rd-css'; st.textContent = CSS;
   (document.head || document.documentElement).appendChild(st);
