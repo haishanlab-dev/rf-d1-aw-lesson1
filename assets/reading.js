@@ -317,10 +317,10 @@
     '.rd-p.is-focus{opacity:1;}',
     '.rd-s{padding:0;}',
     /* Sentence being read: no box; its words get a coloured outline (moves and grows with each word). */
-    '.rd-s.is-on .rd-w{text-shadow:-2px -2px 0 #FFD54A,2px -2px 0 #FFD54A,-2px 2px 0 #FFD54A,2px 2px 0 #FFD54A,0 -2px 0 #FFD54A,0 2px 0 #FFD54A,-2px 0 0 #FFD54A,2px 0 0 #FFD54A;}',
+    '.rd-s.is-on .rd-w,.rd-s.is-on .rd-v{color:#7C3AED;}',
     '.rd-v{color:#2F7FC0;font-weight:900;}',
-    '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease,text-shadow .22s ease;will-change:transform;}',
-    '.rd-w.is-now{color:#C2410C;}',
+    '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease;will-change:transform;}',
+    '.rd-s.is-on .rd-w.is-now,.rd-w.is-now{color:#EA580C;}',
     '.rd-body{position:relative;line-height:1.7;overflow-x:hidden;padding-inline:1em;}',
     '#view .screen.is-read .content > .panel .line.hint{color:#2F5F8C;font-weight:800;}',
     /* narrow / portrait: stack only when two columns would crush text */
