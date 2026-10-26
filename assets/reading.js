@@ -150,32 +150,41 @@
      Words on the same line slide apart by exactly the extra width, so nothing overlaps;
      the line is nudged back inside the box if it would spill over an edge. */
   var DOCK = [1.42, 1.16, 1.05];
+  /* ?rdmode=color (or localStorage rfReadMode='color'): the word only changes colour, no grow. */
+  var COLOR_ONLY = (function () { try { return /[?&]rdmode=color\b/.test(location.search) || localStorage.getItem('rfReadMode') === 'color'; } catch (e) { return false; } })();
   function paintDock(words, cur, body) {
     words.forEach(function (el) { if (el.classList.contains('is-dock')) { el.classList.remove('is-dock', 'is-now'); el.style.transform = ''; } });
     if (cur < 0) return;
+    if (COLOR_ONLY) { words[cur].classList.add('is-dock', 'is-now'); return; }
     var top = words[cur].offsetTop, line = [];
     for (var i = 0; i < words.length; i++) if (Math.abs(words[i].offsetTop - top) < 4) line.push(i);
+    var base = {};
+    line.forEach(function (k) { var d = Math.abs(k - cur); base[k] = d < DOCK.length ? DOCK[d] - 1 : 0; });
+    // room = space left/right of the line inside the text box (the box has side padding for this)
+    var first = words[line[0]], last = words[line[line.length - 1]];
+    var room = (first.offsetLeft) + (body.clientWidth - (last.offsetLeft + last.offsetWidth));
+    var need = 0; line.forEach(function (k) { need += base[k] * words[k].offsetWidth; });
+    var f = need > room && need > 0 ? Math.max(0, room / need) : 1;  // shrink the grow if a full line cannot make room
     var sc = {}, ex = {};
-    line.forEach(function (k) { var d = Math.abs(k - cur); sc[k] = d < DOCK.length ? DOCK[d] : 1; ex[k] = (sc[k] - 1) * words[k].offsetWidth; });
+    line.forEach(function (k) { sc[k] = 1 + base[k] * f; ex[k] = (sc[k] - 1) * words[k].offsetWidth; });
     var sh = {}; sh[cur] = 0;
-    var acc = ex[cur] / 2;
-    for (i = line.indexOf(cur) + 1; i < line.length; i++) { var k2 = line[i]; sh[k2] = acc + ex[k2] / 2; acc += ex[k2]; }
+    var ci = line.indexOf(cur), acc = ex[cur] / 2;
+    for (i = ci + 1; i < line.length; i++) { var k2 = line[i]; sh[k2] = acc + ex[k2] / 2; acc += ex[k2]; }
     acc = ex[cur] / 2;
-    for (i = line.indexOf(cur) - 1; i >= 0; i--) { var k3 = line[i]; sh[k3] = -(acc + ex[k3] / 2); acc += ex[k3]; }
-    // keep inside the text box
+    for (i = ci - 1; i >= 0; i--) { var k3 = line[i]; sh[k3] = -(acc + ex[k3] / 2); acc += ex[k3]; }
     var lo = Infinity, hi = -Infinity;
     line.forEach(function (k) {
       var l = words[k].offsetLeft + sh[k] - ex[k] / 2, r = words[k].offsetLeft + words[k].offsetWidth + sh[k] + ex[k] / 2;
       if (l < lo) lo = l; if (r > hi) hi = r;
     });
-    var nudge = 0, minL = 0, maxR = body.clientWidth;
-    if (hi > maxR) nudge = maxR - hi;
-    if (lo + nudge < minL) nudge = minL - lo;
+    var nudge = 0;
+    if (hi > body.clientWidth) nudge = body.clientWidth - hi;
+    if (lo + nudge < 0) nudge = -lo;
     line.forEach(function (k) {
       if (sc[k] === 1 && Math.abs(sh[k] + nudge) < 0.5) return;
       words[k].classList.add('is-dock');
       if (k === cur) words[k].classList.add('is-now');
-      words[k].style.transform = 'translateX(' + (sh[k] + nudge).toFixed(1) + 'px) scale(' + sc[k] + ')';
+      words[k].style.transform = 'translateX(' + (sh[k] + nudge).toFixed(1) + 'px) scale(' + sc[k].toFixed(3) + ')';
     });
   }
 
@@ -308,12 +317,13 @@
     '.rd-p{margin:0 0 0.75em;} .rd-p:last-child{margin-bottom:0;}',
     '.rd-p.is-dim{opacity:.34;}.rd-p.is-dim .rd-v{opacity:.85;}',
     '.rd-p.is-focus{opacity:1;}',
-    '.rd-s{border-radius:6px;padding:0 2px;transition:background .25s ease,box-shadow .25s ease;}',
-    '.rd-s.is-on{background:#FFF4C2;box-shadow:0 0 0 3px rgba(232,192,74,.35);}',
+    '.rd-s{padding:0;}',
+    /* Sentence being read: no box; its words get a coloured outline (moves and grows with each word). */
+    '.rd-s.is-on .rd-w{text-shadow:-2px -2px 0 #FFD54A,2px -2px 0 #FFD54A,-2px 2px 0 #FFD54A,2px 2px 0 #FFD54A,0 -2px 0 #FFD54A,0 2px 0 #FFD54A,-2px 0 0 #FFD54A,2px 0 0 #FFD54A;}',
     '.rd-v{color:#2F7FC0;font-weight:900;}',
-    '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease;will-change:transform;}',
+    '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease,text-shadow .22s ease;will-change:transform;}',
     '.rd-w.is-now{color:#C2410C;}',
-    '.rd-body{position:relative;line-height:1.7;overflow-x:hidden;}',
+    '.rd-body{position:relative;line-height:1.7;overflow-x:hidden;padding-inline:1em;}',
     '#view .screen.is-read .content > .panel .line.hint{color:#2F5F8C;font-weight:800;}',
     /* narrow / portrait: stack only when two columns would crush text */
     '@container (max-width:520px){.rd-box.has-photo{display:flex;flex-direction:column;}.rd-media{flex:0 0 auto;width:100%;height:min(34cqh,240px);}.rd-photo{min-height:0!important;}.rd-body{font-size:clamp(16px,min(4.4cqw,5.2cqh),28px);justify-content:flex-start;}}',
