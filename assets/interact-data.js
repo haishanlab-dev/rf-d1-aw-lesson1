@@ -84,9 +84,9 @@ window.RF_IX = {
       23: { kind: 'sort',
         prompt: "Look at the map. Where does each country go?",
         visual: { key: 'img/u3_weather_key.jpg', map: 'img/u3_europe_map.jpg' },
-        bins: [{ id: 'rs', label: 'Rain + snow', tone: 'blue' }, { id: 'snow', label: 'Snow', tone: 'gray' }, { id: 'cloudy', label: 'Cloudy', tone: 'green' }, { id: 'sunny', label: 'Sunny', tone: 'gold' }],
+        bins: [{ id: 'rs', label: 'Rainy', tone: 'blue' }, { id: 'snow', label: 'Snow', tone: 'gray' }, { id: 'cloudy', label: 'Cloudy', tone: 'green' }, { id: 'sunny', label: 'Sunny', tone: 'gold' }],
         cards: [
-          { t: 'Germany', bin: 'rs', spot: [75, 34], why: "Germany has rain and snow today.", hint: "Look at the map. Find Germany's weather icon." },
+          { t: 'Germany', bin: 'rs', spot: [75, 34], why: "Germany is rainy today.", hint: "Look at the map. Find Germany's weather icon." },
           { t: 'Spain', bin: 'snow', spot: [33, 86], why: "Spain has snow today.", hint: "Look at the map. Find Spain's weather icon." },
           { t: 'France', bin: 'cloudy', spot: [54, 62], why: "France is cloudy today.", hint: "Look at the map. Find France's weather icon." },
           { t: 'Italy', bin: 'sunny', spot: [77, 64], why: "Italy is sunny today.", hint: "Look at the map. Find Italy's weather icon." } ] }
