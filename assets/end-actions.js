@@ -7,7 +7,7 @@
     unit2: '../unit3/',
     unit3: '../unit4/',
     unit4: '../science-review/'
-    // scienceReview: no next — 看成果 stretches alone
+    // scienceReview: no next — My progress stretches alone
   };
 
   function base(unit) {
@@ -55,14 +55,14 @@
         var nextBtn = document.createElement('button');
         nextBtn.type = 'button';
         nextBtn.className = 'endbtn end-next';
-        nextBtn.innerHTML = ms('arrow_forward') + ' 下一课';
+        nextBtn.innerHTML = ms('arrow_forward') + ' Next lesson';
         nextBtn.onclick = function () { go(nextUrl); };
         row1.appendChild(nextBtn);
       }
       var progBtn = document.createElement('button');
       progBtn.type = 'button';
       progBtn.className = 'endbtn end-progress' + (nextUrl ? '' : ' end-alone');
-      progBtn.innerHTML = ms('insights') + ' 看成果';
+      progBtn.innerHTML = ms('insights') + ' My progress';
       progBtn.onclick = function () { go(base(unit) + 'progress/'); };
       row1.appendChild(progBtn);
       root.appendChild(row1);
@@ -72,13 +72,13 @@
       var homeBtn = document.createElement('button');
       homeBtn.type = 'button';
       homeBtn.className = 'endlink';
-      homeBtn.innerHTML = ms('home') + ' 回到首页';
+      homeBtn.innerHTML = ms('home') + ' Home';
       homeBtn.onclick = function () { go(base(unit)); };
       row2.appendChild(homeBtn);
       var restartBtn = document.createElement('button');
       restartBtn.type = 'button';
       restartBtn.className = 'endlink';
-      restartBtn.innerHTML = ms('replay') + ' 重新开始';
+      restartBtn.innerHTML = ms('replay') + ' Start again';
       restartBtn.onclick = function () {
         if (typeof opts.onRestart === 'function') opts.onRestart();
       };
@@ -101,7 +101,7 @@
       var restartOnly = document.createElement('button');
       restartOnly.type = 'button';
       restartOnly.className = 'endlink';
-      restartOnly.innerHTML = ms('replay') + ' 重新开始';
+      restartOnly.innerHTML = ms('replay') + ' Start again';
       restartOnly.onclick = function () {
         if (typeof opts.onRestart === 'function') opts.onRestart();
       };
