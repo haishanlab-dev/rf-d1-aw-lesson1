@@ -306,6 +306,16 @@ test('options preflight allows the pages origin', async () => {
   assert.match(res.headers.get('Access-Control-Allow-Headers'), /X-Duration-Ms/);
 });
 
+test('options preflight allows the english.milesden.com origin', async () => {
+  const env = envWith();
+  const res = await worker.fetch(new Request('https://rf.example/progress', {
+    method: 'OPTIONS',
+    headers: { Origin: 'https://english.milesden.com' },
+  }), env);
+  assert.equal(res.status, 204);
+  assert.equal(res.headers.get('Access-Control-Allow-Origin'), 'https://english.milesden.com');
+});
+
 test('goodAnswers and firstTry union-merge, sanitize, and old records read as empty', async () => {
   const env = envWith();
   // old record without the new fields

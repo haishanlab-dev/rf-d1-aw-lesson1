@@ -2,7 +2,7 @@
  * Miles RF progress API — Cloudflare Worker + KV + R2
  *
  * Auth: Authorization: Bearer <FAMILY_KEY>  (Worker secret, never in the repo)
- * CORS: GitHub Pages lesson origin
+ * CORS: lesson origins (GitHub Pages + english.milesden.com)
  *
  * Bindings (see wrangler.jsonc):
  *   PROGRESS_KV    — existing miles:progress JSON
@@ -30,6 +30,7 @@ import {
 
 const ALLOW_ORIGINS = [
   'https://haishanlab-dev.github.io',
+  'https://english.milesden.com',
   'http://localhost:8787',
   'http://127.0.0.1:8787',
 ];
