@@ -151,11 +151,9 @@
      the line is nudged back inside the box if it would spill over an edge. */
   var DOCK = [1.42, 1.16, 1.05];
   /* ?rdmode=color (or localStorage rfReadMode='color'): the word only changes colour, no grow. */
-  var COLOR_ONLY = (function () { try { return /[?&]rdmode=color\b/.test(location.search) || localStorage.getItem('rfReadMode') === 'color'; } catch (e) { return false; } })();
   function paintDock(words, cur, body) {
     words.forEach(function (el) { if (el.classList.contains('is-dock')) { el.classList.remove('is-dock', 'is-now'); el.style.transform = ''; } });
     if (cur < 0) return;
-    if (COLOR_ONLY) { words[cur].classList.add('is-dock', 'is-now'); return; }
     var top = words[cur].offsetTop, line = [];
     for (var i = 0; i < words.length; i++) if (Math.abs(words[i].offsetTop - top) < 4) line.push(i);
     var base = {};
