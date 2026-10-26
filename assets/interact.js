@@ -1,4 +1,4 @@
-/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens. (ix19)
+/* Reading Future · tap-choice, drag-to-sort and parent 👍 for lesson pause screens. (ix20)
    Hooks used by the lesson page:
      RFInteract.mount(view, sc, state, unit)  – after every render()
      RFInteract.begin(id)                     – question narration finished; enable taps
@@ -507,6 +507,8 @@
     '.ix-c0{--oc:#3D7AB5;} .ix-c1{--oc:#C9A63A;} .ix-c2{--oc:#7A6BB0;}',
     '.ix-opt:active{transform:translateY(2px);border-bottom-width:4px;}',
     '.ix-wait .ix-opt,.ix-sort.ix-wait .ix-card{opacity:.55;pointer-events:none;}',
+    /* iPad: dragging a card must never scroll the page or pull the Safari bars */
+    '.ix-sort.is-live,.ix-sort.is-live .ix-card,.ix-ghost{touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;}',
     '.ix-opt.ix-ok,.ix-opt.ix-answer{background:#4F9A6B;border-color:#3E7A54;color:#fff;}',
     '.ix-row.is-done .ix-opt:not(.ix-ok):not(.ix-answer){opacity:.4;}',
     '.ix-opt.ix-no{border-color:#D4C6AE;color:#8A93A3;}',
