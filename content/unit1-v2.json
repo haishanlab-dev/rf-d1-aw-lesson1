@@ -15,7 +15,8 @@
     "Session 1 for Miles",
     "Reading Future · Discover 1"
    ],
-   "n": "Hello, Miles! I'm Eva, your English teacher. Today we read Animals' Weather. We will look, read, think, and talk. Are you ready? Let's go!"
+   "n": "Hello, Miles! I'm Eva, your English teacher. Today we read Animals' Weather. We will look, read, think, and talk. Are you ready? Let's go!",
+   "photo": "dog_umbrella.jpg"
   },
   {
    "s": "A",
@@ -48,13 +49,14 @@
     "I wonder ___."
    ],
    "reveal": [
-    "I see a wet dog.",
-    "I think it is rainy.",
-    "I wonder: does the dog know about rain?"
+    "I see a dog with an umbrella.",
+    "I think it will rain.",
+    "I wonder: how does the dog know?"
    ],
    "n": "Miles, look at this picture. What do you see? Start with: I see. Then say: I think. Then say: I wonder. Tap Record and talk. Tap Continue when you finish.",
-   "rn": "Here are some ideas. I see a wet dog. I think it is rainy. I wonder, does the dog know about rain? Great wondering, Miles! Tap Continue.",
-   "tip": "给家长：他说中文也可以，你帮他换成英文句子，不用纠错。"
+   "rn": "Here are some ideas. I see a dog with an umbrella. I think it will rain. I wonder, how does the dog know? Great wondering, Miles! Tap Continue.",
+   "tip": "给家长：他说中文也可以，你帮他换成英文句子，不用纠错。",
+   "photo": "dog_umbrella.jpg"
   },
   {
    "s": "A",
@@ -90,7 +92,8 @@
    ],
    "n": "Here is today's big question. How can animals guess the weather? Miles, make a guess. Say it out loud. Start with: Maybe animals...",
    "rn": "Good guess, Miles! Remember your guess. We will read the story, and then we will check it.",
-   "tip": "给家长：记住他的猜测，读完课文后会回来对照。"
+   "tip": "给家长：记住他的猜测，读完课文后会回来对照。",
+   "photo": "farm_storm.jpg"
   },
   {
    "s": "A",
@@ -144,7 +147,8 @@
     "about the weather.",
     "Animals can help."
    ],
-   "n": "Now turn to page 11. Look at the words and listen. Farmers need to know about the weather. Their farms need it! Animals can help."
+   "n": "Now turn to page 11. Look at the words and listen. Farmers need to know about the weather. Their farms need it! Animals can help.",
+   "photo": "farm_clouds.jpg"
   },
   {
    "s": "A",
@@ -182,7 +186,7 @@
    "practice": true,
    "zh": "Echo Read",
    "en": "Listen, then say it",
-   "img": "horse_p11.jpg",
+   "img": "horse_neck.jpg",
    "page": 11,
    "q": [
     "Cows and horses know",
@@ -203,7 +207,7 @@
    "practice": true,
    "zh": "Echo Read",
    "en": "Listen, then say it",
-   "img": "rabbit_big.jpg",
+   "img": "rabbit_eat.jpg",
    "page": 11,
    "q": [
     "The rabbits are eating a lot.",
@@ -245,7 +249,8 @@
     "why": "The cows and horses smell the air. Then the farmer knows it will rain.",
     "hint": "Look at the part about cows and horses.",
     "explain": "They smell the air. That sentence tells us about rain."
-   }
+   },
+   "photo": "cow_sniff.jpg"
   },
   {
    "s": "A",
@@ -275,7 +280,8 @@
     "why": "The rabbits are getting very fat. Then the farmer knows it will be a long, cold winter.",
     "hint": "Look at the part about the rabbits.",
     "explain": "They are getting very fat. That sentence tells us about winter."
-   }
+   },
+   "photo": "rabbit_fat.jpg"
   },
   {
    "s": "A",
@@ -283,7 +289,7 @@
    "type": "pause",
    "zh": "Check Your Guess",
    "en": "Were you right?",
-   "img": "horse_p11.jpg",
+   "img": "cows_grey.jpg",
    "page": 11,
    "q": [
     "Remember your guess?",
@@ -318,7 +324,8 @@
    ],
    "n": "The story ends with a question. How do the animals know? Miles, what do you think? Start with: Maybe...",
    "rn": "The book does not give an answer. That's OK! Maybe animals can feel or smell the air change. But maybe is not the same as a fact. How could we check, Miles? Look at the last line on page 11.",
-   "tip": "给家长：这题没有标准答案。他答了就追问 Why do you think so?"
+   "tip": "给家长：这题没有标准答案。他答了就追问 Why do you think so?",
+   "photo": "horses_field.jpg"
   },
   {
    "s": "A",
@@ -340,7 +347,8 @@
    ],
    "n": "Now retell the story, Miles. Use these helpers: First. Then. So. Tap Record and tell me the story. Tap Continue when you finish.",
    "rn": "Here is one way to say it. First, cows and horses smell the air. Then, the rabbits get very fat. So, animals help farmers. Tap Continue when you are ready.",
-   "tip": "给家长：看着句子框说；说不完整没关系，你把完整的句子再说一遍给他听。"
+   "tip": "给家长：看着句子框说；说不完整没关系，你把完整的句子再说一遍给他听。",
+   "photo": "cows_group.jpg"
   },
   {
    "s": "A",
@@ -417,7 +425,7 @@
    "type": "pause",
    "zh": "Try it",
    "en": "Main idea or detail?",
-   "img": "rabbit_big.jpg",
+   "img": "rabbit_grass.jpg",
    "page": 12,
    "q": [
     "The rabbits get very fat.",
@@ -514,7 +522,7 @@
    "type": "normal",
    "zh": "Say It Like the Book",
    "en": "know when …",
-   "img": "horse_p11.jpg",
+   "img": "horse_front.jpg",
    "body": [
     "Cows and horses know when it will rain.",
     "I know when …",
@@ -529,7 +537,7 @@
    "practice": true,
    "zh": "Your Turn",
    "en": "I know when …",
-   "img": "horse_p11.jpg",
+   "img": "girl_umbrella.jpg",
    "q": [
     "I know when ___."
    ],
@@ -711,7 +719,7 @@
    "type": "pause",
    "zh": "Fact or Saying?",
    "en": "Critical Thinking",
-   "img": "rabbit_big.jpg",
+   "img": "rabbit_fat2.jpg",
    "page": 11,
    "q": [
     "Fat rabbits mean",
@@ -743,7 +751,7 @@
    "type": "pause",
    "zh": "How Could We Check?",
    "en": "Think like a scientist",
-   "img": "rabbit_big.jpg",
+   "img": "rabbit_eat2.jpg",
    "q": [
     "How could we check",
     "if it is true?"
@@ -777,7 +785,8 @@
    ],
    "n": "Now you are the teacher, Miles! Teach Mum or Dad the story. Use the sentences on the screen. Speak clearly, and answer their question. Tap Record if you want, and tap Continue when you finish.",
    "rn": "Great teaching, Miles! Animals can help farmers. Cows and horses smell the air before rain. Rabbits get very fat before a long, cold winter. Tap Continue.",
-   "tip": "给家长：让他讲给你听，你问一个问题：How do they know? 让他再解释一次。"
+   "tip": "给家长：让他讲给你听，你问一个问题：How do they know? 让他再解释一次。",
+   "photo": "horse_trot.jpg"
   },
   {
    "s": "B",
@@ -811,6 +820,22 @@
   }
  ],
  "imgs": {
-  "cloudy.jpg": "img/cloudy.jpg"
+  "cloudy.jpg": "img/cloudy.jpg",
+  "dog_umbrella.jpg": "lesson-img/lesson1/dog_umbrella.jpg",
+  "horse_neck.jpg": "lesson-img/lesson1/horse_neck.jpg",
+  "cows_grey.jpg": "lesson-img/lesson1/cows_grey.jpg",
+  "horse_front.jpg": "lesson-img/lesson1/horse_front.jpg",
+  "cow_sniff.jpg": "lesson-img/lesson1/cow_sniff.jpg",
+  "cows_group.jpg": "lesson-img/lesson1/cows_group.jpg",
+  "rabbit_fat2.jpg": "lesson-img/lesson1/rabbit_fat2.jpg",
+  "rabbit_eat.jpg": "lesson-img/lesson1/rabbit_eat.jpg",
+  "rabbit_grass.jpg": "lesson-img/lesson1/rabbit_grass.jpg",
+  "girl_umbrella.jpg": "lesson-img/lesson1/girl_umbrella.jpg",
+  "rabbit_eat2.jpg": "lesson-img/lesson1/rabbit_eat2.jpg",
+  "farm_storm.jpg": "lesson-img/lesson1/farm_storm.jpg",
+  "horses_field.jpg": "lesson-img/lesson1/horses_field.jpg",
+  "horse_trot.jpg": "lesson-img/lesson1/horse_trot.jpg",
+  "rabbit_fat.jpg": "lesson-img/lesson1/rabbit_fat.jpg",
+  "farm_clouds.jpg": "lesson-img/lesson1/farm_clouds.jpg"
  }
 }

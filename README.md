@@ -106,3 +106,4 @@ Lesson pages no longer inline photos or narration. Keep it that way — a single
 - Then: `python3 tools/build_preload_manifest.py unit1-v2/index.html`.
 - Screens with `practice: true` let the child record and play back, but nothing is saved or uploaded.
 - Parent tips (Chinese, grey line under the question) show by default; `localStorage.rfParentTips='0'` hides them.
+- Per-screen photo: a screen can set `photo` (a name in `IMGS`) to choose the photo on a title or reading screen; Unit 1 uses it so no photo shows twice. Photo credits: `assets/lesson-img/lesson1/CREDITS.md`.

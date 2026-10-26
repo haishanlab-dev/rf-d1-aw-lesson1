@@ -384,13 +384,13 @@
       if (sc.type === 'normal') {
         var tBody = (sc.body && sc.body.length) ? sc.body : [zh || 'Lesson'];
         // Lesson openers: real hero photo (image-led). SR unit review cards keep short body under photo.
-        return { html: textScene(tBody, { photo: titlePhoto(unit, sc), hero: true }), what: 'tx:title', hint: '', scene: true };
+        return { html: textScene(tBody, { photo: sc.photo || titlePhoto(unit, sc), hero: true }), what: 'tx:title', hint: '', scene: true };
       }
       // pause screens that used a title crop as decoration → soft Noto backdrop, keep Q in panel
-      return { html: textScene([], { photo: titlePhoto(unit, sc), hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
+      return { html: textScene([], { photo: sc.photo || titlePhoto(unit, sc), hero: true }), what: 'tx:titlebg', hint: undefined, scene: true };
     }
     if (/^opener_/i.test(img) && sc.type !== 'normal') {
-      return { html: textScene([], { photo: titlePhoto(unit), hero: true }), what: 'tx:opener', scene: true };
+      return { html: textScene([], { photo: sc.photo || titlePhoto(unit), hero: true }), what: 'tx:opener', scene: true };
     }
     if (/^vocabreview_/i.test(img)) {
       return { html: textScene([], { ills: ['thinking', 'check', 'rabbit'], hero: true }), what: 'tx:vocab', scene: true };
