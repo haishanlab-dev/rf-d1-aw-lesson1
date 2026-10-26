@@ -791,6 +791,28 @@
   {
    "s": "B",
    "part": 4,
+   "type": "retell",
+   "practice": true,
+   "zh": "Tell a friend",
+   "en": "Communication",
+   "img": "two_skills.jpg",
+   "q": [
+    "One rain sentence.",
+    "One winter sentence.",
+    "Ask: Is it always true?"
+   ],
+   "reveal": [
+    "Before rain, cows smell the air.",
+    "Fat rabbits mean a long, cold winter.",
+    "Is it always true?"
+   ],
+   "n": "Now tell a friend, Miles. Say one rain sentence and one winter sentence. Then ask your friend: Is it always true? Speak clearly, and listen to your friend. Tap Record if you want, and tap Continue when you finish.",
+   "rn": "Here is one way to say it. Before rain, cows and horses smell the air. Fat rabbits mean a long, cold winter. Is it always true? Good talking and good listening, Miles! Tap Continue.",
+   "tip": "给家长：可以让他讲给朋友或爷爷奶奶听（打电话、视频都行）；没人在场就由你扮演朋友，听完再问他一句 Is it always true?"
+  },
+  {
+   "s": "B",
+   "part": 4,
    "type": "normal",
    "zh": "Look Outside",
    "en": "Weather where you live",
