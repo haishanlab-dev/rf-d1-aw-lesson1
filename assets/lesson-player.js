@@ -260,7 +260,7 @@ async function runFromIndex(startIdx){
       });
     }else{
       const row=document.createElement('div');row.className='endrow';
-      const b=document.createElement('button');b.className='endbtn';b.textContent='重新开始';b.onclick=restart;row.appendChild(b);
+      const b=document.createElement('button');b.className='endbtn';b.textContent='Start again';b.onclick=restart;row.appendChild(b);
       if(nx){const n=document.createElement('button');n.className='endbtn endnext';n.textContent='Session 2';n.onclick=()=>{runId++;au.pause();holdResolve=null;jumpToPart(nx.part);};row.appendChild(n);}
       p.appendChild(row);
     }
