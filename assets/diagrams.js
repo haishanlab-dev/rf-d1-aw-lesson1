@@ -526,9 +526,8 @@
     var tip = opts.tip || ''; // inline tip in the text column (Warm-Up "Next: …")
     var body;
     if (chips && chips.length) {
-      body = '<div class="tx-chips' + (chips.length > 6 ? ' is-many' : '') + '">' + chips.map(function (c, i) {
-        var pic = c.ph ? '<img class="tx-chip-ph" src="' + IBASE + 'lesson-img/words/' + c.ph + '.jpg?v=wp1" alt="" draggable="false">' : (c.ill ? ill(c.ill, 'ill-tx', i) : '');
-        return '<div class="tx-chip' + (c.ph ? ' has-ph' : '') + '">' + pic +
+      body = '<div class="tx-chips">' + chips.map(function (c, i) {
+        return '<div class="tx-chip">' + (c.ill ? ill(c.ill, 'ill-tx', i) : '') +
           '<span class="tx-chip-w">' + esc(c.w) + '</span></div>';
       }).join('') + '</div>';
     } else {
@@ -595,14 +594,24 @@
     return 'Next: How can animals guess the weather?';
   }
   function wordsChips(unit, sc) {
-    /* Real photos under assets/lesson-img/words/, matched to the book's New Words pictures
-       (credits in assets/lesson-img/words/CREDITS.md). */
-    var NOPH = { into: 'inbox', carry: 'flexed_biceps', probably: 'thinking' }; /* no matching photo yet */
-    function P(ws) { return ws.map(function (w) { return NOPH[w] ? { w: w, ill: NOPH[w] } : { w: w, ph: w }; }); }
-    var u2 = P(['storm', 'cloudy', 'tall', 'sky', 'top', 'all']);
-    var u3 = P(['snow', 'become', 'fall', 'warm', 'dangerous', 'happen']);
-    var u4 = P(['into', 'carry', 'wind', 'tornado', 'surprised', 'probably']);
-    var l1 = P(['neck', 'air', 'rabbit', 'fat', 'know', 'when']);
+    /* Each chip icon must literally depict the word (or a strong everyday association
+       a 7-year-old gets). Noto Emoji SVGs under assets/illus/noto/. */
+    var u2 = [
+      { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'giraffe' },
+      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'mountain' }, { w: 'all', ill: 'hundred' }
+    ];
+    var u3 = [
+      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'butterfly' }, { w: 'fall', ill: 'fallen_leaf' },
+      { w: 'warm', ill: 'hot_drink' }, { w: 'dangerous', ill: 'warning' }, { w: 'happen', ill: 'exclamation' }
+    ];
+    var u4 = [
+      { w: 'into', ill: 'door' }, { w: 'carry', ill: 'package' }, { w: 'wind', ill: 'leaf_wind' },
+      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'shrug' }
+    ];
+    var l1 = [
+      { w: 'neck', ill: 'scarf' }, { w: 'air', ill: 'dash' }, { w: 'rabbit', ill: 'rabbit' },
+      { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
+    ];
     if (unit === 'unit2') return u2;
     if (unit === 'unit3') return u3;
     if (unit === 'unit4') return u4;
@@ -610,11 +619,14 @@
       var en = ((sc && sc.en) || '').toLowerCase();
       if (/animals/.test(en)) {
         /* Match SR Word Bank body: stretch · smell · neck / fat · know · when */
-        return P(['stretch', 'smell', 'neck', 'fat', 'know', 'when']);
+        return [
+          { w: 'stretch', ill: 'person_ok' }, { w: 'smell', ill: 'nose' }, { w: 'neck', ill: 'scarf' },
+          { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
+        ];
       }
       if (/clouds/.test(en)) {
         /* unit2 chips + fluffy from body line 2 */
-        return u2.concat(P(['fluffy']));
+        return u2.concat([{ w: 'fluffy', ill: 'poodle' }]);
       }
       if (/snow|ice/.test(en)) return u3;
       if (/fish/.test(en)) return u4;
@@ -1086,9 +1098,6 @@
     '.tx-line{font-weight:800;font-size:clamp(18px,min(3.2cqw,5.6cqh),36px);line-height:1.35;color:#1F2A44;}',
     '.tx-chips{flex:1 1 0;min-width:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1.6cqmin,16px);align-content:center;}',
     '.tx-chip{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(4px,1cqh,10px);background:#fff;border-radius:clamp(14px,2cqmin,22px);padding:clamp(10px,2cqh,18px) clamp(8px,1.5cqw,14px);box-shadow:0 6px 16px rgba(31,42,68,.10);}',
-    '#view .imgbox img.tx-chip-ph,.tx-chip-ph{display:block;height:clamp(56px,min(30cqh,22cqw),180px);width:auto;max-width:100%;max-height:none;aspect-ratio:4/3;object-fit:cover;border-radius:clamp(8px,1.4cqmin,14px);}',
-    '.tx-chips.is-many{grid-template-columns:repeat(4,minmax(0,1fr));}',
-    '.tx-chip.has-ph{padding:clamp(6px,1.2cqh,12px);}',
     '.tx-chip-w{font-weight:800;font-size:clamp(16px,min(2.8cqw,4.8cqh),28px);color:#1F2A44;}',
     '.tx-side{flex:0 0 auto;display:flex;align-items:center;justify-content:center;}',
     '.tx-ills{display:flex;flex-wrap:nowrap;align-items:center;justify-content:center;gap:clamp(6px,1.5cqmin,14px);max-width:min(42cqw,340px);}',
