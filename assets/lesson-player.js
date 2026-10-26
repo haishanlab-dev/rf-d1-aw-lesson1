@@ -10,6 +10,11 @@ const stage=document.getElementById('stage'), view=document.getElementById('view
 function fit(){/* fluid layout — no fixed stage scale */}
 addEventListener('resize',fit);addEventListener('fullscreenchange',fit);addEventListener('webkitfullscreenchange',fit);
 ['dragstart','selectstart','contextmenu','gesturestart'].forEach(ev=>document.addEventListener(ev,e=>e.preventDefault()));
+/* iPad Safari: a finger drag that the page does not scroll is handed to the browser, which then pulls
+   its toolbar / fullscreen bar into view. Stop touch moves unless they are inside a box that can scroll. */
+(function(){const st=document.createElement('style');st.textContent='html,body{overscroll-behavior:none;}';document.head.appendChild(st);
+function scrollBox(el){for(;el&&el!==document.body&&el.nodeType===1;el=el.parentElement){const s=getComputedStyle(el);if(/(auto|scroll)/.test(s.overflowY)&&el.scrollHeight>el.clientHeight+1)return el;}return null;}
+document.addEventListener('touchmove',function(e){if(e.touches&&e.touches.length>1){if(e.cancelable)e.preventDefault();return;}var ix=window.RFInteract&&RFInteract._state&&RFInteract._state();if(ix&&ix.dragging){if(e.cancelable)e.preventDefault();return;}if(!scrollBox(e.target)&&e.cancelable)e.preventDefault();},{passive:false,capture:true});})();
 let session='A', paused=false, actx=null, runId=0, playIdx=0;
 const $=id=>document.getElementById(id);
 
