@@ -609,7 +609,7 @@
       { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'shrug' }
     ];
     var l1 = [
-      { w: 'neck', ill: 'scarf' }, { w: 'air', ill: 'dash' }, { w: 'rabbit', ill: 'rabbit' },
+      { w: 'neck', ill: 'neck' }, { w: 'air', ill: 'dash' }, { w: 'rabbit', ill: 'rabbit' },
       { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
     ];
     if (unit === 'unit2') return u2;
@@ -620,7 +620,7 @@
       if (/animals/.test(en)) {
         /* Match SR Word Bank body: stretch · smell · neck / fat · know · when */
         return [
-          { w: 'stretch', ill: 'person_ok' }, { w: 'smell', ill: 'nose' }, { w: 'neck', ill: 'scarf' },
+          { w: 'stretch', ill: 'person_ok' }, { w: 'smell', ill: 'nose' }, { w: 'neck', ill: 'neck' },
           { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
         ];
       }
