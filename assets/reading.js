@@ -320,7 +320,7 @@
     '.rd-s.is-on .rd-w,.rd-s.is-on .rd-v{color:#7C3AED;}',
     '.rd-v{color:#2F7FC0;font-weight:900;}',
     '.rd-w{display:inline-block;line-height:1.15;transform-origin:50% 55%;transition:transform .22s cubic-bezier(.3,.7,.3,1),color .22s ease;will-change:transform;}',
-    '.rd-s.is-on .rd-w.is-now,.rd-w.is-now{color:#EA580C;}',
+    '.rd-s.is-on .rd-w.is-now,.rd-w.is-now{color:#5B21B6;}',
     '.rd-body{position:relative;line-height:1.7;overflow-x:hidden;padding-inline:1em;}',
     '#view .screen.is-read .content > .panel .line.hint{color:#2F5F8C;font-weight:800;}',
     /* narrow / portrait: stack only when two columns would crush text */
