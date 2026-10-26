@@ -3,7 +3,8 @@
 
 The content file holds every screen: type, titles, on-screen lines, the narration
 text (`n` before / `rn` at the reveal), an optional parent tip (`tip`, Chinese),
-`imgs` for extra pictures (name -> path under assets/),
+`imgs` for extra pictures (name -> path under assets/), `photo` to pick the
+photo a title / reading screen shows (a name in IMGS),
 `practice: true` for speaking screens that are not saved, and an optional
 interaction (`ix`: choice / rows / sort / sortIntro, same shape as interact-data.js).
 
@@ -27,7 +28,7 @@ import asyncio, hashlib, json, os, re, sys
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 VOICES = {'en-GB': 'en-GB-SoniaNeural', 'en-US': 'en-US-JennyNeural'}
 RATE = '-20%'
-SCREEN_KEYS = ['i', 's', 'part', 'zh', 'en', 'img', 'rimg', 'type', 'body', 'q', 'reveal', 'page', 'map', 'dn', 'dr', 'tip', 'practice']
+SCREEN_KEYS = ['i', 's', 'part', 'zh', 'en', 'img', 'rimg', 'type', 'body', 'q', 'reveal', 'page', 'map', 'dn', 'dr', 'tip', 'practice', 'photo']
 
 
 def fnv(t):

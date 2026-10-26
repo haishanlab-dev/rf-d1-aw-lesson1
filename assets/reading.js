@@ -159,6 +159,7 @@
 
   function photoFor(pass, focus, sc) {
     var ph = pass.photo || {};
+    if (sc && sc.photo) return sc.photo; // per-screen photo set in the lesson data
     if (focus && focus.length === 1 && ph[focus[0]] !== undefined) return ph[focus[0]];
     // companion photo from the screen itself when it is a photo (not the page crop)
     var img = sc.img || '';
