@@ -1,6 +1,7 @@
 /**
  * Forced rest break for Miles.
  * After 20 min of visible app time → full-screen 10-min countdown. No close / skip / parent override.
+ * Being away from the app for 10 min or more (same as a break) restarts the 20 min.
  * State lives in localStorage (survives refresh, navigation, closing the tab). Break end is a wall-clock
  * timestamp, so the 10 minutes keep running while the app is closed.
  * QA only: ?restTest=1 → 20 s learn / 15 s break, separate counters, sticky for this tab (?restTest=0 clears).
@@ -18,8 +19,8 @@
     test = sessionStorage.getItem('rfRestTest') === '1';
   } catch (e) {}
   if (test) { LEARN_SEC = 20; BREAK_SEC = 15; }
-  var REAL = { learn: 'rfRest.learnSec', ends: 'rfRest.breakEndsAt', len: BREAK_SEC };
-  var KEYS = test ? { learn: 'rfRestTest.learnSec', ends: 'rfRestTest.breakEndsAt' } : REAL;
+  var REAL = { learn: 'rfRest.learnSec', ends: 'rfRest.breakEndsAt', seen: 'rfRest.learnAt', len: BREAK_SEC };
+  var KEYS = test ? { learn: 'rfRestTest.learnSec', ends: 'rfRestTest.breakEndsAt', seen: 'rfRestTest.learnAt' } : REAL;
   REAL.len = 10 * 60;
 
   // Parent settings is still locked during a break, but parent time there does not count as learning.
@@ -440,7 +441,11 @@
     if (active) hide();
     if (COUNTS && document.visibilityState === 'visible') {
       var d = Math.min(Math.max(now - last, 0), 3000) / 1000;
-      var learned = (+lsGet(KEYS.learn) || 0) + d;
+      // Time away from the app that is at least as long as a break counts as a rest:
+      // start the 20 minutes again instead of carrying over minutes from an earlier session.
+      var seen = +lsGet(KEYS.seen) || 0;
+      var learned = (!seen || now - seen >= BREAK_SEC * 1000) ? d : (+lsGet(KEYS.learn) || 0) + d;
+      lsSet(KEYS.seen, now);
       if (learned >= LEARN_SEC) {
         var e2 = now + BREAK_SEC * 1000;
         lsSet(KEYS.ends, e2); lsSet(KEYS.learn, 0);
