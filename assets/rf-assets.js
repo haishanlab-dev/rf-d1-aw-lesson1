@@ -111,7 +111,7 @@
     else setTimeout(fn, 200);
   }
   /* Noto illustrations used by diagrams / rest break: warm them once so icons never pop in. */
-  var NOTO = ['alarm_clock','astonished','carrot','check','child','cloud','cloud_rain','cloud_snow','cow','exclamation','farmer','fish','flexed_biceps','giraffe','herb','horse','hundred','inbox','leaf_wind','leafy_green','light_bulb','lotus','question','rabbit','snowflake','snowman','sparkles','speaking','storm','sun','sun_cloud','thermometer','thinking','tornado','up_arrow','warning','wind_face'];
+  var NOTO = ['alarm_clock','astonished','butterfly','calendar','carrot','check','child','cloud','cloud_rain','cloud_snow','cow','dash','door','exclamation','fallen_leaf','farmer','fish','flexed_biceps','giraffe','hamster','herb','horse','hot_drink','hundred','inbox','leaf_wind','leafy_green','light_bulb','lotus','mountain','neck','nose','package','person_ok','poodle','question','rabbit','raising_hand','shrug','snowflake','snowman','sparkles','speaking','storm','sun','sun_cloud','thermometer','thinking','tornado','up_arrow','warning','wind_face'];
   function warmNoto() { NOTO.forEach(function (n) { queue('img', BASE + 'illus/noto/' + n + '.svg'); }); }
 
   window.RFAssets = { media: media, fetchMedia: fetchMedia, image: image, ready: ready, queue: queue, idle: idle, warmNoto: warmNoto, base: BASE, _blobs: blobs };

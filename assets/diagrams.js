@@ -598,19 +598,19 @@
        a 7-year-old gets). Noto Emoji SVGs under assets/illus/noto/. */
     var u2 = [
       { w: 'storm', ill: 'storm' }, { w: 'cloudy', ill: 'cloud' }, { w: 'tall', ill: 'giraffe' },
-      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'up_arrow' }, { w: 'all', ill: 'hundred' }
+      { w: 'sky', ill: 'sun_cloud' }, { w: 'top', ill: 'mountain' }, { w: 'all', ill: 'hundred' }
     ];
     var u3 = [
-      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'sparkles' }, { w: 'fall', ill: 'cloud_rain' },
-      { w: 'warm', ill: 'sun' }, { w: 'dangerous', ill: 'warning' }, { w: 'happen', ill: 'exclamation' }
+      { w: 'snow', ill: 'snowflake' }, { w: 'become', ill: 'butterfly' }, { w: 'fall', ill: 'fallen_leaf' },
+      { w: 'warm', ill: 'hot_drink' }, { w: 'dangerous', ill: 'warning' }, { w: 'happen', ill: 'exclamation' }
     ];
     var u4 = [
-      { w: 'into', ill: 'inbox' }, { w: 'carry', ill: 'flexed_biceps' }, { w: 'wind', ill: 'leaf_wind' },
-      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'thinking' }
+      { w: 'into', ill: 'door' }, { w: 'carry', ill: 'package' }, { w: 'wind', ill: 'leaf_wind' },
+      { w: 'tornado', ill: 'tornado' }, { w: 'surprised', ill: 'astonished' }, { w: 'probably', ill: 'shrug' }
     ];
     var l1 = [
-      { w: 'neck', ill: 'giraffe' }, { w: 'air', ill: 'wind_face' }, { w: 'rabbit', ill: 'rabbit' },
-      { w: 'fat', ill: 'carrot' }, { w: 'know', ill: 'light_bulb' }, { w: 'when', ill: 'alarm_clock' }
+      { w: 'neck', ill: 'neck' }, { w: 'air', ill: 'dash' }, { w: 'rabbit', ill: 'rabbit' },
+      { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
     ];
     if (unit === 'unit2') return u2;
     if (unit === 'unit3') return u3;
@@ -620,13 +620,13 @@
       if (/animals/.test(en)) {
         /* Match SR Word Bank body: stretch · smell · neck / fat · know · when */
         return [
-          { w: 'stretch', ill: 'flexed_biceps' }, { w: 'smell', ill: 'wind_face' }, { w: 'neck', ill: 'giraffe' },
-          { w: 'fat', ill: 'carrot' }, { w: 'know', ill: 'light_bulb' }, { w: 'when', ill: 'alarm_clock' }
+          { w: 'stretch', ill: 'person_ok' }, { w: 'smell', ill: 'nose' }, { w: 'neck', ill: 'neck' },
+          { w: 'fat', ill: 'hamster' }, { w: 'know', ill: 'raising_hand' }, { w: 'when', ill: 'calendar' }
         ];
       }
       if (/clouds/.test(en)) {
         /* unit2 chips + fluffy from body line 2 */
-        return u2.concat([{ w: 'fluffy', ill: 'cloud' }]);
+        return u2.concat([{ w: 'fluffy', ill: 'poodle' }]);
       }
       if (/snow|ice/.test(en)) return u3;
       if (/fish/.test(en)) return u4;
