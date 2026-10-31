@@ -1,0 +1,16 @@
+{
+  "name": "xiangxiang-english",
+  "version": "0.0.0",
+  "private": true,
+  "engines": { "node": ">=22" },
+  "scripts": {
+    "build": "node tools/build-static.mjs",
+    "dev": "wrangler dev --config wrangler.jsonc --ip 0.0.0.0",
+    "deploy": "npm run build && wrangler versions upload --config wrangler.jsonc",
+    "check:deploy": "npm run deploy -- --dry-run",
+    "test": "node tools/test.mjs"
+  },
+  "devDependencies": {
+    "wrangler": "4.156.0"
+  }
+}
